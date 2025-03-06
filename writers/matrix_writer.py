@@ -11,7 +11,7 @@ class MatrixWriter:
 
     writer_name = "Base Writer"
 
-    def __init__(self, on_bytes, off_bytes):
+    def __init__(self, on_bytes: int, off_bytes: int):
         if on_bytes is None or off_bytes is None:
             raise ValueError("On and off bytes must be specified")
 
@@ -41,12 +41,14 @@ class MatrixWriter:
     def stop(self) -> None:
         return
 
-    def _write_number(self, number, matrix, start_row, start_col):
+    def _write_number(
+        self, number: str, matrix: list[list[int]], start_row: int, start_col: int
+    ) -> None:
         """
         Writes a number into the given matrix starting at the specified row and column.
 
         Args:
-            number (int): The number to write into the matrix.
+            number (str): The number to write into the matrix.
             matrix (list of list of int): The matrix where the number will be written.
             start_row (int): The starting row index in the matrix.
             start_col (int): The starting column index in the matrix.
@@ -54,9 +56,11 @@ class MatrixWriter:
         Returns:
             bool: True if the number was successfully written, False otherwise.
         """
-        return self.__number_funcs[number](matrix, start_row, start_col)
+        self.__number_funcs[number](matrix, start_row, start_col)
 
-    def _write_text(self, text, matrix, start_row, start_col):
+    def _write_text(
+        self, text: str, matrix: list[list[int]], start_row: int, start_col: int
+    ) -> None:
         """
         Writes the given text to the specified position in the matrix.
 
@@ -65,14 +69,17 @@ class MatrixWriter:
             matrix (list of list of any): The matrix where the text will be written.
             start_row (int): The starting row index in the matrix.
             start_col (int): The starting column index in the matrix.
-
-        Returns:
-            any: The result of the text writing operation, as defined by
-                the specific string function.
         """
-        return self.__string_funcs[text](matrix, start_row, start_col)
+        self.__string_funcs[text](matrix, start_row, start_col)
 
-    def _print_divider(self, matrix, start_row, start_col, width, height):
+    def _print_divider(
+        self,
+        matrix: list[list[int]],
+        start_row: int,
+        start_col: int,
+        width: int,
+        height: int,
+    ) -> None:
         """
         Draws a divider on the given matrix starting from the specified position.
 
@@ -82,9 +89,6 @@ class MatrixWriter:
             start_col (int): The starting column index (1-based).
             width (int): The width of the horizontal part of the divider.
             height (int): The height of the vertical part of the divider.
-
-        Returns:
-            list of list of int: The matrix with the divider drawn on it.
         """
         start_row = start_row - 1
         start_col = start_col - 1
@@ -100,9 +104,7 @@ class MatrixWriter:
         while j < height:
             matrix[max_col][start_row + j] = self._on
 
-        return matrix
-
-    def __zero(self, matrix, start_row, start_col):
+    def __zero(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -119,9 +121,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __one(self, matrix, start_row, start_col):
+    def __one(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._off
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._off
@@ -138,9 +138,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._off
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __two(self, matrix, start_row, start_col):
+    def __two(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._off
         matrix[start_col][start_row + 2] = self._off
@@ -157,9 +155,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._off
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __three(self, matrix, start_row, start_col):
+    def __three(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._off
         matrix[start_col][start_row + 2] = self._on
@@ -176,9 +172,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __four(self, matrix, start_row, start_col):
+    def __four(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -195,9 +189,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __five(self, matrix, start_row, start_col):
+    def __five(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -214,9 +206,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __six(self, matrix, start_row, start_col):
+    def __six(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -233,9 +223,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __seven(self, matrix, start_row, start_col):
+    def __seven(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._off
         matrix[start_col][start_row + 2] = self._off
@@ -252,9 +240,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._off
         matrix[start_col + 2][start_row + 4] = self._off
 
-        return matrix
-
-    def __eight(self, matrix, start_row, start_col):
+    def __eight(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -271,9 +257,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __nine(self, matrix, start_row, start_col):
+    def __nine(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
@@ -290,11 +274,11 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
     # This is garbage
     # Don't Use this shit
-    def __percent(self, matrix, start_row, start_col):
+    def __percent(
+        self, matrix: list[list[int]], start_row: int, start_col: int
+    ) -> None:
         matrix[start_col][start_row] = self._on
         matrix[start_col][start_row + 1] = self._off
         matrix[start_col][start_row + 2] = self._off
@@ -311,9 +295,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._off
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __c(self, matrix, start_row, start_col):
+    def __c(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
         matrix[start_col][start_row + 3] = self._on
@@ -327,9 +309,7 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 3] = self._off
         matrix[start_col + 2][start_row + 4] = self._on
 
-        return matrix
-
-    def __g(self, matrix, start_row, start_col):
+    def __g(self, matrix: list[list[int]], start_row: int, start_col: int) -> None:
         matrix[start_col][start_row + 1] = self._on
         matrix[start_col][start_row + 2] = self._on
         matrix[start_col][start_row + 3] = self._on
@@ -342,5 +322,3 @@ class MatrixWriter:
         matrix[start_col + 2][start_row + 2] = self._off
         matrix[start_col + 2][start_row + 3] = self._on
         matrix[start_col + 2][start_row + 4] = self._on
-
-        return matrix

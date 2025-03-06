@@ -33,15 +33,9 @@ Global Variables:
     ROW (int): Current row being updated in the main loop.
 """
 
-import json
-import os
 import signal
-import subprocess
 import sys
 from time import sleep
-
-import psutil
-import serial
 
 from device import Device
 from matrix import Matrix
@@ -54,9 +48,17 @@ right_device_address = "/dev/ttyACM0"
 left_device = Device(location=left_device_address, name="Left Matrix")
 # right_device = Device(location=right_device_address, name="Right Matrix")
 
-walking_writer_down = CpuWriter(left_device.ON, left_device.OFF)
+print((0, left_device.HEIGHT - 1 - 18))
+print((3, left_device.HEIGHT - 1))
 
-left_matrix = Matrix(left_device, [walking_writer_down])
+cpu_writer = CpuWriter(
+    left_device.ON,
+    left_device.OFF,
+    (0, left_device.HEIGHT - 1 - 18),
+    (4, left_device.HEIGHT - 1),
+)
+
+left_matrix = Matrix(left_device, [cpu_writer])
 
 
 def signal_handler(_sig, _frame):
@@ -85,7 +87,6 @@ signal.signal(signal.SIGINT, signal_handler)
 left_matrix.start_modules()
 
 while left_matrix.running:
-    print("running")
     sleep(10)
 
 # right_matrix = Matrix(right_device)
