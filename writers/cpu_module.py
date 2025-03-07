@@ -29,51 +29,6 @@ class CpuModule(MatrixModule):
 
         stop() -> None:
             Stops the CpuModule from running.
-
-        _exclamation(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Draws an exclamation mark on the matrix display.
-
-        _blink(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for blinking functionality.
-
-        _c(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the character 'C'.
-
-        _eight(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '8'.
-
-        _five(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '5'.
-
-        _four(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '4'.
-
-        _g(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the character 'G'.
-
-        _nine(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '9'.
-
-        _one(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '1'.
-
-        _percent(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the percent symbol '%'.
-
-        _seven(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '7'.
-
-        _six(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '6'.
-
-        _three(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '3'.
-
-        _two(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '2'.
-
-        _zero(matrix: list[list[int]], start_row: int, start_col: int) -> None:
-            Placeholder method for drawing the number '0'.
     """
 
     __start_cords: tuple[int, int] = None
