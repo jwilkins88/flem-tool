@@ -1,21 +1,4 @@
-"""
-This module provides the Device class for managing a serial connection to a device.
-
-Classes:
-    Device: Represents a device with serial communication capabilities.
-
-Attributes:
-    __SERIAL_DEVICE (serial.Serial): The serial connection to the device.
-    __WIDTH (int): The width attribute of the device.
-    __HEIGHT (int): The height attribute of the device.
-    _ON (int): The value representing the ON state.
-    _OFF (int): The value representing the OFF state.
-
-Methods:
-    __init__(name, location, speed): Initializes a new instance of the Device class.
-    __str__(): Returns a string representation of the device.
-    connect(): Establishes a serial connection to the device.
-"""
+# pylint: disable=missing-module-docstring
 
 from enum import IntEnum
 import serial

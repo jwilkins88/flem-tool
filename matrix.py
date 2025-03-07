@@ -1,9 +1,15 @@
+# pylint: disable=missing-module-docstring
+
 import threading
 from device import Device
-from writers import MatrixWriter
+from writers import MatrixModule
 
 
 class Matrix:
+    """
+    The Matrix class manages a matrix of devices and modules.
+    """
+
     __DEFAULT_MATRIX = [
         [Device.OFF for _ in range(Device.HEIGHT)] for _ in range(Device.WIDTH)
     ]
@@ -17,7 +23,7 @@ class Matrix:
     def __init__(
         self,
         matrix_device: Device,
-        modules: list[MatrixWriter] = None,
+        modules: list[MatrixModule] = None,
         matrix: list[list[int]] = None,
     ):
         if not matrix_device:
@@ -45,7 +51,20 @@ class Matrix:
             self.__device.connect()
 
     def start_modules(self) -> None:
+        """
+        Starts the modules associated with the matrix.
+
+        This method iterates over the list of modules and starts each one. If a module is static,
+        it writes directly to the matrix and update device. If a module is not static, it starts
+        a new thread to handle the writing process and appends the thread to the thread list.
+
+        Returns:
+            None
+        """
         for module in self.__modules:
+            if module.is_static:
+                module.write(self._matrix, self.__update_device)
+                continue
             thread = threading.Thread(
                 target=module.write,
                 name=module.writer_name,
@@ -76,12 +95,22 @@ class Matrix:
         """
         Resets the matrix to its default state.
 
-        This method sets the matrix to a copy of the default matrix and updates the device accordingly.
+        This method sets the matrix to a copy of the default matrix \
+            and updates the device accordingly.
         """
         self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
         self.__update_device()
 
     def stop(self) -> None:
+        """
+        Stops the matrix processing by performing the following actions:
+
+        1. Sets the running flag to False if it is currently True.
+        2. Stops all modules in the __modules list.
+        3. Joins all threads in the __thread_list to ensure they have completed.
+        4. Resets the matrix to its initial state.
+        5. Closes the device associated with the matrix.
+        """
         if self.running:
             self.running = False
 

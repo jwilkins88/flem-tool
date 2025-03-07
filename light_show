@@ -39,7 +39,7 @@ from time import sleep
 
 from device import Device
 from matrix import Matrix
-from writers import CpuWriter
+from writers import CpuModule
 
 
 left_device_address = "/dev/ttyACM1"
@@ -48,17 +48,14 @@ right_device_address = "/dev/ttyACM0"
 left_device = Device(location=left_device_address, name="Left Matrix")
 # right_device = Device(location=right_device_address, name="Right Matrix")
 
-print((0, left_device.HEIGHT - 1 - 18))
-print((3, left_device.HEIGHT - 1))
-
-cpu_writer = CpuWriter(
+cpu_module = CpuModule(
     left_device.ON,
     left_device.OFF,
     (0, left_device.HEIGHT - 1 - 18),
-    (4, left_device.HEIGHT - 1),
+    (3, left_device.HEIGHT - 1),
 )
 
-left_matrix = Matrix(left_device, [cpu_writer])
+left_matrix = Matrix(left_device, [cpu_module])
 
 
 def signal_handler(_sig, _frame):
