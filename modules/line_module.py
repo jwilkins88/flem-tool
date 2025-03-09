@@ -30,7 +30,6 @@ class LineModule(MatrixModule):
     def __init__(self, config: ModuleConfig, width: int, height: int = 1):
         self.__config = config
         self.__width = width
-        self.__height = height
         super().__init__(config, width, height)
 
     def write(

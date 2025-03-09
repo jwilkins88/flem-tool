@@ -40,7 +40,6 @@ from time import sleep
 
 from led_device import LedDevice
 from matrix import Matrix
-from led_device import LedDevice
 from models.config import Config
 from models import ConfigSchema
 from modules import load_module
@@ -92,7 +91,6 @@ def signal_handler(_sig, _frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-print(matrices)
 for matrix in matrices:
     matrix.start_modules()
 

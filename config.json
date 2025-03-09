@@ -15,8 +15,35 @@
                         "y": 0
                     },
                     "refresh_interval": 1000
+                },
+                {
+                    "module_type": "GpuModule",
+                    "position": {
+                        "x": 4,
+                        "y": 0
+                    },
+                    "refresh_interval": 1000
+                }
+            ]
+        },
+        {
+            "name": "right",
+            "device_address": "/dev/ttyACM0",
+            "speed": 115200,
+            "brightness": 10,
+            "on_bytes": 1,
+            "off_bytes": 0,
+            "modules": [
+                {
+                    "module_type": "CpuModule",
+                    "position": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "refresh_interval": 1000
                 }
             ]
         }
     ]
+
 }

@@ -1,45 +1,23 @@
 # pylint: disable=abstract-method, missing-module-docstring
 
+import json
+import subprocess
 from time import sleep
-
-import psutil
 
 from modules.matrix_module import MatrixModule
 from modules.line_module import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 
-class CpuModule(MatrixModule):
-    """
-    CpuModule is a subclass of MatrixModule that displays CPU usage on a matrix display.
-
-    Attributes:
-        __start_cords (tuple[int, int]): Starting coordinates for the display area.
-        __end_cords (tuple[int, int]): Ending coordinates for the display area.
-        __line_module (LineModule): An instance of LineModule for additional display functionality.
-        running (bool): A flag to control the running state of the module.
-        writer_name (str): The name of the writer module.
-
-    Methods:
-        __init__(on_bytes: int, off_bytes: int, start_coords: tuple[int, int], \
-            end_coords: tuple[int, int]):
-            Initializes the CpuModule with the given parameters.
-
-        write(matrix: list[list[int]], callback: callable, execute_callback: bool = True) -> None:
-            Writes the CPU usage to the matrix display and executes the callback if specified.
-
-        stop() -> None:
-            Stops the CpuModule from running.
-    """
-
+class GpuModule(MatrixModule):
     __line_module: LineModule = None
-
-    running = True
-    module_name = "CPU Module"
     __width = 3
     __height = 17
     __config: ModuleConfig = None
     __previous_value: str = "NA"
+
+    running = True
+    module_name = "GPU Module"
 
     def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 17):
         self.__config = config
@@ -60,25 +38,31 @@ class CpuModule(MatrixModule):
         execute_callback: bool = True,
     ) -> None:
         self._write_text(
-            "c", write_queue, self.__config.position.y, self.__config.position.x
+            "g", write_queue, self.__config.position.y, self.__config.position.x
         )
 
         self.__line_module.write(update_device, write_queue)
         while self.running:
-            cpu_percentage = str(round(psutil.cpu_percent()))
+
+            gpu_info = json.loads(
+                subprocess.check_output(
+                    ["/home/joelwilkins/nvtop-dev/usr/local/bin/nvtop", "-s"]
+                )
+            )
+            gpu_percentage = gpu_info[0]["gpu_util"][:-1]
 
             start_row = self.__config.position.x
-            cpu_cols = len(cpu_percentage)
+            gpu_cols = len(gpu_percentage)
 
-            if cpu_cols == 1:
-                cpu_percentage = "0" + cpu_percentage
+            if gpu_cols == 1:
+                gpu_percentage = "0" + gpu_percentage
 
             start_row = self.__config.position.y + self.__height - 10
 
-            if cpu_percentage == "100":
+            if gpu_percentage == "100":
                 self._write_text("!", write_queue, start_row, self.__config.position.x)
             else:
-                for i, char in enumerate(cpu_percentage):
+                for i, char in enumerate(gpu_percentage):
                     if char == self.__previous_value[i]:
                         start_row += 6
                         continue
@@ -91,7 +75,7 @@ class CpuModule(MatrixModule):
                     )
                     start_row += 6
 
-            self.__previous_value = cpu_percentage
+            self.__previous_value = gpu_percentage
             super().write(update_device, write_queue, execute_callback)
             sleep(self.__config.refresh_interval / 1000)
 

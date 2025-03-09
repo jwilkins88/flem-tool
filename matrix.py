@@ -1,6 +1,6 @@
 # pylint: disable=missing-module-docstring
 
-import threading
+from threading import Thread, Lock
 import queue
 
 from led_device import LedDevice
@@ -20,6 +20,7 @@ class Matrix:
     __OFF_CHAR = "⚫"
     __thread_list = None
     __change_queue: queue.Queue = None
+    __lock: Lock = None
 
     running = True
 
@@ -40,6 +41,7 @@ class Matrix:
         self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
         self.__thread_list = []
         self.__change_queue = queue.Queue()
+        self.__lock = Lock()
 
         if matrix is not None:
             if (
@@ -70,7 +72,7 @@ class Matrix:
             if module.is_static:
                 module.write(self._matrix, self.__update_device)
                 continue
-            thread = threading.Thread(
+            thread = Thread(
                 target=module.write,
                 name=module.module_name,
                 args=(
@@ -148,8 +150,10 @@ class Matrix:
     def __update_device(self) -> None:
         while not self.__change_queue.empty() and not self.__change_queue.is_shutdown:
             try:
+                self.__lock.acquire()
                 x, y, on = self.__change_queue.get(block=False)
                 self._matrix[x][y] = self.__device.ON if on else self.__device.OFF
+                self.__lock.release()
             except queue.Empty:
                 break
         self.__device.render_matrix(self._matrix)
