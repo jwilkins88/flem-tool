@@ -33,15 +33,16 @@ class CpuModule(MatrixModule):
     """
 
     __line_module: LineModule = None
+    __width = 3
+    __height = 18
+    __config: ModuleConfig = None
+    __previous_value: str = "NA"
+    __stat_start_row_offset = None
 
     running = True
     module_name = "CPU Module"
-    __width = 3
-    __height = 17
-    __config: ModuleConfig = None
-    __previous_value: str = "NA"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 17):
+    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
         self.__config = config
         self.__width = width
         self.__height = height
@@ -51,6 +52,7 @@ class CpuModule(MatrixModule):
             module_type="line",
         )
         self.__line_module = LineModule(line_config, self.__width)
+        self.__stat_start_row_offset = self.__config.position.y + self.__height - 11
         super().__init__(config, width, height)
 
     def write(
@@ -59,41 +61,48 @@ class CpuModule(MatrixModule):
         write_queue: callable,
         execute_callback: bool = True,
     ) -> None:
-        self._write_text(
-            "c", write_queue, self.__config.position.y, self.__config.position.x
-        )
+        try:
+            self._write_text(
+                "c", write_queue, self.__config.position.y, self.__config.position.x
+            )
 
-        self.__line_module.write(update_device, write_queue)
-        while self.running:
-            cpu_percentage = str(round(psutil.cpu_percent()))
+            self.__line_module.write(update_device, write_queue)
+            while self.running:
+                cpu_percentage = str(round(psutil.cpu_percent()))
 
-            start_row = self.__config.position.x
-            cpu_cols = len(cpu_percentage)
+                start_row = self.__config.position.x
+                cpu_cols = len(cpu_percentage)
 
-            if cpu_cols == 1:
-                cpu_percentage = "0" + cpu_percentage
+                if cpu_cols == 1:
+                    cpu_percentage = "0" + cpu_percentage
 
-            start_row = self.__config.position.y + self.__height - 10
+                start_row = self.__config.position.y + self.__stat_start_row_offset
 
-            if cpu_percentage == "100":
-                self._write_text("!", write_queue, start_row, self.__config.position.x)
-            else:
-                for i, char in enumerate(cpu_percentage):
-                    if char == self.__previous_value[i]:
-                        start_row += 6
-                        continue
-
-                    self._write_number(
-                        char,
-                        write_queue,
-                        start_row,
-                        self.__config.position.x,
+                if cpu_percentage == "100":
+                    self._write_text(
+                        "!", write_queue, start_row, self.__config.position.x
                     )
-                    start_row += 6
+                else:
+                    for i, char in enumerate(cpu_percentage):
+                        if char == self.__previous_value[i]:
+                            start_row += 6
+                            continue
 
-            self.__previous_value = cpu_percentage
-            super().write(update_device, write_queue, execute_callback)
-            sleep(self.__config.refresh_interval / 1000)
+                        self._write_number(
+                            char,
+                            write_queue,
+                            start_row,
+                            self.__config.position.x,
+                        )
+                        start_row += 6
+
+                self.__previous_value = cpu_percentage
+                super().write(update_device, write_queue, execute_callback)
+                sleep(self.__config.refresh_interval / 1000)
+        except (IndexError, ValueError, TypeError, psutil.Error) as e:
+            print(f"Error while running {self.module_name}: {e}")
+            super().stop()
+            super().clear_module(update_device, write_queue)
 
     def _exclamation(
         self, write_queue: callable, start_row: int, start_col: int

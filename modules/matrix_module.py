@@ -80,6 +80,9 @@ class MatrixModule:
     __metaclass__ = abc.ABCMeta
     __number_funcs = None
     __string_funcs = None
+    __config: ModuleConfig = None
+    __width: int = None
+    __height: int = None
 
     is_static = False
     module_name = "Base Module"
@@ -106,6 +109,10 @@ class MatrixModule:
             "!": self._exclamation,
         }
 
+        self.__config = config
+        self.__width = width
+        self.__height = height
+
     @abc.abstractmethod
     def write(
         self,
@@ -125,6 +132,26 @@ class MatrixModule:
         This method is used to signal the matrix module to stop its operations.
         """
         self.running = False
+
+    @abc.abstractmethod
+    def clear_module(self, update_device: callable, write_queue: callable) -> None:
+        """
+        Clears the matrix by setting all values to False.
+
+        This method is used to clear the matrix of any data.
+        """
+        try:
+            for row in range(
+                self.__config.position.y, self.__config.position.y + self.__height
+            ):
+                for col in range(
+                    self.__config.position.x, self.__config.position.x + self.__width
+                ):
+                    write_queue((col, row, False))
+
+            update_device()
+        except Exception as e:
+            print(f"An error occurred while clearing the module: {e}")
 
     def _write_number(
         self,
