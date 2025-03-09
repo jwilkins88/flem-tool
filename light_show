@@ -35,27 +35,38 @@ Global Variables:
 
 import signal
 import sys
+import os
 from time import sleep
 
-from device import Device
+from led_device import LedDevice
 from matrix import Matrix
-from writers import CpuModule
+from led_device import LedDevice
+from models.config import Config
+from models import ConfigSchema
+from modules import load_module
+
+CONFIG: Config = None
+CONFIG_SCHEMA: ConfigSchema = ConfigSchema()
+CONFIG_PATH = "config.json"
+if not os.path.exists(CONFIG_PATH):
+    print(f"Configuration file {CONFIG_PATH} not found.")
+    sys.exit(1)
+
+with open(CONFIG_PATH, encoding="utf-8") as config_file:
+    CONFIG = CONFIG_SCHEMA.loads(config_file.read())
+
+devices: list[LedDevice] = []
+matrices: list[Matrix] = []
 
 
-left_device_address = "/dev/ttyACM1"
-right_device_address = "/dev/ttyACM0"
+for device in CONFIG.devices:
+    device_to_add = LedDevice(device)
+    devices.append(device_to_add)
 
-left_device = Device(location=left_device_address, name="Left Matrix")
-# right_device = Device(location=right_device_address, name="Right Matrix")
-
-cpu_module = CpuModule(
-    left_device.ON,
-    left_device.OFF,
-    (0, left_device.HEIGHT - 1 - 18),
-    (3, left_device.HEIGHT - 1),
-)
-
-left_matrix = Matrix(left_device, [cpu_module])
+    device_modules = []
+    for module in device.modules:
+        device_modules.append(load_module(module))
+    matrices.append(Matrix(device_to_add, device_modules))
 
 
 def signal_handler(_sig, _frame):
@@ -73,18 +84,49 @@ def signal_handler(_sig, _frame):
         frame (FrameType): The current stack frame.
     """
 
-    left_matrix.stop()
+    for matrix in matrices:
+        matrix.stop()
 
     sys.exit(0)
 
 
 signal.signal(signal.SIGINT, signal_handler)
 
+print(matrices)
+for matrix in matrices:
+    matrix.start_modules()
 
-left_matrix.start_modules()
 
-while left_matrix.running:
+any_matrix_running = True
+
+while any_matrix_running:
+    for matrix in matrices:
+        if matrix.running:
+            any_matrix_running = True
+            break
+        any_matrix_running = False
+
+    # todo check for config updates
+
     sleep(10)
+
+# left_device = Device(location=left_device_address, name="Left Matrix")
+# # right_device = Device(location=right_device_address, name="Right Matrix")
+
+# cpu_module = CpuModule(
+#     left_device.ON,
+#     left_device.OFF,
+#     (0, left_device.HEIGHT - 1 - 18),
+#     (3, left_device.HEIGHT - 1),
+# )
+
+# left_matrix = Matrix(left_device, [cpu_module])
+
+
+# left_matrix.start_modules()
+
+# while left_matrix.running:
+#     sleep(10)
 
 # right_matrix = Matrix(right_device)
 
@@ -105,28 +147,6 @@ while left_matrix.running:
 # discard = psutil.cpu_percent()
 
 # send_command(left_matrix, CommandVals.BRIGHTNESS, [5])
-
-# # Print CPU Usage
-# while True:
-#     matrices[LEFT_DEVICE] = [row[:] for row in matrices["default"]]
-#     cpu_percentage = str(round(psutil.cpu_percent()))
-#     # cpu_percentage = "100"
-
-#     cpu_cols = len(cpu_percentage)
-#     top_row = 7
-#     if cpu_cols == 1:
-#         start_row = 29
-#         top_row = 29
-#     elif cpu_cols == 2:
-#         start_row = 23
-#         top_row = 23
-#     else:
-#         start_row = 17
-#         top_row = 17
-
-#     for char in cpu_percentage:
-#         matrices[LEFT_DEVICE] = write_number(char, matrices[LEFT_DEVICE], start_row, 0)
-#         start_row += 6
 
 #     gpu_info = json.loads(
 #         subprocess.check_output(

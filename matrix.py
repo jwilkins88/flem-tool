@@ -1,8 +1,10 @@
 # pylint: disable=missing-module-docstring
 
 import threading
-from device import Device
-from writers import MatrixModule
+import queue
+
+from led_device import LedDevice
+from modules import MatrixModule
 
 
 class Matrix:
@@ -11,18 +13,19 @@ class Matrix:
     """
 
     __DEFAULT_MATRIX = [
-        [Device.OFF for _ in range(Device.HEIGHT)] for _ in range(Device.WIDTH)
+        [LedDevice.OFF for _ in range(LedDevice.HEIGHT)] for _ in range(LedDevice.WIDTH)
     ]
     __BORDER_CHAR = "⬛"
     __ON_CHAR = "⚪"
     __OFF_CHAR = "⚫"
-    __thread_list = []
+    __thread_list = None
+    __change_queue: queue.Queue = None
 
     running = True
 
     def __init__(
         self,
-        matrix_device: Device,
+        matrix_device: LedDevice,
         modules: list[MatrixModule] = None,
         matrix: list[list[int]] = None,
     ):
@@ -35,6 +38,8 @@ class Matrix:
             self.__modules = []
 
         self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
+        self.__thread_list = []
+        self.__change_queue = queue.Queue()
 
         if matrix is not None:
             if (
@@ -67,10 +72,10 @@ class Matrix:
                 continue
             thread = threading.Thread(
                 target=module.write,
-                name=module.writer_name,
+                name=module.module_name,
                 args=(
-                    self._matrix,
                     self.__update_device,
+                    self.__write_queue,
                 ),
             )
             thread.start()
@@ -98,6 +103,7 @@ class Matrix:
         This method sets the matrix to a copy of the default matrix \
             and updates the device accordingly.
         """
+        self.__change_queue.shutdown()
         self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
         self.__update_device()
 
@@ -123,7 +129,29 @@ class Matrix:
         self.reset_matrix()
         self.__device.close()
 
+    def __write_queue(self, value: tuple[int, int, bool]) -> None:
+        """
+        Writes the given value to the matrix.
+
+        Args:
+            value (list[tuple[int, int, bool]]): A list of tuples containing the x and y coordinates
+                of the matrix and a boolean value indicating whether the LED should be on or off.
+
+        Returns:
+            None
+        """
+        try:
+            self.__change_queue.put(value, block=False)
+        except queue.ShutDown:
+            pass
+
     def __update_device(self) -> None:
+        while not self.__change_queue.empty() and not self.__change_queue.is_shutdown:
+            try:
+                x, y, on = self.__change_queue.get(block=False)
+                self._matrix[x][y] = self.__device.ON if on else self.__device.OFF
+            except queue.Empty:
+                break
         self.__device.render_matrix(self._matrix)
 
     def __str__(self):
