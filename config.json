@@ -1,0 +1,22 @@
+{
+    "devices": [
+        {
+            "name": "left",
+            "device_address": "/dev/ttyACM1",
+            "speed": 115200,
+            "brightness": 5,
+            "on_bytes": 1,
+            "off_bytes": 0,
+            "modules": [
+                {
+                    "module_type": "CpuModule",
+                    "position": {
+                        "x": 0,
+                        "y": 0
+                    },
+                    "refresh_interval": 1000
+                }
+            ]
+        }
+    ]
+}
