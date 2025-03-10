@@ -4,7 +4,7 @@
             "name": "left",
             "device_address": "/dev/ttyACM1",
             "speed": 115200,
-            "brightness": 5,
+            "brightness": 3,
             "on_bytes": 1,
             "off_bytes": 0,
             "modules": [
@@ -15,20 +15,6 @@
                         "y": 15
                     },
                     "refresh_interval": 1000
-                },
-                {
-                    "module_type": "GpuModule",
-                    "position": {
-                        "x": 5,
-                        "y": 15
-                    },
-                    "refresh_interval": 1000,
-                    "arguments": {
-                        "gpu_index": 0,
-                        "gpu_command": "/home/joelwilkins/nvtop-dev/usr/local/bin/nvtop",
-                        "gpu_command_arguments": "-s",
-                        "gpu_util_output_property": "gpu_util"
-                    }
                 },
                 {
                     "module_type": "ClockModule",

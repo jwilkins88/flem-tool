@@ -45,7 +45,7 @@ class LineModule(MatrixModule):
         self,
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
-        execute_callback: bool = False,
+        execute_callback: bool = True,
     ) -> None:
         try:
             i = self.__config.position.x

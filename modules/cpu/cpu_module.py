@@ -68,7 +68,7 @@ class CpuModule(MatrixModule):
                 "c", write_queue, self.__config.position.y, self.__config.position.x
             )
 
-            self.__line_module.write(update_device, write_queue)
+            self.__line_module.write(update_device, write_queue, False)
             while self.running:
                 cpu_percentage = str(round(psutil.cpu_percent()))
 
