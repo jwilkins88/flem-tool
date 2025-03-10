@@ -23,6 +23,17 @@
                         "y": 0
                     },
                     "refresh_interval": 1000
+                },
+                {
+                    "module_type": "LineModule",
+                    "position": {
+                        "x": 0,
+                        "y": 33
+                    },
+                    "refresh_interval": 0,
+                    "arguments": {
+                        "width": 6
+                    }
                 }
             ]
         },

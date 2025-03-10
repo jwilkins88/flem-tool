@@ -70,7 +70,7 @@ class Matrix:
         """
         for module in self.__modules:
             if module.is_static:
-                module.write(self._matrix, self.__update_device)
+                module.write(self.__update_device, self.__write_queue)
                 continue
             thread = Thread(
                 target=module.write,

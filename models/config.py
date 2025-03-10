@@ -6,11 +6,16 @@ class ModulePositionConfig:
 
 class ModuleConfig:
     def __init__(
-        self, module_type: str, position: ModulePositionConfig, refresh_interval: int
+        self,
+        module_type: str,
+        position: ModulePositionConfig,
+        refresh_interval: int,
+        arguments: dict = None,
     ):
         self.module_type = module_type
         self.position = position
         self.refresh_interval = refresh_interval
+        self.arguments = arguments or {}
 
 
 class DeviceConfig:

@@ -16,6 +16,7 @@ class ModuleSchema(Schema):
     module_type = fields.Str()
     position = fields.Nested(ModulePositionSchema)
     refresh_interval = fields.Int()
+    arguments = fields.Dict(required=False)
 
     @post_load
     def make_module(self, data, **kwargs):

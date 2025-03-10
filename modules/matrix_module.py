@@ -3,6 +3,7 @@
 import abc
 
 from models import ModuleConfig
+from typing import Callable
 
 
 class MatrixModule:
@@ -116,8 +117,8 @@ class MatrixModule:
     @abc.abstractmethod
     def write(
         self,
-        update_device: callable,
-        write_queue: callable,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
     ) -> None:
         "The main function that draws the matrix info for the module"
@@ -134,7 +135,11 @@ class MatrixModule:
         self.running = False
 
     @abc.abstractmethod
-    def clear_module(self, update_device: callable, write_queue: callable) -> None:
+    def clear_module(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ) -> None:
         """
         Clears the matrix by setting all values to False.
 
@@ -156,7 +161,7 @@ class MatrixModule:
     def _write_number(
         self,
         number: str,
-        write_queue: callable,
+        write_queue: Callable[[tuple[int, int, bool]], None],
         start_row: int,
         start_col: int,
     ) -> None:
@@ -177,7 +182,7 @@ class MatrixModule:
     def _write_text(
         self,
         text: str,
-        write_queue: callable,
+        write_queue: Callable[[tuple[int, int, bool]], None],
         start_row: int,
         start_col: int,
     ) -> None:
@@ -205,7 +210,12 @@ class MatrixModule:
         """
 
     @abc.abstractmethod
-    def _zero(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _zero(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -223,7 +233,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _one(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _one(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, False))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, False))
@@ -241,7 +256,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _two(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _two(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, False))
         write_queue((start_col, start_row + 2, False))
@@ -259,7 +279,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _three(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _three(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, False))
         write_queue((start_col, start_row + 2, True))
@@ -277,7 +302,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _four(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _four(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -295,7 +325,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _five(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _five(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -313,7 +348,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _six(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _six(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -331,7 +371,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _seven(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _seven(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, False))
         write_queue((start_col, start_row + 2, False))
@@ -349,7 +394,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, False))
 
     @abc.abstractmethod
-    def _eight(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _eight(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -367,7 +417,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _nine(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _nine(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 2, True))
@@ -387,7 +442,12 @@ class MatrixModule:
     # This is garbage
     # Don't Use this shit
     @abc.abstractmethod
-    def _percent(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _percent(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, False))
         write_queue((start_col, start_row + 2, False))
@@ -405,7 +465,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     @abc.abstractmethod
-    def _c(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _c(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -420,7 +485,12 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 3, True))
 
     @abc.abstractmethod
-    def _g(self, write_queue: callable, start_row: int, start_col: int) -> None:
+    def _g(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))
         write_queue((start_col, start_row + 2, True))
@@ -436,7 +506,10 @@ class MatrixModule:
 
     @abc.abstractmethod
     def _exclamation(
-        self, write_queue: callable, start_row: int, start_col: int
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
     ) -> None:
         write_queue((start_col, start_row, False))
         write_queue((start_col, start_row + 1, False))
