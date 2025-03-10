@@ -6,7 +6,7 @@ from modules import load_module
 from led_device import LedDevice
 from matrix import Matrix
 
-__CONFIG_PATHS = ["~/.flem/config.json", "config.json"]
+__CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
 
 
 def get_config() -> tuple[Config, str]:
@@ -18,7 +18,7 @@ def get_config() -> tuple[Config, str]:
 
 def read_config_from_file() -> str:
     for path in __CONFIG_PATHS:
-        if os.path.exists(path):
+        if os.path.exists((path)):
             with open(path, encoding="utf-8") as config_file:
                 return config_file.read()
 
