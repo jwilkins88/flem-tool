@@ -12,6 +12,24 @@ I hope you find it as useful as I have!
 
 <img src="docs/images/action.gif" height="400" />
 
+## Table of Contents
+- [Setup](#setup)
+  - [Before you get started](#before-you-get-started)
+  - [I'm not a developer. Make this easy](#im-not-a-developer-make-this-easy)
+  - [I'm a developer](#im-a-developer)
+- [Customizing](#customizing)
+  - [Config Reference](#config-reference)
+  - [Existing Modules](#existing-modules)
+    - [CPU Module](#cpu-module)
+    - [GPU Module](#gpu-module)
+    - [Line Module](#line-module)
+    - [Clock Module](#clock-module)
+  - [Adding Custom Modules (WIP)](#adding-custom-modules-wip)
+- [Limitations](#limitations)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+
+
 ## Setup
 
 This is still a work in progress. The end goal is to have this be a package that you can install with either pip or a package manager on your favorite OS. For now, you're going to have to clone the repo and run it manually. When you clone the repository, it won't just fire up. without installing a couple dependencies.
