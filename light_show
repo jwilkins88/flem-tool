@@ -34,38 +34,21 @@ Global Variables:
 """
 
 import signal
-import sys
 import os
 from time import sleep
 
-from led_device import LedDevice
 from matrix import Matrix
-from models.config import Config
-from models import ConfigSchema
-from modules import load_module
+from models import Config
+from utilities import (
+    get_config,
+    read_config_from_file,
+    has_config_changed,
+    run_matrices_from_config,
+)
 
-CONFIG: Config = None
-CONFIG_SCHEMA: ConfigSchema = ConfigSchema()
-CONFIG_PATH = "config.json"
-if not os.path.exists(CONFIG_PATH):
-    print(f"Configuration file {CONFIG_PATH} not found.")
-    sys.exit(1)
-
-with open(CONFIG_PATH, encoding="utf-8") as config_file:
-    CONFIG = CONFIG_SCHEMA.loads(config_file.read())
-
-devices: list[LedDevice] = []
+config: Config
+config_hash: str
 matrices: list[Matrix] = []
-
-
-for device in CONFIG.devices:
-    device_to_add = LedDevice(device)
-    devices.append(device_to_add)
-
-    device_modules = []
-    for module in device.modules:
-        device_modules.append(load_module(module))
-    matrices.append(Matrix(device_to_add, device_modules))
 
 
 def signal_handler(_sig, _frame):
@@ -82,18 +65,18 @@ def signal_handler(_sig, _frame):
         sig (int): The signal number.
         frame (FrameType): The current stack frame.
     """
-
+    print("Received exit command")
     for matrix in matrices:
         matrix.stop()
 
-    sys.exit(0)
+    os._exit(0)
 
 
 signal.signal(signal.SIGINT, signal_handler)
 
-for matrix in matrices:
-    matrix.start_modules()
+config, config_hash = get_config()
 
+matrices = run_matrices_from_config(config, matrices)
 
 any_matrix_running = True
 
@@ -104,6 +87,10 @@ while any_matrix_running:
             break
         any_matrix_running = False
 
-    # todo check for config updates
+    config_string = read_config_from_file()
+
+    if has_config_changed(config_hash, config_string):
+        config, config_hash = get_config()
+        matrices = run_matrices_from_config(config, matrices)
 
     sleep(10)

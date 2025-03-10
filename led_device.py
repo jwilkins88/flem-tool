@@ -70,13 +70,15 @@ class LedDevice:
     __response_size = 32
     __fwk_magic = [0x32, 0xAC]
 
-    WIDTH = 9
-    HEIGHT = 34
-    ON = 0xFF
-    OFF = 0x00
+    WIDTH: int = 9
+    HEIGHT: int = 34
+    ON: int = 0xFF
+    OFF: int = 0x00
+    name: str = None
 
     def __init__(self, config: DeviceConfig):
         self.__config = config
+        self.name = self.__config.name
 
     def connect(self) -> None:
         """
@@ -91,6 +93,7 @@ class LedDevice:
         self.__serial_device = serial.Serial(
             self.__config.location, self.__config.speed
         )
+
         self.brightness(self.__config.brightness)
 
     def update_config(self, config: DeviceConfig) -> None:

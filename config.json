@@ -12,7 +12,7 @@
                     "module_type": "CpuModule",
                     "position": {
                         "x": 0,
-                        "y": 0
+                        "y": 16
                     },
                     "refresh_interval": 1000
                 },
@@ -20,19 +20,14 @@
                     "module_type": "GpuModule",
                     "position": {
                         "x": 4,
-                        "y": 0
+                        "y": 16
                     },
-                    "refresh_interval": 1000
-                },
-                {
-                    "module_type": "LineModule",
-                    "position": {
-                        "x": 0,
-                        "y": 33
-                    },
-                    "refresh_interval": 0,
+                    "refresh_interval": 1000,
                     "arguments": {
-                        "width": 6
+                        "gpu_index": 0,
+                        "gpu_command": "/home/joelwilkins/nvtop-dev/usr/local/bin/nvtop",
+                        "gpu_command_arguments": "-s",
+                        "gpu_util_output_property": "gpu_util"
                     }
                 }
             ]
@@ -56,5 +51,4 @@
             ]
         }
     ]
-
 }

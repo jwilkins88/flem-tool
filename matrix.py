@@ -12,17 +12,18 @@ class Matrix:
     The Matrix class manages a matrix of devices and modules.
     """
 
-    __DEFAULT_MATRIX = [
+    __DEFAULT_MATRIX: list[list[int]] = [
         [LedDevice.OFF for _ in range(LedDevice.HEIGHT)] for _ in range(LedDevice.WIDTH)
     ]
-    __BORDER_CHAR = "⬛"
-    __ON_CHAR = "⚪"
-    __OFF_CHAR = "⚫"
-    __thread_list = None
+    __BORDER_CHAR: str = "⬛"
+    __ON_CHAR: str = "⚪"
+    __OFF_CHAR: str = "⚫"
+    __thread_list: list[Thread] = None
     __change_queue: queue.Queue = None
     __lock: Lock = None
 
-    running = True
+    running: bool = True
+    name = None
 
     def __init__(
         self,
@@ -42,6 +43,7 @@ class Matrix:
         self.__thread_list = []
         self.__change_queue = queue.Queue()
         self.__lock = Lock()
+        self.name = self.__device.name
 
         if matrix is not None:
             if (
@@ -74,7 +76,7 @@ class Matrix:
                 continue
             thread = Thread(
                 target=module.write,
-                name=module.module_name,
+                name=f"{module.module_name}_{id(self)}",
                 args=(
                     self.__update_device,
                     self.__write_queue,
@@ -123,13 +125,22 @@ class Matrix:
             self.running = False
 
         for module in self.__modules:
-            module.stop()
+            try:
+                module.stop()
+            except:
+                pass
 
         for thread in self.__thread_list:
-            thread.join()
+            try:
+                thread.join(timeout=2)
+            except:
+                pass
 
-        self.reset_matrix()
-        self.__device.close()
+        try:
+            self.reset_matrix()
+            self.__device.close()
+        except:
+            pass
 
     def __write_queue(self, value: tuple[int, int, bool]) -> None:
         """
@@ -148,6 +159,7 @@ class Matrix:
             pass
 
     def __update_device(self) -> None:
+        # print(self.__change_queue)
         while not self.__change_queue.empty() and not self.__change_queue.is_shutdown:
             try:
                 self.__lock.acquire()
@@ -156,6 +168,9 @@ class Matrix:
                 self.__lock.release()
             except queue.Empty:
                 break
+            except IndexError:
+                print(f"[{x}][{y}]")
+                raise
         self.__device.render_matrix(self._matrix)
 
     def __str__(self):

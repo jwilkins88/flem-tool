@@ -1,7 +1,9 @@
 # pylint: disable=abstract-method, missing-module-docstring
 
+import sys
 from time import sleep
 from typing import Callable
+import traceback
 
 import psutil
 
@@ -39,7 +41,6 @@ class CpuModule(MatrixModule):
     __height = 18
     __config: ModuleConfig = None
     __previous_value: str = "NA"
-    __stat_start_row_offset = None
 
     running = True
     module_name = "CPU Module"
@@ -54,7 +55,6 @@ class CpuModule(MatrixModule):
             module_type="line",
         )
         self.__line_module = LineModule(line_config, self.__width)
-        self.__stat_start_row_offset = self.__config.position.y + self.__height - 11
         super().__init__(config, width, height)
 
     def write(
@@ -72,13 +72,12 @@ class CpuModule(MatrixModule):
             while self.running:
                 cpu_percentage = str(round(psutil.cpu_percent()))
 
-                start_row = self.__config.position.x
                 cpu_cols = len(cpu_percentage)
 
                 if cpu_cols == 1:
                     cpu_percentage = "0" + cpu_percentage
 
-                start_row = self.__config.position.y + self.__stat_start_row_offset
+                start_row = self.__config.position.y + 7
 
                 if cpu_percentage == "100":
                     self._write_text(
@@ -102,6 +101,7 @@ class CpuModule(MatrixModule):
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError, psutil.Error) as e:
+            traceback.print_exception(*sys.exc_info())
             print(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)

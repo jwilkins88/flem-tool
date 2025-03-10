@@ -13,14 +13,18 @@ from models import ModuleConfig, ModulePositionConfig
 class GpuModule(MatrixModule):
     __line_module: LineModule = None
     __width = 3
-    __height = 17
+    __height = 18
     __config: ModuleConfig = None
     __previous_value: str = "NA"
+    __gpu_command_argument = "gpu_command"
+    __gpu_index_argument = "gpu_index"
+    __gpu_command_arguments_argument = "gpu_command_arguments"
+    __gpu_util_output_property = "gpu_util_output_property"
 
     running = True
     module_name = "GPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 17):
+    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
         self.__config = config
         self.__width = width
         self.__height = height
@@ -48,18 +52,22 @@ class GpuModule(MatrixModule):
 
                 gpu_info = json.loads(
                     subprocess.check_output(
-                        ["/home/joelwilkins/nvtop-dev/usr/local/bin/nvtop", "-s"]
+                        [self.__config.arguments[self.__gpu_command_argument]]
+                        + self.__config.arguments[
+                            self.__gpu_command_arguments_argument
+                        ].split(",")
                     )
                 )
-                gpu_percentage = gpu_info[0]["gpu_util"][:-1]
+                gpu_percentage = gpu_info[
+                    self.__config.arguments[self.__gpu_index_argument]
+                ][self.__config.arguments[self.__gpu_util_output_property]][:-1]
 
-                start_row = self.__config.position.x
                 gpu_cols = len(gpu_percentage)
 
                 if gpu_cols == 1:
                     gpu_percentage = "0" + gpu_percentage
 
-                start_row = self.__config.position.y + self.__height - 10
+                start_row = self.__config.position.y + 7
 
                 if gpu_percentage == "100":
                     self._write_text(
