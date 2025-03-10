@@ -440,7 +440,7 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 4, True))
 
     # This is garbage
-    # Don't Use this shit
+    # Don't Use this
     @abc.abstractmethod
     def _percent(
         self,
