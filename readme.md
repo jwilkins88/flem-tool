@@ -92,6 +92,7 @@ Simple Config. This is a pretty bare bones example of a config that will show th
           },
           "refresh_interval": 1000
         }
+      ]
     }
   ]
 }
