@@ -25,12 +25,20 @@ class LineModule(MatrixModule):
             Calls the callback function if execute_callback is True.
     """
 
+    __line_style_options = ["dashed", "solid"]
+    __line_style = "solid"
+    __line_style_argument = "line_style"
+
     is_static = True
     module_name = "Line Module"
 
     def __init__(self, config: ModuleConfig, width: int = None, height: int = 1):
         self.__config = config
         self.__width = width
+
+        line_style = config.arguments.get(self.__line_style_argument)
+        if line_style in self.__line_style_options:
+            self.__line_style = line_style
         super().__init__(config, width, height)
 
     def write(
@@ -44,7 +52,12 @@ class LineModule(MatrixModule):
             while i < self.__config.position.x + (
                 self.__width or self.__config.arguments["width"]
             ):
-                write_queue((i, self.__config.position.y, True))
+                if (
+                    self.__line_style == "dashed"
+                    and i % 2 == 0
+                    or self.__line_style == "solid"
+                ):
+                    write_queue((i, self.__config.position.y, True))
                 i += 1
 
             super().write(update_device, write_queue, execute_callback)

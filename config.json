@@ -11,16 +11,16 @@
                 {
                     "module_type": "CpuModule",
                     "position": {
-                        "x": 0,
-                        "y": 16
+                        "x": 1,
+                        "y": 15
                     },
                     "refresh_interval": 1000
                 },
                 {
                     "module_type": "GpuModule",
                     "position": {
-                        "x": 4,
-                        "y": 16
+                        "x": 5,
+                        "y": 15
                     },
                     "refresh_interval": 1000,
                     "arguments": {
@@ -29,24 +29,30 @@
                         "gpu_command_arguments": "-s",
                         "gpu_util_output_property": "gpu_util"
                     }
-                }
-            ]
-        },
-        {
-            "name": "right",
-            "device_address": "/dev/ttyACM0",
-            "speed": 115200,
-            "brightness": 10,
-            "on_bytes": 1,
-            "off_bytes": 0,
-            "modules": [
+                },
                 {
-                    "module_type": "CpuModule",
+                    "module_type": "ClockModule",
                     "position": {
                         "x": 0,
-                        "y": 0
+                        "y": 1
                     },
-                    "refresh_interval": 1000
+                    "refresh_interval": 1000,
+                    "arguments": {
+                        "clock_mode": "24h",
+                        "show_seconds_indicator": true
+                    }
+                },
+                {
+                    "module_type": "LineModule",
+                    "position": {
+                        "x": 0,
+                        "y": 13
+                    },
+                    "refresh_interval": 0,
+                    "arguments": {
+                        "width": 9,
+                        "line_style": "dashed"
+                    }
                 }
             ]
         }
