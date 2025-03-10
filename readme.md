@@ -6,7 +6,7 @@
 
 When I got my LED Matrices from Framework, my head was spinning with the possibilities. As I implemented things that I wanted, I realized that what I really wanted was a utility that could manage all these different pieces that I wanted in a sane way. Managing the layout of the matrices was a bit painful. Having to keep track of what LEDs were lit by what piece was painful, so I started writing a utility that would help manage that.
 
-Enter the FLEM Tool. FLEM Tool is a config based rendered that renders modules (more on that later) for [Framework's LED Matrix panels](https://frame.work/products/16-led-matrix) asynchronously (i.e., each module updates independently). Each module manages its own space, its own content, refresh rate, etc...
+Enter the FLEM Tool. FLEM Tool is a config based renderer that renders modules (more on that later) for [Framework's LED Matrix panels](https://frame.work/products/16-led-matrix) asynchronously (i.e., each module updates independently). Each module manages its own space, its own content, refresh rate, etc...
 
 I hope you find it as useful as I have!
 
