@@ -1,8 +1,6 @@
 {
   "cSpell.words": [
-    "funcs"
-  ],
-  "python.analysis.extraPaths": [
-    "./writers"
+    "funcs",
+    "maximalism"
   ]
 }

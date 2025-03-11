@@ -7,13 +7,12 @@ import traceback
 
 import psutil
 
-
 from modules.matrix_module import MatrixModule
 from modules.generic.line_module import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 
-class CpuModule(MatrixModule):
+class CpuHModule(MatrixModule):
     """
     CpuModule is a subclass of MatrixModule that displays CPU usage on a matrix display.
 
@@ -37,24 +36,45 @@ class CpuModule(MatrixModule):
     """
 
     __line_module: LineModule = None
-    __width = 3
+    __temperature_line_module: LineModule = None
+    __width = 7
     __height = 18
     __config: ModuleConfig = None
     __previous_value: str = "NA"
+    __previous_temp: str = "NA"
+    __show_temp_argument = "show_temp"
+    __temp_sensor_type_argument = "temp_sensor"
+    __temp_sensor_index_argument = "temp_sensor_index"
+    __show_temp: bool = False
 
     running = True
     module_name = "CPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
+    def __init__(self, config: ModuleConfig = None, width: int = 9, height: int = 12):
         self.__config = config
         self.__width = width
         self.__height = height
-        line_config = ModuleConfig(
+        header_line_config = ModuleConfig(
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
         )
-        self.__line_module = LineModule(line_config, self.__width)
+
+        self.__line_module = LineModule(header_line_config, self.__width)
+        self.__show_temp = config.arguments.get(self.__show_temp_argument)
+        if self.__show_temp:
+            self.__height = self.__height + 7
+            temperature_line_config = ModuleConfig(
+                position=ModulePositionConfig(
+                    x=config.position.x, y=config.position.y + 13
+                ),
+                refresh_interval=config.refresh_interval,
+                module_type="line",
+                arguments={"line_style": "dashed"},
+            )
+            self.__temperature_line_module = LineModule(
+                temperature_line_config, self.__width
+            )
         super().__init__(config, width, height)
 
     def write(
@@ -67,6 +87,12 @@ class CpuModule(MatrixModule):
             self._write_text(
                 "c", write_queue, self.__config.position.y, self.__config.position.x
             )
+            self._write_text(
+                "p", write_queue, self.__config.position.y, self.__config.position.x + 3
+            )
+            self._write_text(
+                "u", write_queue, self.__config.position.y, self.__config.position.x + 6
+            )
 
             self.__line_module.write(update_device, write_queue, False)
             while self.running:
@@ -78,30 +104,73 @@ class CpuModule(MatrixModule):
                     cpu_percentage = "0" + cpu_percentage
 
                 start_row = self.__config.position.y + 7
+                start_col = self.__config.position.x + 1
+
                 if cpu_percentage == "100":
-                    self._write_text(
-                        "!", write_queue, start_row, self.__config.position.x
-                    )
+                    self._write_text("!", write_queue, start_row, start_col)
                 else:
                     for i, char in enumerate(cpu_percentage):
                         if char == self.__previous_value[i]:
-                            start_row += 6
+                            start_col += 4
                             continue
 
                         self._write_number(
                             char,
                             write_queue,
                             start_row,
-                            self.__config.position.x,
+                            start_col,
                         )
-                        start_row += 6
+                        start_col += 4
+
+                if self.__show_temp:
+                    start_col = 1
+                    self.__temperature_line_module.write(
+                        update_device, write_queue, False
+                    )
+                    sensor_category = psutil.sensors_temperatures().get(
+                        self.__config.arguments.get(self.__temp_sensor_type_argument)
+                    )
+                    target_sensor = sensor_category[
+                        self.__config.arguments.get(self.__temp_sensor_index_argument)
+                    ]
+                    temperature = str(round(target_sensor.current))
+
+                    start_row += 8
+                    for i, char in enumerate(temperature):
+                        if char == self.__previous_temp[i]:
+                            start_col += 4
+                            continue
+
+                        self._write_number(
+                            char,
+                            write_queue,
+                            start_row,
+                            start_col,
+                        )
+                        start_col += 4
+
+                    self.__previous_temp = temperature
 
                 if self.__previous_value == "100":
-                    for i in range(3):
+                    for i in range(5):
                         write_queue(
                             (
-                                self.__config.position.x + i,
-                                self.__config.position.y + 12,
+                                self.__config.position.x + 4,
+                                self.__config.position.y + i,
+                                False,
+                            )
+                        )
+                        write_queue(
+                            (
+                                self.__config.position.x + 7,
+                                self.__config.position.y + i,
+                                False,
+                            )
+                        )
+                        write_queue(
+                            (
+                                self.__config.position.x + 8,
+                                self.__config.position.y + i,
                                 False,
                             )
                         )
@@ -115,6 +184,25 @@ class CpuModule(MatrixModule):
             super().stop()
             super().clear_module(update_device, write_queue)
 
+    def _c(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        write_queue((start_col, start_row, True))
+        write_queue((start_col, start_row + 1, True))
+        write_queue((start_col, start_row + 2, True))
+        write_queue((start_col, start_row + 3, True))
+        write_queue((start_col + 1, start_row, True))
+        write_queue((start_col + 1, start_row + 1, False))
+        write_queue((start_col + 1, start_row + 2, False))
+        write_queue((start_col + 1, start_row + 3, True))
+        write_queue((start_col + 2, start_row, False))
+        write_queue((start_col + 2, start_row + 1, False))
+        write_queue((start_col + 2, start_row + 2, False))
+        write_queue((start_col + 2, start_row + 3, True))
+
     def _exclamation(
         self,
         write_queue: Callable[[tuple[int, int, bool]], None],
@@ -127,30 +215,15 @@ class CpuModule(MatrixModule):
         write_queue((start_col, start_row + 3, True))
         write_queue((start_col, start_row + 4, True))
         write_queue((start_col, start_row + 5, True))
-        write_queue((start_col, start_row + 6, True))
-        write_queue((start_col, start_row + 7, True))
-        write_queue((start_col, start_row + 8, True))
-        write_queue((start_col, start_row + 9, True))
-        write_queue((start_col, start_row + 10, True))
         write_queue((start_col + 1, start_row, True))
         write_queue((start_col + 1, start_row + 1, True))
         write_queue((start_col + 1, start_row + 2, True))
         write_queue((start_col + 1, start_row + 3, True))
         write_queue((start_col + 1, start_row + 4, True))
         write_queue((start_col + 1, start_row + 5, True))
-        write_queue((start_col + 1, start_row + 6, True))
-        write_queue((start_col + 1, start_row + 7, True))
-        write_queue((start_col + 1, start_row + 8, True))
-        write_queue((start_col + 1, start_row + 9, True))
-        write_queue((start_col + 1, start_row + 10, True))
         write_queue((start_col + 2, start_row, True))
         write_queue((start_col + 2, start_row + 1, True))
         write_queue((start_col + 2, start_row + 2, True))
         write_queue((start_col + 2, start_row + 3, True))
         write_queue((start_col + 2, start_row + 4, True))
         write_queue((start_col + 2, start_row + 5, True))
-        write_queue((start_col + 2, start_row + 6, True))
-        write_queue((start_col + 2, start_row + 7, True))
-        write_queue((start_col + 2, start_row + 8, True))
-        write_queue((start_col + 2, start_row + 9, True))
-        write_queue((start_col + 2, start_row + 10, True))

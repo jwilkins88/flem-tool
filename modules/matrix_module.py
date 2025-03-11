@@ -105,9 +105,11 @@ class MatrixModule:
 
         self.__string_funcs = {
             "%": self._percent,
-            "g": self._g,
-            "c": self._c,
             "!": self._exclamation,
+            "c": self._c,
+            "g": self._g,
+            "p": self._p,
+            "u": self._u,
         }
 
         self.__config = config
@@ -501,6 +503,46 @@ class MatrixModule:
         write_queue((start_col + 1, start_row + 3, True))
         write_queue((start_col + 2, start_row, True))
         write_queue((start_col + 2, start_row + 1, False))
+        write_queue((start_col + 2, start_row + 2, True))
+        write_queue((start_col + 2, start_row + 3, True))
+
+    @abc.abstractmethod
+    def _p(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        write_queue((start_col, start_row, True))
+        write_queue((start_col, start_row + 1, True))
+        write_queue((start_col, start_row + 2, True))
+        write_queue((start_col, start_row + 3, True))
+        write_queue((start_col + 1, start_row, True))
+        write_queue((start_col + 1, start_row + 1, False))
+        write_queue((start_col + 1, start_row + 2, True))
+        write_queue((start_col + 1, start_row + 3, False))
+        write_queue((start_col + 2, start_row, True))
+        write_queue((start_col + 2, start_row + 1, True))
+        write_queue((start_col + 2, start_row + 2, True))
+        write_queue((start_col + 2, start_row + 3, False))
+
+    @abc.abstractmethod
+    def _u(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        write_queue((start_col, start_row, True))
+        write_queue((start_col, start_row + 1, True))
+        write_queue((start_col, start_row + 2, True))
+        write_queue((start_col, start_row + 3, True))
+        write_queue((start_col + 1, start_row, False))
+        write_queue((start_col + 1, start_row + 1, False))
+        write_queue((start_col + 1, start_row + 2, False))
+        write_queue((start_col + 1, start_row + 3, True))
+        write_queue((start_col + 2, start_row, True))
+        write_queue((start_col + 2, start_row + 1, True))
         write_queue((start_col + 2, start_row + 2, True))
         write_queue((start_col + 2, start_row + 3, True))
 

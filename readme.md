@@ -229,9 +229,9 @@ Here's the full structure of the config and all the allowed properties
 
 #### CPU Module
 
-My first creation! This module simply displays the current CPU usage. As of this writing, I'm using [psutil](https://github.com/giampaolo/psutil).
+My first creation! This module simply displays the current CPU usage. As of this writing, I'm using [psutil](https://github.com/giampaolo/psutil)
 
-**Module Name**: CpuModule
+**Module Type**: CpuModule
 
 **Dimensions (width x height)**: 3x18
 
@@ -291,13 +291,90 @@ Example:
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
+### Horizontal CPU Module
+
+Reading top to bottom is hard for those of us who are used to reading left to right. I initially created the CPU module thinking about how I could display the most information in the smallest space, but, variety is the spice of life. For when maximalism is the order of the day, consider the horizontal CPU module. It's capable of displaying both the utilization and temperature, and it's a bit easier on the eyes.
+
+Top number shows utilization. Bottom shows temperature (celsius only for now)
+
+This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This time, I'm using a function that only works on linux ([per the documentation](https://psutil.readthedocs.io/en/latest/#sensors)). If you're on Windows, well, I don't know that any of this will work for you.
+
+**Module Type**: CpuHModule
+
+**Dimensions (width x height)**: 8x12 (without temperature); 8x19 (with temperature)
+
+**Custom Arguments**:
+
+| Argument     | Type                                                            | Description                                                                                                                                                                      |
+| :----------- | :-------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `show_temp`      | true                                                         | Whether we're going to show the temperature or not. If this is set to true, the other two arguments are required |
+| `temp_sensor` | string | **If `show_temp` is true, this is required**. There's a few ways you can find your sensor name. One of the easiest is to install lm-sensors and find you sensor in the list. It's not always obvious. For my AMD processor it's `k10temp`                                                       |
+| `temp_sensor_index` | int | For my AMD processor, I have one sensor. When you have more than one sensor, you'll need to specify which one you want to see. Most the time, this is individual core temperature |
+
+**Sample Module Config**
+
+```json
+{
+    "module_type": "CpuHModule",
+    "position": {
+        "x": 0,
+        "y": 14
+    },
+    "refresh_interval": 1000,
+    "arguments": {
+        "show_temp": true,
+        "temp_sensor": "k10temp",
+        "temp_sensor_index": 0
+    }
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
 #### GPU Module
 
 This command is a little bit more complex because it relies on an OS utility to get the GPU utilization. This is currently only tested on Linux Mint (should work fine on Ubuntu as well). I haven't tested this on Windows or any other Linux flavor. The theory is that it should work. The tool that I'm using to get the GPU info is called [NVTOP](https://github.com/Syllo/nvtop). It's a super neat utility that works with both AMD and NVIDIA (and a whole lot of other stuff). Can't say enough good things about the the utility.
 
 To make things even more complicated, this uses a custom version that I modified to suit my needs. I have a [PR open to get those changes into the main version](https://github.com/Syllo/nvtop/pull/358), but until that's merged and published, you're going to need to build your own version of this utility from [my fork](https://github.com/jwilkins88/nvtop/tree/master). The build instructions are really good, and I promise it's not too hard.
 
-**Module Name**: GpuModule
+**Module Type**: GpuModule
 
 **Dimensions (width x height)**: 3x18
 
@@ -368,11 +445,88 @@ To make things even more complicated, this uses a custom version that I modified
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
+#### Horizontal GPU Module
+
+Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can show temp and utilization in a left-to-right fashion. Other than that, it's exactly the same as the [GPU module](#gpu-module). All the same things apply. It's still using my custom version of [NVTOP](https://github.com/Syllo/nvtop), and you'll need that if you want to use it. The nice think about NVTOP is that it gives me all the information I want in one go, so I don't need to worry about making multiple calls to get the utilization and then the temperature. 
+
+**Module Type**: GpuModule
+
+**Dimensions (width x height)**: 8x12 (without temperature); 8x19 (with temperature)
+
+**Custom Arguments**:
+
+| Argument                   | Type                           | Description                                                                                                                                                                                                                                                                                                                                                      |
+| :------------------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gpu_index`                | integer                        | In the case that you have multiple GPUs (iGPU and discrete GPU), you need to select your index. `0` Is a pretty safe bet for most use cases, but check the output of your command of choice (no reason this _has_ to be nvtop)                                                                                                                                   |
+| `gpu_command`              | string                         | This is the command to run to get the GPU info. In my case, this is `/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop`. Again, this can be whatever you want it to be so long as it outputs json                                                                                                                                                                       |
+| `gpu_command_arguments`    | array (comma separated string) | If you need to specify arguments for your command, this is how you'll need to do it. This is an array, but I haven't tested the argument values as an array. For now, specify multiple options separated by commas (i.e., `-s,-i=0,-etc`)                                                                                                                        |
+| `gpu_util_output_property` | string                         | This is the property that we're going to read from the JSON. Keep in mind that, as of now, I don't have any validation around this. I'll add that as a part of [improving error handling](#improved-error-handling), but, for now, this is fairly brittle. It can only handle digits, and I don't do any sanitization. My value for this is typically `gpu_util` |
+| `show_temp` | bool | Unlike the cpu temp module, this one doesn't require any extra config. Set this to true, and you can see your GPU temperature live. It's handy dandy |
+
+**Sample Module Config**
+
+```json
+{
+  "module_type": "GpuModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "gpu_index": 1,
+    "gpu_command": "/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop",
+    "gpu_command_arguments": "-s",
+    "gpu_util_output_property": "gpu_util",
+    "show_temp": true
+  }
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
 #### Line Module
 
 This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-module) and the [GPU Module](#gpu-module), but it also has more uses. In my gif in the intro, I'm using the line module to create separation between the Clock Module and the gpu/cpu info. Currently, this is my only "static" module (i.e., it doesn't run a thread, and it never updates - unless there's a config update). Currently only supports horizontal lines.
 
-**Module Name**: LineModule
+**Module Type**: LineModule
 
 **Dimensions (width x height)**: \[width\]x1
 
@@ -445,7 +599,7 @@ This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-mo
 
 This is a simple clock module that shows the current system time. Why use a module when you have a clock on your computer? Because it's dope. There's no other reason you need. Optionally, displays an indicator showing how many the progression of seconds until the next minute (think of it like a seconds hand, but with far less precision and slightly whacky timing). The seconds indicator blinks, giving another indicator of seconds passing. One full cycle of blinks (blink on, blink off) represents 2 seconds. I might add support for custom timezones.
 
-**Module Name**: ClockModule
+**Module Type**: ClockModule
 
 **Dimensions (width x height)**: 9x11
 
@@ -553,13 +707,17 @@ I'm not great at naming things, but, essentially, I want to add the ability to c
 
 I don't know how feasible this is, and I think it'll be very OS specific when I get here
 
+As a part of this, I also want to add "rotating" layouts. Since our real estate is so small, we can't fit a lot of information onto the matrix. For things like the horizontal cpu module, it takes up over half the matrix. To get around this, I might "rotate" the modules on an interval. As an example, every 10 seconds, I swap the horizontal CPU module for network information, or you swap the clock for weather. That continues in a constant cycle, displaying as many rotating modules as you want.
+
+Maybe every minute, you swap in an animation that lasts for 5 seconds before rotating back through the information. It gives you a lot of power and flexibility to display more information with the limited real estate
+
 #### More modules
 
 I want to keep this light, but there's a few more modules that I want to figure out. In order:
 
 1. RAM Module
-2. CPU Temp Module
-3. GPU Temp Module
+2. ~~CPU Temp Module~~ Done! (kinda) - I still want to find a minimalist way to display temp in the vertical cpu module
+3. ~~GPU Temp Module~~ Done! (kinda) - Same as the CPU Temp
 4. Weather Module
 5. Battery Module
 

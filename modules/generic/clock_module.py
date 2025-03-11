@@ -60,36 +60,96 @@ class ClockModule(MatrixModule):
                     seconds = int(datetime.now().strftime("%S"))
 
                     if seconds < 6:
-                        write_queue((8, 1, False))
-                        write_queue((8, 2, False))
-                        write_queue((8, 3, False))
-                        write_queue((8, 4, False))
-                        write_queue((8, 5, False))
-                        write_queue((0, 7, False))
-                        write_queue((0, 8, False))
-                        write_queue((0, 9, False))
-                        write_queue((0, 10, False))
-                        write_queue((0, 11, False))
+                        write_queue((8, self.__config.position.y, False))
+                        write_queue((8, self.__config.position.y + 1, False))
+                        write_queue((8, self.__config.position.y + 2, False))
+                        write_queue((8, self.__config.position.y + 3, False))
+                        write_queue((8, self.__config.position.y + 4, False))
+                        write_queue((0, self.__config.position.y + 6, False))
+                        write_queue((0, self.__config.position.y + 7, False))
+                        write_queue((0, self.__config.position.y + 8, False))
+                        write_queue((0, self.__config.position.y + 9, False))
+                        write_queue((0, self.__config.position.y + 11, False))
                     if seconds >= 6:
-                        write_queue((8, 1, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                8,
+                                self.__config.position.y,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 12:
-                        write_queue((8, 2, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                8,
+                                self.__config.position.y + 1,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 18:
-                        write_queue((8, 3, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                8,
+                                self.__config.position.y + 2,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 24:
-                        write_queue((8, 4, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                8,
+                                self.__config.position.y + 3,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 30:
-                        write_queue((8, 5, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                8,
+                                self.__config.position.y + 4,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 36:
-                        write_queue((0, 7, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                0,
+                                self.__config.position.y + 6,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 42:
-                        write_queue((0, 8, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                0,
+                                self.__config.position.y + 7,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 48:
-                        write_queue((0, 9, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                0,
+                                self.__config.position.y + 8,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 53:
-                        write_queue((0, 10, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                0,
+                                self.__config.position.y + 9,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
                     if seconds >= 58:
-                        write_queue((0, 11, True if seconds % 2 == 0 else False))
+                        write_queue(
+                            (
+                                0,
+                                self.__config.position.y + 10,
+                                True if seconds % 2 == 0 else False,
+                            )
+                        )
 
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
