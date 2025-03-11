@@ -106,6 +106,7 @@ class MatrixModule:
         self.__string_funcs = {
             "%": self._percent,
             "!": self._exclamation,
+            "b": self._b,
             "c": self._c,
             "g": self._g,
             "p": self._p,
@@ -468,6 +469,26 @@ class MatrixModule:
         write_queue((start_col + 2, start_row + 2, False))
         write_queue((start_col + 2, start_row + 3, False))
         write_queue((start_col + 2, start_row + 4, True))
+
+    @abc.abstractmethod
+    def _b(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        write_queue((start_col, start_row, True))
+        write_queue((start_col, start_row + 1, True))
+        write_queue((start_col, start_row + 2, True))
+        write_queue((start_col, start_row + 3, True))
+        write_queue((start_col + 1, start_row, False))
+        write_queue((start_col + 1, start_row + 1, True))
+        write_queue((start_col + 1, start_row + 2, False))
+        write_queue((start_col + 1, start_row + 3, True))
+        write_queue((start_col + 2, start_row, False))
+        write_queue((start_col + 2, start_row + 1, True))
+        write_queue((start_col + 2, start_row + 2, True))
+        write_queue((start_col + 2, start_row + 3, True))
 
     @abc.abstractmethod
     def _c(

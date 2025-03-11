@@ -8,3 +8,4 @@ from modules.gpu.gpu_module import GpuModule
 from modules.gpu.gpu_h_module import GpuHModule
 from modules.matrix_module import MatrixModule
 from modules.utilities.module_loader import load_module
+from modules.ram.ram_module import RamModule
