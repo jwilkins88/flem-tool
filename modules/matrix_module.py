@@ -1,9 +1,9 @@
 # pylint: disable=missing-module-docstring
 
 import abc
+from typing import Callable
 
 from models import ModuleConfig
-from typing import Callable
 
 
 class MatrixModule:
@@ -86,7 +86,7 @@ class MatrixModule:
     __height: int = None
 
     is_static = False
-    module_name = "Base Module"
+    module_name: str = "Base Module"
     running = True
 
     def __init__(self, config: ModuleConfig, width: int, height: int):
@@ -116,6 +116,31 @@ class MatrixModule:
         self.__config = config
         self.__width = width
         self.__height = height
+        self.module_name = config.name
+
+    @abc.abstractmethod
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
+
+    @abc.abstractmethod
+    def reset(self) -> None:
+        pass
+
+    @abc.abstractmethod
+    def stop(self) -> None:
+        """
+        Stops the matrix module by setting the running flag to False.
+
+        This method is used to signal the matrix module to stop its operations.
+        """
+        self.running = False
 
     @abc.abstractmethod
     def write(
@@ -130,15 +155,6 @@ class MatrixModule:
                 update_device()
             except Exception as e:
                 print(f"An error occurred while updating the device: {e}")
-
-    @abc.abstractmethod
-    def stop(self) -> None:
-        """
-        Stops the matrix module by setting the running flag to False.
-
-        This method is used to signal the matrix module to stop its operations.
-        """
-        self.running = False
 
     @abc.abstractmethod
     def clear_module(

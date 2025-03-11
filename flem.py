@@ -78,11 +78,13 @@ config, config_hash = get_config()
 
 matrices = run_matrices_from_config(config, matrices)
 
+# pylint: disable=invalid-name
 any_matrix_running = True
+# pylint: enable=invalid-name
 
 while any_matrix_running:
-    for matrix in matrices:
-        if matrix.running:
+    for matrix_thread in matrices:
+        if matrix_thread.running:
             any_matrix_running = True
             break
         any_matrix_running = False

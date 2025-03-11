@@ -28,13 +28,13 @@ class LineModule(MatrixModule):
     __line_style_options = ["dashed", "solid"]
     __line_style = "solid"
     __line_style_argument = "line_style"
+    __config: ModuleConfig = None
 
     is_static = True
     module_name = "Line Module"
 
     def __init__(self, config: ModuleConfig, width: int = None, height: int = 1):
         self.__config = config
-        self.__width = width
 
         line_style = config.arguments.get(self.__line_style_argument)
         if line_style in self.__line_style_options:

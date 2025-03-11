@@ -12,13 +12,17 @@ from models import ModuleConfig
 
 class RamModule(MatrixModule):
     __previous_value = ["NA", 0]
+    __config: ModuleConfig = None
 
     module_name = "RAM Module"
 
     def __init__(self, config: ModuleConfig, width: int = 9, height: int = 11):
         self.__config = config
-        self.__width = width
         super().__init__(config, width, height)
+
+    def reset(self):
+        self.__previous_value = ["NA", 0]
+        return super().reset()
 
     def write(
         self,

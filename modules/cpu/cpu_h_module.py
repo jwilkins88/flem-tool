@@ -8,7 +8,7 @@ import traceback
 import psutil
 
 from modules.matrix_module import MatrixModule
-from modules.generic.line_module import LineModule
+from modules.generic import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 
@@ -55,6 +55,7 @@ class CpuHModule(MatrixModule):
         self.__width = width
         self.__height = height
         header_line_config = ModuleConfig(
+            name="header_line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
@@ -65,6 +66,7 @@ class CpuHModule(MatrixModule):
         if self.__show_temp:
             self.__height = self.__height + 7
             temperature_line_config = ModuleConfig(
+                name="temperature_line",
                 position=ModulePositionConfig(
                     x=config.position.x, y=config.position.y + 13
                 ),
@@ -76,6 +78,11 @@ class CpuHModule(MatrixModule):
                 temperature_line_config, self.__width
             )
         super().__init__(config, width, height)
+
+    def reset(self):
+        self.__previous_temp = "NA"
+        self.__previous_value = "NA"
+        return super().reset()
 
     def write(
         self,

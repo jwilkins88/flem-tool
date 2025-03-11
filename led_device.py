@@ -3,7 +3,7 @@
 from enum import IntEnum
 import serial
 
-from models.config import DeviceConfig
+from models import DeviceConfig
 
 
 class CommandVals(IntEnum):

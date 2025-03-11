@@ -173,5 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-.vscode/launch.json
+.vscode
 config.local

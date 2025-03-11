@@ -1,7 +1,13 @@
-from models.config_schema import (
+from .config_schema import (
     ConfigSchema,
     DeviceSchema,
     ModuleSchema,
     ModulePositionSchema,
 )
-from models.config import Config, DeviceConfig, ModuleConfig, ModulePositionConfig
+from .config import (
+    Config,
+    DeviceConfig,
+    ModuleConfig,
+    ModulePositionConfig,
+    SceneConfig,
+)

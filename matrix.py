@@ -4,7 +4,9 @@ from threading import Thread, Lock
 import queue
 
 from led_device import LedDevice
+from models import SceneConfig
 from modules import MatrixModule
+from scene import Scene
 
 
 class Matrix:
@@ -21,6 +23,8 @@ class Matrix:
     __thread_list: list[Thread] = None
     __change_queue: queue.Queue = None
     __lock: Lock = None
+    __scenes: list[Scene]
+    __current_scene: int = 0
 
     running: bool = True
     name = None
@@ -30,6 +34,7 @@ class Matrix:
         matrix_device: LedDevice,
         modules: list[MatrixModule] = None,
         matrix: list[list[int]] = None,
+        scenes: list[SceneConfig] = None,
     ):
         if not matrix_device:
             raise ValueError("No device specified")
@@ -40,9 +45,25 @@ class Matrix:
             self.__modules = []
 
         self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
-        self.__thread_list = []
         self.__change_queue = queue.Queue()
         self.__lock = Lock()
+        self.__scenes = []
+        for scene in scenes:
+            scene_modules = []
+            for module in scene.modules:
+                for module in self.__modules:
+                    if module.module_name in scene.modules:
+                        scene_modules.append(module)
+                        continue
+            self.__scenes.append(
+                Scene(
+                    scene,
+                    scene_modules,
+                    self.__update_device,
+                    self.__write_queue,
+                    self.__scene_finished,
+                )
+            )
         self.name = self.__device.name
 
         if matrix is not None:
@@ -59,32 +80,6 @@ class Matrix:
         if not self.__device.is_open():
             self.__device.connect()
 
-    def start_modules(self) -> None:
-        """
-        Starts the modules associated with the matrix.
-
-        This method iterates over the list of modules and starts each one. If a module is static,
-        it writes directly to the matrix and update device. If a module is not static, it starts
-        a new thread to handle the writing process and appends the thread to the thread list.
-
-        Returns:
-            None
-        """
-        for module in self.__modules:
-            if module.is_static:
-                module.write(self.__update_device, self.__write_queue)
-                continue
-            thread = Thread(
-                target=module.write,
-                name=f"{module.module_name}_{id(self)}",
-                args=(
-                    self.__update_device,
-                    self.__write_queue,
-                ),
-            )
-            thread.start()
-            self.__thread_list.append(thread)
-
     def set_matrix(self, matrix: list[list[int]]) -> None:
         """
         Sets the matrix to the given 2D list of integers and updates the device.
@@ -100,16 +95,35 @@ class Matrix:
         self._matrix = matrix
         self.__update_device()
 
-    def reset_matrix(self) -> None:
+    def run_next_scene(self) -> None:
+        """
+        Runs the scenes associated with the matrix.
+
+        This method iterates over the list of scenes and runs each one. It writes the modules
+        associated with the scene to the matrix and updates the device. The scene is then shown
+        for the specified duration.
+
+        Returns:
+            None
+        """
+        self.__scenes[self.__current_scene].start()
+
+        self.__current_scene = self.__current_scene + 1
+        if self.__current_scene > len(self.__scenes) - 1:
+            self.__current_scene = 0
+
+    def reset_matrix(self, update_device: bool = True) -> None:
         """
         Resets the matrix to its default state.
 
         This method sets the matrix to a copy of the default matrix \
             and updates the device accordingly.
         """
-        self.__change_queue.shutdown()
-        self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
-        self.__update_device()
+        with self.__lock:
+            self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
+
+        if update_device:
+            self.__update_device()
 
     def stop(self) -> None:
         """
@@ -121,18 +135,13 @@ class Matrix:
         4. Resets the matrix to its initial state.
         5. Closes the device associated with the matrix.
         """
+        self.__change_queue.shutdown()
         if self.running:
             self.running = False
 
-        for module in self.__modules:
+        for scene in self.__scenes:
             try:
-                module.stop()
-            except:
-                pass
-
-        for thread in self.__thread_list:
-            try:
-                thread.join(timeout=2)
+                scene.stop()
             except:
                 pass
 
@@ -141,6 +150,24 @@ class Matrix:
             self.__device.close()
         except:
             pass
+
+    def __stop_scene(self, scene: Scene) -> None:
+        """
+        Stops the given scene by resetting the matrix to its default state.
+
+        Args:
+            scene (SceneConfig): The scene to be stopped.
+
+        Returns:
+            None
+        """
+        scene.stop()
+
+        self.reset_matrix(False)
+
+    def __scene_finished(self, scene: Scene):
+        self.__stop_scene(scene)
+        self.run_next_scene()
 
     def __write_queue(self, value: tuple[int, int, bool]) -> None:
         """
@@ -162,10 +189,9 @@ class Matrix:
         # print(self.__change_queue)
         while not self.__change_queue.empty() and not self.__change_queue.is_shutdown:
             try:
-                self.__lock.acquire()
-                x, y, on = self.__change_queue.get(block=False)
-                self._matrix[x][y] = self.__device.ON if on else self.__device.OFF
-                self.__lock.release()
+                with self.__lock:
+                    x, y, on = self.__change_queue.get(block=False)
+                    self._matrix[x][y] = self.__device.ON if on else self.__device.OFF
             except queue.Empty:
                 break
             except IndexError:

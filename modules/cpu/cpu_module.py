@@ -9,7 +9,7 @@ import psutil
 
 
 from modules.matrix_module import MatrixModule
-from modules.generic.line_module import LineModule
+from modules.generic import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 
@@ -37,8 +37,6 @@ class CpuModule(MatrixModule):
     """
 
     __line_module: LineModule = None
-    __width = 3
-    __height = 18
     __config: ModuleConfig = None
     __previous_value: str = "NA"
 
@@ -47,15 +45,18 @@ class CpuModule(MatrixModule):
 
     def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
         self.__config = config
-        self.__width = width
-        self.__height = height
         line_config = ModuleConfig(
+            name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
         )
         self.__line_module = LineModule(line_config, self.__width)
         super().__init__(config, width, height)
+
+    def reset(self):
+        self.__previous_value = "NA"
+        return super().reset()
 
     def write(
         self,

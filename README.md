@@ -680,7 +680,7 @@ This is largely untested. I've only tested it on Linux Mint. Eventually I'll get
 
 In no specific order, here's a list of things that I'm still working on getting to
 
-#### Convert into PIP Package
+#### Convert into PIP Package * In Progress
 
 This makes it easier for people to use
 
@@ -698,7 +698,7 @@ Managing threads in Python is gross. I want true multi-threading for all sorts o
 
 When (if) this happens, I will try to maintain feature parity between the two versions (python and C#). I'm also thinking about making a core functions library in C++ so that I can make most my updates in one place. I'm not a C++ developer, so that will be a long way down the road. My goal is to keep this light and fairly unopinionated, so there shouldn't be too much in the "core" functionality anyway
 
-#### Add "trigger configs"
+#### Add "trigger configs" * In Progress!
 
 I'm not great at naming things, but, essentially, I want to add the ability to change the display dynamically in response to system changes. Examples:
 
@@ -711,11 +711,11 @@ As a part of this, I also want to add "rotating" layouts. Since our real estate 
 
 Maybe every minute, you swap in an animation that lasts for 5 seconds before rotating back through the information. It gives you a lot of power and flexibility to display more information with the limited real estate
 
-#### More modules
+#### More modules * In Progress
 
 I want to keep this light, but there's a few more modules that I want to figure out. In order:
 
-1. RAM Module
+1. ~~RAM Module~~ Done!
 2. ~~CPU Temp Module~~ Done! (kinda) - I still want to find a minimalist way to display temp in the vertical cpu module
 3. ~~GPU Temp Module~~ Done! (kinda) - Same as the CPU Temp
 4. Weather Module
@@ -723,7 +723,7 @@ I want to keep this light, but there's a few more modules that I want to figure 
 
 For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other. I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
 
-#### Improved logging/debugging
+#### Improved logging/debugging * In Progress!
 
 Right now, I don't have much in the way of logging. I'm not a Python guy typically, so I don't even know what the standards are around logging. I definitely want to add some better logging in for debugging issues. Once this is out into the wild, it's going to be very difficult to troubleshoot in its current state
 

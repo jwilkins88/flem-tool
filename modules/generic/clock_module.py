@@ -15,12 +15,12 @@ class ClockModule(MatrixModule):
     __time_format_24h = "%H%M"
     __show_seconds_indicator = False
     __show_seconds_indicator_argument = "show_seconds_indicator"
+    __config: ModuleConfig = None
 
     module_name = "Clock Module"
 
     def __init__(self, config: ModuleConfig, width: int = 9, height: int = 11):
         self.__config = config
-        self.__width = width
         clock_mode = config.arguments.get(self.__clock_mode_argument)
         self.__show_seconds_indicator = config.arguments.get(
             self.__show_seconds_indicator_argument

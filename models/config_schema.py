@@ -1,6 +1,12 @@
 from marshmallow import Schema, fields, post_load
 
-from models.config import Config, DeviceConfig, ModuleConfig, ModulePositionConfig
+from .config import (
+    Config,
+    DeviceConfig,
+    ModuleConfig,
+    ModulePositionConfig,
+    SceneConfig,
+)
 
 
 class ModulePositionSchema(Schema):
@@ -13,6 +19,7 @@ class ModulePositionSchema(Schema):
 
 
 class ModuleSchema(Schema):
+    name = fields.Str()
     module_type = fields.Str()
     position = fields.Nested(ModulePositionSchema)
     refresh_interval = fields.Int()
@@ -23,6 +30,17 @@ class ModuleSchema(Schema):
         return ModuleConfig(**data)
 
 
+class SceneSchema(Schema):
+    name = fields.Str()
+    show_for = fields.Int()
+    scene_order = fields.Int()
+    modules = fields.List(fields.Str())
+
+    @post_load
+    def make_scene(self, data, **kwargs):
+        return SceneConfig(**data)
+
+
 class DeviceSchema(Schema):
     name = fields.Str()
     device_address = fields.Str()
@@ -31,6 +49,7 @@ class DeviceSchema(Schema):
     on_bytes = fields.Int()
     off_bytes = fields.Int()
     modules = fields.List(fields.Nested(ModuleSchema))
+    scenes = fields.List(fields.Nested(SceneSchema))
 
     @post_load
     def make_device(self, data, **kwargs):

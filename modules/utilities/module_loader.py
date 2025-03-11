@@ -1,5 +1,9 @@
-from models import ModuleConfig
+# pylint: disable=import-error
 import modules as loaded_modules
+
+# pylint: enable=import-error
+
+from models import ModuleConfig
 
 
 def load_module(module_config: ModuleConfig):

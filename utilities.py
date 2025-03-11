@@ -1,5 +1,7 @@
 from hashlib import md5
 import os
+import sys
+import traceback
 
 from models import Config, ConfigSchema
 from modules import load_module
@@ -27,8 +29,7 @@ def read_config_from_file() -> str:
     for path in __CONFIG_PATHS:
         print(f"'{path}", end="")
 
-    print()
-    os._exit(1)
+    raise FileNotFoundError("Configuration file not found")
 
 
 def has_config_changed(current_config_hash: any, read_config: str) -> bool:
@@ -37,11 +38,12 @@ def has_config_changed(current_config_hash: any, read_config: str) -> bool:
 
 
 def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Matrix]:
+    matrices: list[Matrix] = []
     devices: list[LedDevice] = []
 
     for matrix in matrices:
-        matrix.stop()
-        del matrix
+        matrix[0].stop()
+        matrix[1].join(2)
 
     matrices.clear()
 
@@ -52,12 +54,20 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
         device_modules = []
         for module in device.modules:
             device_modules.append(load_module(module))
-        matrices.append(Matrix(device_to_add, device_modules))
+
+        matrices.append(
+            Matrix(
+                matrix_device=device_to_add,
+                modules=device_modules,
+                scenes=device.scenes,
+            )
+        )
 
     for matrix in matrices:
         try:
-            matrix.start_modules()
+            matrix.run_next_scene()
         except:
+            traceback.print_exc(*sys.exc_info())
             print("Something went very wrong starting the modules")
 
     return matrices
