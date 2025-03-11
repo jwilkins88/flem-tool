@@ -125,7 +125,10 @@ class MatrixModule:
     ) -> None:
         "The main function that draws the matrix info for the module"
         if execute_callback:
-            update_device()
+            try:
+                update_device()
+            except Exception as e:
+                print(f"An error occurred while updating the device: {e}")
 
     @abc.abstractmethod
     def stop(self) -> None:

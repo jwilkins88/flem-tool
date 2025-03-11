@@ -171,7 +171,10 @@ class Matrix:
             except IndexError:
                 print(f"[{x}][{y}]")
                 raise
-        self.__device.render_matrix(self._matrix)
+        try:
+            self.__device.render_matrix(self._matrix)
+        except Exception as e:
+            print("Error updating device: ", e)
 
     def __str__(self):
         matrix_str = [self.__BORDER_CHAR for _ in range(self.__device.WIDTH * 2 - 2)]

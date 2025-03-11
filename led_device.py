@@ -173,6 +173,9 @@ class LedDevice:
                 return res
         except (IOError, OSError) as _ex:
             print("Error: ", _ex)
+            if self.is_open():
+                self.close()
+                self.connect()
 
     def send_col(self, x, vals: list[int]) -> None:
         """Stage greyscale values for a single column. Must be committed with commit_cols()"""
