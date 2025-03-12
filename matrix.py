@@ -77,6 +77,11 @@ class Matrix:
             for module in scene.modules:
                 for module in self.__modules:
                     if module.module_name in scene.modules:
+                        if any(
+                            module.module_name in scene_module.module_name
+                            for scene_module in scene_modules
+                        ):
+                            continue
                         scene_modules.append(module)
                         continue
             self.__scenes.append(
