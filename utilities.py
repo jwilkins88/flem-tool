@@ -79,7 +79,6 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
         list[Matrix]: A list of initialized and running Matrix objects.
     """
 
-    matrices: list[Matrix] = []
     devices: list[LedDevice] = []
 
     logger.debug("Stopping and clearing existing matrices")
