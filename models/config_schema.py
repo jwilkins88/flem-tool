@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring, missing-class-docstring
 from marshmallow import Schema, fields, post_load
 
 from .config import (
@@ -15,6 +16,9 @@ class ModulePositionSchema(Schema):
 
     @post_load
     def make_module_position(self, data, **kwargs):
+        """
+        map to object
+        """
         return ModulePositionConfig(**data)
 
 
@@ -27,6 +31,9 @@ class ModuleSchema(Schema):
 
     @post_load
     def make_module(self, data, **kwargs):
+        """
+        map to object
+        """
         return ModuleConfig(**data)
 
 
@@ -38,6 +45,9 @@ class SceneSchema(Schema):
 
     @post_load
     def make_scene(self, data, **kwargs):
+        """
+        map to object
+        """
         return SceneConfig(**data)
 
 
@@ -53,6 +63,9 @@ class DeviceSchema(Schema):
 
     @post_load
     def make_device(self, data, **kwargs):
+        """
+        map to object
+        """
         return DeviceConfig(**data)
 
 
@@ -61,4 +74,7 @@ class ConfigSchema(Schema):
 
     @post_load
     def make_config(self, data, **kwargs):
+        """
+        map to object
+        """
         return Config(**data)

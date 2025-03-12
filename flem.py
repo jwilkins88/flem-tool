@@ -36,6 +36,9 @@ Global Variables:
 import signal
 import os
 from time import sleep
+import sys
+
+from loguru import logger
 
 from matrix import Matrix
 from models import Config
@@ -45,6 +48,14 @@ from utilities import (
     has_config_changed,
     run_matrices_from_config,
 )
+
+logger.remove()
+logger.add(sys.stderr, level="INFO")
+
+for arg in sys.argv:
+    if arg == "--debug":
+        logger.remove()
+        logger.add(sys.stderr, level="DEBUG")
 
 config: Config
 config_hash: str
@@ -65,7 +76,7 @@ def signal_handler(_sig, _frame):
         sig (int): The signal number.
         frame (FrameType): The current stack frame.
     """
-    print("Received exit command")
+    logger.debug("Ctrl+C pressed. Exiting...")
     for matrix in matrices:
         matrix.stop()
 
@@ -74,8 +85,10 @@ def signal_handler(_sig, _frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
+logger.debug("Retrieving configuration...")
 config, config_hash = get_config()
 
+logger.debug("Running matrices...")
 matrices = run_matrices_from_config(config, matrices)
 
 # pylint: disable=invalid-name
@@ -83,15 +96,20 @@ any_matrix_running = True
 # pylint: enable=invalid-name
 
 while any_matrix_running:
-    for matrix_thread in matrices:
-        if matrix_thread.running:
+    logger.info("Checking if any matrix is running")
+    for matrix in matrices:
+        logger.info(f"Matrix {matrix.name} is running: {matrix.running}")
+        if matrix.running:
+            logger.info("At least one matrix is running")
             any_matrix_running = True
             break
         any_matrix_running = False
 
+    logger.info("Checking if configuration has changed")
     config_string = read_config_from_file()
 
     if has_config_changed(config_hash, config_string):
+        logger.info("Configuration has changed. Reloading configuration...")
         config, config_hash = get_config()
         matrices = run_matrices_from_config(config, matrices)
 

@@ -34,6 +34,9 @@ class GpuModule(MatrixModule):
         super().__init__(config, width, height)
 
     def reset(self):
+        """
+        Resets the GPU module to its initial state.
+        """
         self.__previous_value = "NA"
         return super().reset()
 
@@ -43,6 +46,9 @@ class GpuModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
     ) -> None:
+        """
+        Writes the GPU usage to the matrix display and executes the callback if specified.
+        """
         try:
             self._write_text(
                 "g", write_queue, self.__config.position.y, self.__config.position.x

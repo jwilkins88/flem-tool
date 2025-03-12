@@ -14,28 +14,6 @@ from models import ModuleConfig, ModulePositionConfig
 
 
 class CpuModule(MatrixModule):
-    """
-    CpuModule is a subclass of MatrixModule that displays CPU usage on a matrix display.
-
-    Attributes:
-        __start_cords (tuple[int, int]): Starting coordinates for the display area.
-        __end_cords (tuple[int, int]): Ending coordinates for the display area.
-        __line_module (LineModule): An instance of LineModule for additional display functionality.
-        running (bool): A flag to control the running state of the module.
-        writer_name (str): The name of the writer module.
-
-    Methods:
-        __init__(on_bytes: int, off_bytes: int, start_coords: tuple[int, int], \
-            end_coords: tuple[int, int]):
-            Initializes the CpuModule with the given parameters.
-
-        write(matrix: list[list[int]], callback: callable, execute_callback: bool = True) -> None:
-            Writes the CPU usage to the matrix display and executes the callback if specified.
-
-        stop() -> None:
-            Stops the CpuModule from running.
-    """
-
     __line_module: LineModule = None
     __config: ModuleConfig = None
     __previous_value: str = "NA"
@@ -55,6 +33,14 @@ class CpuModule(MatrixModule):
         super().__init__(config, width, height)
 
     def reset(self):
+        """
+        Resets the CPU module to its initial state.
+        This method sets the previous value to "NA" and then calls the reset method
+        of the superclass to perform any additional reset operations.
+        Returns:
+            The result of the superclass reset method.
+        """
+
         self.__previous_value = "NA"
         return super().reset()
 
@@ -64,6 +50,9 @@ class CpuModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
     ) -> None:
+        """
+        Writes the CPU usage to the matrix display and executes the callback if specified.
+        """
         try:
             self._write_text(
                 "c", write_queue, self.__config.position.y, self.__config.position.x

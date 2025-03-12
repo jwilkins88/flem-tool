@@ -75,7 +75,7 @@ class ClockModule(MatrixModule):
                             (
                                 8,
                                 self.__config.position.y,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 12:
@@ -83,7 +83,7 @@ class ClockModule(MatrixModule):
                             (
                                 8,
                                 self.__config.position.y + 1,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 18:
@@ -91,7 +91,7 @@ class ClockModule(MatrixModule):
                             (
                                 8,
                                 self.__config.position.y + 2,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 24:
@@ -99,7 +99,7 @@ class ClockModule(MatrixModule):
                             (
                                 8,
                                 self.__config.position.y + 3,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 30:
@@ -107,7 +107,7 @@ class ClockModule(MatrixModule):
                             (
                                 8,
                                 self.__config.position.y + 4,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 36:
@@ -115,7 +115,7 @@ class ClockModule(MatrixModule):
                             (
                                 0,
                                 self.__config.position.y + 6,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 42:
@@ -123,7 +123,7 @@ class ClockModule(MatrixModule):
                             (
                                 0,
                                 self.__config.position.y + 7,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 48:
@@ -131,7 +131,7 @@ class ClockModule(MatrixModule):
                             (
                                 0,
                                 self.__config.position.y + 8,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 53:
@@ -139,7 +139,7 @@ class ClockModule(MatrixModule):
                             (
                                 0,
                                 self.__config.position.y + 9,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
                     if seconds >= 58:
@@ -147,7 +147,7 @@ class ClockModule(MatrixModule):
                             (
                                 0,
                                 self.__config.position.y + 10,
-                                True if seconds % 2 == 0 else False,
+                                seconds % 2 == 0,
                             )
                         )
 

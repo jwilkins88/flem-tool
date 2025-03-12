@@ -13,32 +13,8 @@ from models import ModuleConfig, ModulePositionConfig
 
 
 class CpuHModule(MatrixModule):
-    """
-    CpuModule is a subclass of MatrixModule that displays CPU usage on a matrix display.
-
-    Attributes:
-        __start_cords (tuple[int, int]): Starting coordinates for the display area.
-        __end_cords (tuple[int, int]): Ending coordinates for the display area.
-        __line_module (LineModule): An instance of LineModule for additional display functionality.
-        running (bool): A flag to control the running state of the module.
-        writer_name (str): The name of the writer module.
-
-    Methods:
-        __init__(on_bytes: int, off_bytes: int, start_coords: tuple[int, int], \
-            end_coords: tuple[int, int]):
-            Initializes the CpuModule with the given parameters.
-
-        write(matrix: list[list[int]], callback: callable, execute_callback: bool = True) -> None:
-            Writes the CPU usage to the matrix display and executes the callback if specified.
-
-        stop() -> None:
-            Stops the CpuModule from running.
-    """
-
     __line_module: LineModule = None
     __temperature_line_module: LineModule = None
-    __width = 7
-    __height = 18
     __config: ModuleConfig = None
     __previous_value: str = "NA"
     __previous_temp: str = "NA"
@@ -52,8 +28,6 @@ class CpuHModule(MatrixModule):
 
     def __init__(self, config: ModuleConfig = None, width: int = 9, height: int = 12):
         self.__config = config
-        self.__width = width
-        self.__height = height
         header_line_config = ModuleConfig(
             name="header_line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
@@ -61,10 +35,12 @@ class CpuHModule(MatrixModule):
             module_type="line",
         )
 
-        self.__line_module = LineModule(header_line_config, self.__width)
+        self.__line_module = LineModule(header_line_config, width)
         self.__show_temp = config.arguments.get(self.__show_temp_argument)
         if self.__show_temp:
-            self.__height = self.__height + 7
+            # I'm probably going to use these properties and any calculations associated
+            # with them when I start implementing matrix validations
+            # self.__height = self.__height + 7
             temperature_line_config = ModuleConfig(
                 name="temperature_line",
                 position=ModulePositionConfig(
@@ -74,12 +50,13 @@ class CpuHModule(MatrixModule):
                 module_type="line",
                 arguments={"line_style": "dashed"},
             )
-            self.__temperature_line_module = LineModule(
-                temperature_line_config, self.__width
-            )
+            self.__temperature_line_module = LineModule(temperature_line_config, width)
         super().__init__(config, width, height)
 
     def reset(self):
+        """
+        Resets the CPU module to its initial state.
+        """
         self.__previous_temp = "NA"
         self.__previous_value = "NA"
         return super().reset()
@@ -90,6 +67,10 @@ class CpuHModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
     ) -> None:
+        """
+        Writes the CPU usage to the matrix display and executes the callback if specified.
+        Horizontal style
+        """
         try:
             self._write_text(
                 "c", write_queue, self.__config.position.y, self.__config.position.x
@@ -100,6 +81,9 @@ class CpuHModule(MatrixModule):
             self._write_text(
                 "u", write_queue, self.__config.position.y, self.__config.position.x + 6
             )
+
+            if self.__show_temp:
+                self.__temperature_line_module.write(update_device, write_queue, False)
 
             self.__line_module.write(update_device, write_queue, False)
             while self.running:
@@ -131,9 +115,6 @@ class CpuHModule(MatrixModule):
 
                 if self.__show_temp:
                     start_col = 1
-                    self.__temperature_line_module.write(
-                        update_device, write_queue, False
-                    )
                     sensor_category = psutil.sensors_temperatures().get(
                         self.__config.arguments.get(self.__temp_sensor_type_argument)
                     )

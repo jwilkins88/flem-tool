@@ -1,7 +1,9 @@
 # pylint: disable=missing-module-docstring
 
-from threading import Thread, Lock
+from threading import Lock
 import queue
+
+from loguru import logger
 
 from led_device import LedDevice
 from models import SceneConfig
@@ -11,7 +13,19 @@ from scene import Scene
 
 class Matrix:
     """
-    The Matrix class manages a matrix of devices and modules.
+    Matrix class for managing and controlling an LED matrix device.
+    Attributes:
+        running (bool): Flag indicating whether the matrix is running.
+        name (str): Name of the matrix device.
+    Methods:
+        __init__(self, matrix_device: LedDevice, modules: list[MatrixModule] = None, matrix: list[list[int]] = None, scenes: list[SceneConfig] = None):
+            Initializes the Matrix object with the given device, modules, matrix, and scenes.
+        set_matrix(self, matrix: list[list[int]]) -> None:
+        run_next_scene(self) -> None:
+            Runs the next scene in the list of scenes.
+        reset_matrix(self, update_device: bool = True) -> None:
+        stop(self) -> None:
+            Stops the matrix processing and resets the matrix to its initial state.
     """
 
     __DEFAULT_MATRIX: list[list[int]] = [
@@ -20,7 +34,6 @@ class Matrix:
     __BORDER_CHAR: str = "⬛"
     __ON_CHAR: str = "⚪"
     __OFF_CHAR: str = "⚫"
-    __thread_list: list[Thread] = None
     __change_queue: queue.Queue = None
     __lock: Lock = None
     __scenes: list[Scene]
@@ -36,7 +49,18 @@ class Matrix:
         matrix: list[list[int]] = None,
         scenes: list[SceneConfig] = None,
     ):
+        """
+        Initialize the Matrix class.
+        Args:
+            matrix_device (LedDevice): The LED device to control the matrix.
+            modules (list[MatrixModule], optional): A list of matrix modules. Defaults to None.
+            matrix (list[list[int]], optional): A 2D list representing the matrix. Defaults to None.
+            scenes (list[SceneConfig], optional): A list of scene configurations. Defaults to None.
+        Raises:
+            ValueError: If no device is specified or if the matrix dimensions are invalid.
+        """
         if not matrix_device:
+            logger.error("No device specified")
             raise ValueError("No device specified")
 
         self.__modules = modules
@@ -71,10 +95,11 @@ class Matrix:
                 len(matrix) != matrix_device.WIDTH
                 and len(matrix[0]) == matrix_device.HEIGHT
             ):
+                logger.error(
+                    f"Invalid matrix dimensions. Must be {matrix_device.WIDTH}x{matrix_device.HEIGHT}."
+                )
                 raise ValueError(
-                    f"""
-                    Invalid matrix dimensions. Must be {matrix_device.WIDTH}x{matrix_device.HEIGHT}.
-                    """
+                    f"Invalid matrix dimensions. Must be {matrix_device.WIDTH}x{matrix_device.HEIGHT}."
                 )
             self._matrix = matrix
         if not self.__device.is_open():
@@ -106,6 +131,7 @@ class Matrix:
         Returns:
             None
         """
+        logger.debug("Running next scene")
         self.__scenes[self.__current_scene].start()
 
         self.__current_scene = self.__current_scene + 1
@@ -119,6 +145,7 @@ class Matrix:
         This method sets the matrix to a copy of the default matrix \
             and updates the device accordingly.
         """
+        logger.debug("Resetting matrix")
         with self.__lock:
             self._matrix = [row[:] for row in self.__DEFAULT_MATRIX]
 
@@ -135,6 +162,8 @@ class Matrix:
         4. Resets the matrix to its initial state.
         5. Closes the device associated with the matrix.
         """
+        logger.debug(f"Stopping matrix {self.name}")
+        logger.debug("Shutting down change queue")
         self.__change_queue.shutdown()
         if self.running:
             self.running = False
@@ -142,11 +171,12 @@ class Matrix:
         for scene in self.__scenes:
             try:
                 scene.stop()
-            except:
-                pass
+            except Exception as e:
+                logger.exception(f"Error while stopping scene: {e}")
 
         try:
             self.reset_matrix()
+            logger.debug("Closing device")
             self.__device.close()
         except:
             pass
@@ -170,37 +200,33 @@ class Matrix:
         self.run_next_scene()
 
     def __write_queue(self, value: tuple[int, int, bool]) -> None:
-        """
-        Writes the given value to the matrix.
-
-        Args:
-            value (list[tuple[int, int, bool]]): A list of tuples containing the x and y coordinates
-                of the matrix and a boolean value indicating whether the LED should be on or off.
-
-        Returns:
-            None
-        """
         try:
+            logger.debug(f"Writing value to queue: {value}")
             self.__change_queue.put(value, block=False)
         except queue.ShutDown:
-            pass
+            logger.debug("Queue is shutdown")
 
     def __update_device(self) -> None:
-        # print(self.__change_queue)
-        while not self.__change_queue.empty() and not self.__change_queue.is_shutdown:
-            try:
-                with self.__lock:
+        logger.debug("Updating device")
+        logger.debug("Reading changes from queue")
+        with self.__lock:
+            while (
+                not self.__change_queue.empty() and not self.__change_queue.is_shutdown
+            ):
+                try:
                     x, y, on = self.__change_queue.get(block=False)
-                    self._matrix[x][y] = self.__device.ON if on else self.__device.OFF
-            except queue.Empty:
-                break
-            except IndexError:
-                print(f"[{x}][{y}]")
-                raise
+                    self._matrix[x][y] = on
+                except queue.Empty as e:
+                    logger.debug(f"Queue is empty: {e}")
+                    break
+                except IndexError as ie:
+                    logger.exception(f"[{x}][{y}] Index out of bounds: {ie}")
+                    raise
         try:
+            logger.debug("Rendering matrix")
             self.__device.render_matrix(self._matrix)
         except Exception as e:
-            print("Error updating device: ", e)
+            logger.exception("Error updating device: {e}")
 
     def __str__(self):
         matrix_str = [self.__BORDER_CHAR for _ in range(self.__device.WIDTH * 2 - 2)]

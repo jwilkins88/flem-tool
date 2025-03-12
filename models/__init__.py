@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring
 from .config_schema import (
     ConfigSchema,
     DeviceSchema,
