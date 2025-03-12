@@ -241,7 +241,7 @@ class Matrix:
         while row_index < self.__device.HEIGHT:
             matrix_str.append(f"{self.__BORDER_CHAR} ")
             for column_index in range(self.__device.WIDTH):
-                if self._matrix[column_index][row_index] == self.__device.ON:
+                if self._matrix[column_index][row_index]:
                     matrix_str.append(self.__ON_CHAR)
                     matrix_str.append(" ")
                 else:

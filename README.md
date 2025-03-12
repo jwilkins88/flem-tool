@@ -17,18 +17,42 @@ I hope you find it as useful as I have!
   - [Before you get started](#before-you-get-started)
   - [I'm not a developer. Make this easy](#im-not-a-developer-make-this-easy)
   - [I'm a developer](#im-a-developer)
+- [Running FLEM](#running-flem)
 - [Customizing](#customizing)
   - [Config Reference](#config-reference)
   - [Existing Modules](#existing-modules)
-    - [CPU Module](#cpu-module)
-    - [GPU Module](#gpu-module)
-    - [Line Module](#line-module)
-    - [Clock Module](#clock-module)
   - [Adding Custom Modules (WIP)](#adding-custom-modules-wip)
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 
+## Basic Information
+
+FLEM Tool is a way to easily manage your LED Matrix Panels from Framework. It takes a modular, asynchronous approach to updating and managing the panels. This means that you can have many modules updating on their own schedule, and you only have to worry about what's in your config file. The plan is to ship this with some prebuilt modules and give users the tools they need to build whatever they want.
+
+As of the latest update, Scenes are supported, and this makes the tool even more useful. Scenes automatically rotate through a pre-defined list of modules at a set interval, giving users the ability to show more information on the same screen. Think of it like those obnoxious digital billboards that are everywhere now.
+
+### Modules
+
+Modules are the core of FLEM. Each module is self-contained, and is only concerned about rendering its own information to the matrix. Each module runs in isolation, and isn't affected by other modules that are also running (well, sort of... more on that in [limitation](#limitations)).
+
+Currently, I have:
+
+- CPU
+  - [Minimalist CPU Module](#cpu-module)
+  - [Full CPU Module (includes CPU temp)](#horizontal-cpu-module)
+- GPU***
+  - [Minimalist GPU Module](#gpu-module)
+  - [Full GPU Module (include GPU temp)](#horizontal-gpu-module)
+- [RAM Module](#ram-module)
+- [Clock Module](#clock-module)
+- [Line Module (more of a building block)](#line-module)
+
+*** The GPU module **will not** work out of the box. It requires a custom built version of NVTOP (can be found on my github). I'm hoping that my changes will make it to the stable version of NVTOP, but, for now, there's a bit of monkeying required to get the GPU modules working. See [the GPU module](#gpu-module) section for more information
+
+### Scenes
+
+Scenes add power to FLEM. Scenes are exactly what they 
 
 ## Setup
 
@@ -70,7 +94,7 @@ pip install -r requirements.txt
 If you get an error about permissions denied, run, then try again:
 
 ```bash
-chmod +x ./flem-tool
+chmod +x ./flem.py
 ```
 
 #### I'm a developer
@@ -85,11 +109,21 @@ source ./venv/bin/activate
 
 3. Continue from step 2 in the easy mode instructions
 
+## Running Flem
+
+FLEM comes with a default layout (a layout that I find useful, and I know will run on *most* systems). Out of the box, you should be able to use it. Once you've got FLEM cloned from the repository, navigate to the directory and run the following command:
+
+```bash
+./flem.py
+```
+
+Once that's done, your terminal should be spitting out logs, and you should see things happening on your matrix(s)!
+
 ## Customizing
 
 ### Config Reference
 
-Simple Config. This is a pretty bare bones example of a config that will show the CPU module in the top left corner of the matrix
+Simple Config. This is a pretty bare bones example of a config that will show the CPU module in the top left corner of the matrix. As of now, we have to add at least one scene. Scenes are what really unlock the power and flexibility of FLEM, but more on that later
 
 ```json
 {
@@ -103,12 +137,23 @@ Simple Config. This is a pretty bare bones example of a config that will show th
       "off_bytes": 0,
       "modules": [
         {
-          "module_type": "CpuModule",
+          "name": "cpu",
+          "module_type": "CpuHModule",
           "position": {
             "x": 0,
             "y": 0
           },
           "refresh_interval": 1000
+        }
+      ],
+      "scenes": [
+        {
+          "name": "Scene 1",
+          "show_for": 0,
+          "scene_order": 0,
+          "modules": [
+            "cpu"
+          ]
         }
       ]
     }
@@ -158,10 +203,21 @@ Here's the full structure of the config and all the allowed properties
 
       /**
       This is an array of the modules that we want to load.
-      This is where the magic happens
+      This is where the magic happens. These modules are defined once per device
+      and then references in the scenes. This way, we don't have to duplicate 
+      modules if we have multiple scenes with the same module.
+      (i.e., we want to show clock and CPU in scene 1 and Clock and GPU in Scene 2)
       **/
       "modules": [
         {
+          /**
+          The name is how the scenes will reference the module. This way, we can 
+          have multiple of the same module, but referenced differntly in scenes.
+          (i.e., When I implement trigger configs, we might want to define two CPU
+          Modules, but have them displayed at different coordinates)
+          **/
+          "name": "my_module_1",
+
           /**
           Module Type has a list of values. Refer to the "Existing Modules"
           section for a rundown on what their values are as well as a list
@@ -218,6 +274,48 @@ Here's the full structure of the config and all the allowed properties
             "file_path": "~/my_file.txt"
             // etc...
           }
+        }
+      ],
+      /**
+      Scenes is how we can display a ton of information on a small display. Scenes are
+      simply a collection of modules that rotate on an interval. I haven't tested an 
+      upper limit on the number of scenes, but theoretically, you can have as many as you
+      want
+      **/
+      "scenes": [
+        {
+          /**
+          This doesn't have any special functionality around it. This can really be whatever
+          you want, but it'll be easier to troubleshoot if all the scene names are unique. It
+          could be anything: "Clock+GPU", "Clock+Weather", "Clock+CPU+GPU". This really only
+          shows up in the logs
+          **/
+          "name": "Scene 1",
+
+          /**
+          How long this scene shows before changing (in ms). This can be different for every 
+          scene or the same. It's really up to you on how you want the info to display
+
+          NOTE: 0 means that the scene never changes
+          **/
+          "show_for": 20000,
+
+          /**
+          Not currently implemented, but it will be very soon. This was added as more of a 
+          convenience than anything else. Rather than having to futz with reordering the json
+          array, you can set the order, and it will be reflected
+          **/
+          "scene_order": 0,
+
+          /**
+            This array determines what modules will show in this scene.
+
+            IMPORTANT!!! These values **MUST** match the name of a module defined in the 
+            modules section above. If it doesn't, it will error
+          **/
+          "modules": [
+            "my_module_1"
+          ]
         }
       ]
     }
@@ -666,6 +764,69 @@ This is a simple clock module that shows the current system time. Why use a modu
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
+#### RAM Module
+
+Shows current RAM usage. Once again, this uses psutil. Should work on Windows, but I'm not going to be testing on Windows for a little while. This currently only shows RAM usage rounded to the nearest gigabyte. I did add an indicator (similar to the [clock module](#clock-module)) that shows little pips for each 1/10th of a gigabye. In the sample output below, I'm using 9.1GB of RAM.
+
+**Module Type**: RamModule
+
+**Dimensions (width x height)**: 9x11
+
+**Custom Arguments**: N/A
+
+**Sample Module Config**
+
+```json
+{
+  "name": "ram",
+  "module_type": "RamModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
 ### Adding Custom Modules (WIP)
 
 Currently, I don't have a way for you to do this locally, so you'll have to clone this repo and work inside of it. Eventually, I want to be able to have you plug in modules that aren't a part of this tool itself. I'd recommend starting with the line module as a template and build out from there.
@@ -675,6 +836,10 @@ There's no real gotchas at this point except that it's just a bit whacky working
 ## Limitations
 
 This is largely untested. I've only tested it on Linux Mint. Eventually I'll get around to testing it on Windows and other distros, but for now, I can only guarantee it'll work on what's running on my laptop. Ubuntu should be fine, but if you're on any other distro, I can't guarantee anything. I'm working toward it though!
+
+### About Modules
+
+The dream and hope for this is that we can run completely sandboxed modules that have no impact on any other modules. This is partially true in FLEM's current state. While modules don't care about anything but doing their job, it is possible that modules can collide and render on top of each other. It's fully on the end user right now to make sure this doesn't happen. I'm planning on putting in guard rails and true sandboxing for modules in a future update, but it's just not there right now. I'm focused on core functionality (with some fun stuff), and then I'll go back and get around to hardening the application
 
 ## Roadmap
 
@@ -744,3 +909,45 @@ I'd love to see the community excited about this project and wanting to make it 
 I don't really have any guidelines right now, but if you want to build something on top of this, I'd love to see it. If you have a module you want to contribute, please see my [guide on making modules](#adding-custom-modules-wip).
 
 If you make something, I'd love to give you a shout out. If you want to make your own module (but don't want to contribute it back to the tool), I'll happily add a link and a gallery showing off your awesome work.
+
+## My current configuration
+
+```
+            LEFT                                        RIGHT
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛           ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛           ⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛           ⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛           ⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛           ⬛ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛           ⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⬛           ⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛           ⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛           ⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛           ⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛           ⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛           ⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛           ⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚫ ⬛           ⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛           ⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛           ⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛           ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
