@@ -878,13 +878,17 @@ Maybe every minute, you swap in an animation that lasts for 5 seconds before rot
 
 #### More modules * In Progress
 
-I want to keep this light, but there's a few more modules that I want to figure out. In order:
+I want to keep this light, but there's a few more modules that I want to figure out:
 
 1. ~~RAM Module~~ Done!
 2. ~~CPU Temp Module~~ Done! (kinda) - I still want to find a minimalist way to display temp in the vertical cpu module
 3. ~~GPU Temp Module~~ Done! (kinda) - Same as the CPU Temp
 4. Weather Module
 5. Battery Module
+6. Binary Clock
+7. CPU Bar
+8. GPU Bar
+9. RAM Bar
 
 For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other. I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
 
