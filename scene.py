@@ -96,7 +96,6 @@ class Scene:
                 logger.error(
                     f"Error while stopping {module.module_name} in scene {self.__config.name}: {e}"
                 )
-        self.__modules.clear()
 
         try:
             if self.__timer and not self.__timer.is_alive():
