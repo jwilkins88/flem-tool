@@ -38,10 +38,6 @@ import os
 from time import sleep
 import sys
 
-import sys
-
-sys.path.append("/home/joelwilkins/source/flem_tool")
-
 from loguru import logger
 
 from models import Config
