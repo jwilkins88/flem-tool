@@ -1,7 +1,5 @@
 from hashlib import md5
 import os
-import sys
-import traceback
 
 from loguru import logger
 
@@ -30,9 +28,9 @@ def get_config() -> tuple[Config, str]:
 def read_config_from_file() -> str:
     """
     Reads the configuration from the first available file in the predefined configuration paths.
-    This function iterates over a list of predefined configuration file paths and returns the content
-    of the first file it finds. If no configuration file is found, it prints an error message and raises
-    a FileNotFoundError.
+    This function iterates over a list of predefined configuration file paths and returns the
+    content of the first file it finds. If no configuration file is found, it prints an error
+    message and raises a FileNotFoundError.
     Returns:
         str: The content of the configuration file.
     Raises:

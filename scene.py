@@ -34,13 +34,15 @@ class Scene:
 
     def start(self):
         """
-        Starts the scene by initializing and starting all modules and setting up a timer if required.
+        Starts the scene by initializing and starting all modules and setting up a timer if
+        required.
         This method performs the following steps:
         1. Sets the `running` attribute to True and prints the name of the scene.
         2. Iterates over all modules in `self.__modules`:
             - If a module is static, it starts the module directly.
             - If a module is not static, it starts the module in a new thread and track the thread.
-        3. If `show_for` is not 0, sets up a timer to call stop the scene after the specified duration.
+        3. If `show_for` is not 0, sets up a timer to call stop the scene after the specified
+        duration
         """
 
         self.running = True

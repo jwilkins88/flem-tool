@@ -18,8 +18,10 @@ class Matrix:
         running (bool): Flag indicating whether the matrix is running.
         name (str): Name of the matrix device.
     Methods:
-        __init__(self, matrix_device: LedDevice, modules: list[MatrixModule] = None, matrix: list[list[int]] = None, scenes: list[SceneConfig] = None):
-            Initializes the Matrix object with the given device, modules, matrix, and scenes.
+        __init__(self, matrix_device: LedDevice, modules: list[MatrixModule] = None,
+        matrix: list[list[int]] = None, scenes: list[SceneConfig] = None):
+            Initializes the Matrix object with the given device, modules, matrix,
+            and scenes.
         set_matrix(self, matrix: list[list[int]]) -> None:
         run_next_scene(self) -> None:
             Runs the next scene in the list of scenes.
@@ -101,10 +103,16 @@ class Matrix:
                 and len(matrix[0]) == matrix_device.HEIGHT
             ):
                 logger.error(
-                    f"Invalid matrix dimensions. Must be {matrix_device.WIDTH}x{matrix_device.HEIGHT}."
+                    (
+                        "Invalid matrix dimensions. Must be",
+                        f" {matrix_device.WIDTH}x{matrix_device.HEIGHT}.",
+                    )
                 )
                 raise ValueError(
-                    f"Invalid matrix dimensions. Must be {matrix_device.WIDTH}x{matrix_device.HEIGHT}."
+                    (
+                        "Invalid matrix dimensions. Must be ",
+                        f" {matrix_device.WIDTH}x{matrix_device.HEIGHT}.",
+                    )
                 )
             self._matrix = matrix
         if not self.__device.is_open():
@@ -183,8 +191,8 @@ class Matrix:
             self.reset_matrix()
             logger.debug("Closing device")
             self.__device.close()
-        except:
-            pass
+        except Exception as e:
+            logger.exception(f"Error while stopping matrix: {e}")
 
     def __stop_scene(self, scene: Scene) -> None:
         """
@@ -231,7 +239,7 @@ class Matrix:
             logger.debug("Rendering matrix")
             self.__device.render_matrix(self._matrix)
         except Exception as e:
-            logger.exception("Error updating device: {e}")
+            logger.exception(f"Error updating device: {e}")
 
     def __str__(self):
         matrix_str = [self.__BORDER_CHAR for _ in range(self.__device.WIDTH * 2 - 2)]

@@ -146,7 +146,8 @@ class LedDevice:
             command: The command to be sent.
             parameters (list, optional): A list of parameters to be sent with the command.
                 Defaults to an empty list if not provided.
-            with_response (bool, optional): Indicates whether a response is expected from the device.
+            with_response (bool, optional): Indicates whether a response is expected
+            from the device.
                 Defaults to False.
 
         Returns:
@@ -171,11 +172,13 @@ class LedDevice:
             if with_response:
                 res = self.__serial_device.read(self.__response_size)
                 return res
+            return None
         except (IOError, OSError) as _ex:
             print("Error: ", _ex)
             if self.is_open():
                 self.close()
                 self.connect()
+            return None
 
     def send_col(self, x, vals: list[int]) -> None:
         """Stage greyscale values for a single column. Must be committed with commit_cols()"""
@@ -206,4 +209,7 @@ class LedDevice:
         self.send_command(CommandVals.BRIGHTNESS, [brightness])
 
     def __str__(self):
-        return f"Device: {self.__config.name} at {self.__config.location} ({self.__config.speed} baud)"
+        return str(
+            f"Device: {self.__config.name} at {self.__config.location}",
+            f"({self.__config.speed} baud)",
+        )

@@ -1,4 +1,4 @@
-# pylint: disable=missing-module-docstring, missing-class-docstring
+# pylint: disable=missing-module-docstring, missing-class-docstring, unused-argument
 from marshmallow import Schema, fields, post_load
 
 from .config import (
