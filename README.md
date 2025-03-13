@@ -88,19 +88,7 @@ Once that's done, your terminal should be spitting out logs, and you should see 
 
 ### Config Location
 
-The default config that comes with FLEM is located (for me) at `/home/<my_user>/.pyenv/versions/3.13.2/lib/python3.13/site-packages/flem/config.json` (switch out your python version as is necessary)
-
-**BUT**
-
-I do not recommend tinkering too much in the python directories. Rather, I recommend you create an override config in your home directory. At some point, this will be automated, but, for now, you'll have to do it manually
-
-```bash
-mkdir ~/.flem
-touch config.json
-nano config.json # or whatever your preferred editor is
-```
-
-Once that's done, any changes to that config will reload your matrices with the contents.
+FLEM creates a config file at `~/.flem/config.json` on its first run. If this ever gets deleted, it'll create it again with the default config
 
 ### Config Reference
 
