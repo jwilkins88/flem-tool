@@ -57,16 +57,15 @@ def main():
 
     check_and_create_user_directory()
 
-    for arg in sys.argv:
-        if arg == "--debug" or arg == "-d":
-            logger.remove()
-            logger.add(sys.stderr, level="DEBUG")
-        if arg == "--log-dump" or arg == "-l":
-            logger.add(
-                f"{os.path.expanduser('~')}/.flem/logs/flem.log",
-                rotation="50 MB",
-                compression="zip",
-            )
+    if "--debug" in sys.argv or "-d" in sys.argv:
+        logger.remove()
+        logger.add(sys.stderr, level="DEBUG")
+    if "--log-dump" in sys.argv or "-l" in sys.argv:
+        logger.add(
+            f"{os.path.expanduser('~')}/.flem/logs/flem.log",
+            rotation="50 MB",
+            compression="zip",
+        )
 
     config: Config
     config_hash: str
