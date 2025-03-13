@@ -8,7 +8,7 @@ authors = [{ name = "Joel Wilkins" }]
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
     "loguru==0.7.3",
     "marshmallow==3.26.1",
@@ -22,3 +22,7 @@ Home = "https://github.com/jwilkins88/flem-tool"
 
 [project.scripts]
 flem = "flem_tool:main"
+
+[tool.hatch.build.targets.sdist]
+include = ["*.py", "/modules", "models", "config.json"]
+exclude = ["*.json", "pkg/_compat.py"]
