@@ -39,7 +39,6 @@ class GpuHModule(MatrixModule):
     def __init__(self, config: ModuleConfig = None, width: int = 9, height: int = 12):
         self.__config = config
         self.__width = width
-        self.__height = height
         line_config = ModuleConfig(
             name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
