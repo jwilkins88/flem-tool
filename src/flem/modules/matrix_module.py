@@ -3,7 +3,9 @@
 import abc
 from typing import Callable
 
-from models import ModuleConfig
+from loguru import logger
+
+from flem.models.config import ModuleConfig
 
 
 class MatrixModule:
@@ -154,7 +156,7 @@ class MatrixModule:
             try:
                 update_device()
             except Exception as e:
-                print(f"An error occurred while updating the device: {e}")
+                logger.exception(f"An error occurred while updating the device: {e}")
 
     @abc.abstractmethod
     def clear_module(
@@ -178,7 +180,7 @@ class MatrixModule:
 
             update_device()
         except Exception as e:
-            print(f"An error occurred while clearing the module: {e}")
+            logger.exception(f"An error occurred while clearing the module: {e}")
 
     def _write_number(
         self,

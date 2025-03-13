@@ -1,13 +1,12 @@
 # pylint: disable=abstract-method, missing-module-docstring
 from time import sleep
 from typing import Callable
-import traceback
-import sys
 
 import psutil
+from loguru import logger
 
-from modules.matrix_module import MatrixModule
-from models import ModuleConfig
+from flem.modules.matrix_module import MatrixModule
+from flem.models.config import ModuleConfig
 
 
 class RamModule(MatrixModule):
@@ -94,7 +93,6 @@ class RamModule(MatrixModule):
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError) as e:
-            print(f"Error while running {self.module_name}: {e}")
-            traceback.print_exc(*sys.exc_info())
+            logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)

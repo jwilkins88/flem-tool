@@ -5,10 +5,10 @@ import queue
 
 from loguru import logger
 
-from led_device import LedDevice
-from models import SceneConfig
-from modules.matrix_module import MatrixModule
-from scene import Scene
+from flem.devices.led_device import LedDevice
+from flem.models.config import SceneConfig
+from flem.modules.matrix_module import MatrixModule
+from flem.matrix.scene import Scene
 
 
 class Matrix:
@@ -78,7 +78,6 @@ class Matrix:
             scene_modules = []
             for module in scene.modules:
                 for module in self.__modules:
-                    print(module)
                     if module.module_name in scene.modules:
                         if any(
                             module.module_name in scene_module.module_name

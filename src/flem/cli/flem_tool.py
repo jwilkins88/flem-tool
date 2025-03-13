@@ -40,14 +40,14 @@ import sys
 
 from loguru import logger
 
-from models import Config
-from utilities import (
+from flem.models.config import Config
+from flem.utilities.utilities import (
     get_config,
     read_config_from_file,
     has_config_changed,
     run_matrices_from_config,
 )
-from matrix import Matrix
+from flem.matrix.matrix import Matrix
 
 
 def main():

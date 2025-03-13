@@ -1,26 +1,24 @@
 # pylint: disable=abstract-method, missing-module-docstring
 
-import json
-import subprocess
 from time import sleep
 from typing import Callable
 
-from modules.matrix_module import MatrixModule
-from modules.generic.line_module import LineModule
-from models import ModuleConfig, ModulePositionConfig
+import psutil
+from loguru import logger
 
 
-class GpuModule(MatrixModule):
+from flem.modules.matrix_module import MatrixModule
+from flem.modules.line_module import LineModule
+from flem.models.config import ModuleConfig, ModulePositionConfig
+
+
+class CpuModule(MatrixModule):
     __line_module: LineModule = None
     __config: ModuleConfig = None
     __previous_value: str = "NA"
-    __gpu_command_argument = "gpu_command"
-    __gpu_index_argument = "gpu_index"
-    __gpu_command_arguments_argument = "gpu_command_arguments"
-    __gpu_util_output_property = "gpu_util_output_property"
 
     running = True
-    module_name = "GPU Module"
+    module_name = "CPU Module"
 
     def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
         self.__config = config
@@ -35,8 +33,13 @@ class GpuModule(MatrixModule):
 
     def reset(self):
         """
-        Resets the GPU module to its initial state.
+        Resets the CPU module to its initial state.
+        This method sets the previous value to "NA" and then calls the reset method
+        of the superclass to perform any additional reset operations.
+        Returns:
+            The result of the superclass reset method.
         """
+
         self.__previous_value = "NA"
         return super().reset()
 
@@ -47,41 +50,29 @@ class GpuModule(MatrixModule):
         execute_callback: bool = True,
     ) -> None:
         """
-        Writes the GPU usage to the matrix display and executes the callback if specified.
+        Writes the CPU usage to the matrix display and executes the callback if specified.
         """
         try:
             self._write_text(
-                "g", write_queue, self.__config.position.y, self.__config.position.x
+                "c", write_queue, self.__config.position.y, self.__config.position.x
             )
 
             self.__line_module.write(update_device, write_queue, False)
             while self.running:
+                cpu_percentage = str(round(psutil.cpu_percent()))
 
-                gpu_info = json.loads(
-                    subprocess.check_output(
-                        [self.__config.arguments[self.__gpu_command_argument]]
-                        + self.__config.arguments[
-                            self.__gpu_command_arguments_argument
-                        ].split(",")
-                    )
-                )
-                gpu_percentage = gpu_info[
-                    self.__config.arguments[self.__gpu_index_argument]
-                ][self.__config.arguments[self.__gpu_util_output_property]][:-1]
+                cpu_cols = len(cpu_percentage)
 
-                gpu_cols = len(gpu_percentage)
-
-                if gpu_cols == 1:
-                    gpu_percentage = "0" + gpu_percentage
+                if cpu_cols == 1:
+                    cpu_percentage = "0" + cpu_percentage
 
                 start_row = self.__config.position.y + 7
-
-                if gpu_percentage == "100":
+                if cpu_percentage == "100":
                     self._write_text(
                         "!", write_queue, start_row, self.__config.position.x
                     )
                 else:
-                    for i, char in enumerate(gpu_percentage):
+                    for i, char in enumerate(cpu_percentage):
                         if char == self.__previous_value[i]:
                             start_row += 6
                             continue
@@ -104,16 +95,19 @@ class GpuModule(MatrixModule):
                             )
                         )
 
-                self.__previous_value = gpu_percentage
+                self.__previous_value = cpu_percentage
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
-        except (IndexError, ValueError, TypeError) as e:
-            print(f"Error while running {self.module_name}: {e}")
+        except (IndexError, ValueError, TypeError, psutil.Error) as e:
+            logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)
 
     def _exclamation(
-        self, write_queue: callable, start_row: int, start_col: int
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
     ) -> None:
         write_queue((start_col, start_row, True))
         write_queue((start_col, start_row + 1, True))

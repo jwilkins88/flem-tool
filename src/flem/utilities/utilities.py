@@ -1,14 +1,56 @@
 from hashlib import md5
 import os
+import glob
+import importlib
 
 from loguru import logger
 
-from models import Config, ConfigSchema
-from modules import load_module
-from led_device import LedDevice
-from matrix import Matrix
+from flem.models.config import Config, ModuleConfig
+from flem.models.config_schema import ConfigSchema
+from flem.devices.led_device import LedDevice
+from flem.matrix.matrix import Matrix
 
 __CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
+
+modules_to_load = glob.glob(
+    os.path.join(os.path.dirname(__file__), "../modules", "*.py")
+)
+
+modules_to_load = [
+    os.path.basename(f)[:-3]
+    for f in modules_to_load
+    if os.path.isfile(f) and not f.endswith("__init__.py")
+]
+
+imports = {}
+for module in modules_to_load:
+    module_import = importlib.import_module(f"flem.modules.{module}")
+    class_name = "".join([segment.capitalize() for segment in module.split("_")])
+    class_import = getattr(module_import, class_name)
+
+    imports[class_name] = class_import
+
+
+def load_module(module_config: ModuleConfig):
+    """
+    Loads and initializes a module based on the provided configuration.
+
+    Args:
+        module_config (ModuleConfig): The configuration object for the module to be loaded.
+
+    Returns:
+        object: An instance of the loaded module if found, otherwise None.
+
+    Raises:
+        KeyError: If the module type specified in the configuration is not found in loaded_modules.
+    """
+    print(imports)
+    if module_config.module_type in imports:
+        logger.debug(f"module {module_config.module_type} found")
+        return imports[module_config.module_type](module_config)
+
+    logger.warning(f"Module {module_config.module_type} not found")
+    return None
 
 
 def get_config() -> tuple[Config, str]:
@@ -96,7 +138,9 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
         logger.debug("Loading modules")
         for module in device.modules:
             logger.debug(f"Loading module {module.name}")
-            device_modules.append(load_module(module))
+            loaded_module = load_module(module)
+            if loaded_module:
+                device_modules.append(loaded_module)
 
         matrices.append(
             Matrix(

@@ -3,8 +3,8 @@ from typing import Callable
 
 from loguru import logger
 
-from models import SceneConfig
-from modules import MatrixModule
+from flem.models.config import SceneConfig
+from flem.modules.matrix_module import MatrixModule
 
 
 class Scene:

@@ -3,7 +3,9 @@
 from enum import IntEnum
 import serial
 
-from models import DeviceConfig
+from loguru import logger
+
+from flem.models.config import DeviceConfig
 
 
 class CommandVals(IntEnum):
@@ -133,7 +135,7 @@ class LedDevice:
         try:
             self.__serial_device.write(command)
         except (IOError, OSError) as _ex:
-            print("Error: ", _ex)
+            logger.exception(f"Error: {_ex}")
 
     def send_command(
         self, command: CommandVals, parameters: list = None, with_response: bool = False
@@ -165,7 +167,6 @@ class LedDevice:
     ) -> bytes:
         """Send a command to the device.
         Opens new serial connection every time"""
-        # print(f"Sending command: {command}")
         try:
             self.__serial_device.write(command)
 
@@ -174,7 +175,7 @@ class LedDevice:
                 return res
             return None
         except (IOError, OSError) as _ex:
-            print("Error: ", _ex)
+            logger.exception(f"Error: {_ex}")
             if self.is_open():
                 self.close()
                 self.connect()

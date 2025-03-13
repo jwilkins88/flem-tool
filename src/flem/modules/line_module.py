@@ -1,8 +1,10 @@
 # pylint: disable=abstract-method, missing-module-docstring
 from typing import Callable
 
-from modules.matrix_module import MatrixModule
-from models import ModuleConfig
+from loguru import logger
+
+from flem.modules.matrix_module import MatrixModule
+from flem.models.config import ModuleConfig
 
 
 class LineModule(MatrixModule):
@@ -46,6 +48,6 @@ class LineModule(MatrixModule):
 
             super().write(update_device, write_queue, execute_callback)
         except (IndexError, ValueError, TypeError) as e:
-            print(f"Error while running {self.module_name}: {e}")
+            logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)
