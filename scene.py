@@ -111,7 +111,8 @@ class Scene:
         for thread in self.__threads:
             try:
                 logger.debug(f"Attempting to join thread {thread.name}")
-                thread.join()
+                if thread.is_alive():
+                    thread.join()
             except (RuntimeError, TimeoutError) as e:
                 logger.error(f"Error while joining thread {thread.name}: {e}")
 

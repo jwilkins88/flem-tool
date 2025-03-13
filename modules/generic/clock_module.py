@@ -58,8 +58,9 @@ class ClockModule(MatrixModule):
 
                 if self.__show_seconds_indicator:
                     seconds = int(datetime.now().strftime("%S"))
+                    pips_to_show = super()._calculate_pips_to_show(seconds, 60, 10)
 
-                    if seconds < 6:
+                    if pips_to_show == 0:
                         write_queue((8, self.__config.position.y, False))
                         write_queue((8, self.__config.position.y + 1, False))
                         write_queue((8, self.__config.position.y + 2, False))
@@ -70,83 +71,18 @@ class ClockModule(MatrixModule):
                         write_queue((0, self.__config.position.y + 8, False))
                         write_queue((0, self.__config.position.y + 9, False))
                         write_queue((0, self.__config.position.y + 11, False))
-                    if seconds >= 6:
+
+                    pip_col = 8
+                    buffer = 0
+                    for i in range(pips_to_show):
+                        if i > 4:
+                            pip_col = 0
+                            buffer = 1
+
                         write_queue(
                             (
-                                8,
-                                self.__config.position.y,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 12:
-                        write_queue(
-                            (
-                                8,
-                                self.__config.position.y + 1,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 18:
-                        write_queue(
-                            (
-                                8,
-                                self.__config.position.y + 2,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 24:
-                        write_queue(
-                            (
-                                8,
-                                self.__config.position.y + 3,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 30:
-                        write_queue(
-                            (
-                                8,
-                                self.__config.position.y + 4,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 36:
-                        write_queue(
-                            (
-                                0,
-                                self.__config.position.y + 6,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 42:
-                        write_queue(
-                            (
-                                0,
-                                self.__config.position.y + 7,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 48:
-                        write_queue(
-                            (
-                                0,
-                                self.__config.position.y + 8,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 53:
-                        write_queue(
-                            (
-                                0,
-                                self.__config.position.y + 9,
-                                seconds % 2 == 0,
-                            )
-                        )
-                    if seconds >= 58:
-                        write_queue(
-                            (
-                                0,
-                                self.__config.position.y + 10,
+                                pip_col,
+                                self.__config.position.y + i + buffer,
                                 seconds % 2 == 0,
                             )
                         )

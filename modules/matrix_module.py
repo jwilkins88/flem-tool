@@ -232,6 +232,14 @@ class MatrixModule:
         """
 
     @abc.abstractmethod
+    def _calculate_pips_to_show(
+        self, value: float, max_value: float, max_pips: int
+    ) -> int:
+        pip_value = max_pips / max_value
+
+        return round(pip_value * value)
+
+    @abc.abstractmethod
     def _zero(
         self,
         write_queue: Callable[[tuple[int, int, bool]], None],

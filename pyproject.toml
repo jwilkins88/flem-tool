@@ -8,7 +8,7 @@ authors = [{ name = "Joel Wilkins" }]
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
     "loguru==0.7.3",
     "marshmallow==3.26.1",
@@ -19,3 +19,6 @@ dependencies = [
 
 [project.urls]
 Home = "https://github.com/jwilkins88/flem-tool"
+
+[project.scripts]
+flem = "flem_tool:main"

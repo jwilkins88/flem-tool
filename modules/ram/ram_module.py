@@ -34,13 +34,13 @@ class RamModule(MatrixModule):
             self._write_text(
                 "g",
                 write_queue,
-                self.__config.position.y + 7,
+                self.__config.position.y + 6,
                 self.__config.position.x + 2,
             )
             self._write_text(
                 "b",
                 write_queue,
-                self.__config.position.y + 7,
+                self.__config.position.y + 6,
                 self.__config.position.x + 6,
             )
             while self.running:
@@ -60,36 +60,35 @@ class RamModule(MatrixModule):
                     start_col += 4
 
                 used_memory[1] = int(used_memory[1])
-                self.write_fraction(
-                    used_memory[1], 0, write_queue, 8, self.__config.position.y
-                )
-                self.write_fraction(
-                    used_memory[1], 10, write_queue, 8, self.__config.position.y + 1
-                )
-                self.write_fraction(
-                    used_memory[1], 20, write_queue, 8, self.__config.position.y + 2
-                )
-                self.write_fraction(
-                    used_memory[1], 30, write_queue, 8, self.__config.position.y + 3
-                )
-                self.write_fraction(
-                    used_memory[1], 40, write_queue, 8, self.__config.position.y + 4
-                )
-                self.write_fraction(
-                    used_memory[1], 50, write_queue, 0, self.__config.position.y + 6
-                )
-                self.write_fraction(
-                    used_memory[1], 60, write_queue, 0, self.__config.position.y + 7
-                )
-                self.write_fraction(
-                    used_memory[1], 70, write_queue, 0, self.__config.position.y + 8
-                )
-                self.write_fraction(
-                    used_memory[1], 80, write_queue, 0, self.__config.position.y + 9
-                )
-                self.write_fraction(
-                    used_memory[1], 90, write_queue, 0, self.__config.position.y + 10
-                )
+
+                pips_to_show = super()._calculate_pips_to_show(used_memory[1], 100, 9)
+
+                if pips_to_show == 0:
+                    write_queue((8, self.__config.position.y, False))
+                    write_queue((8, self.__config.position.y + 1, False))
+                    write_queue((8, self.__config.position.y + 2, False))
+                    write_queue((8, self.__config.position.y + 3, False))
+                    write_queue((8, self.__config.position.y + 4, False))
+                    write_queue((0, self.__config.position.y + 6, False))
+                    write_queue((0, self.__config.position.y + 7, False))
+                    write_queue((0, self.__config.position.y + 8, False))
+                    write_queue((0, self.__config.position.y + 9, False))
+                    write_queue((0, self.__config.position.y + 11, False))
+
+                pip_col = 8
+                buffer = 0
+                for i in range(10):
+                    if i > 4:
+                        pip_col = 0
+                        buffer = 1
+
+                    write_queue(
+                        (
+                            pip_col,
+                            start_row + i + buffer,
+                            i < pips_to_show,
+                        )
+                    )
 
                 self.__previous_value = used_memory
                 super().write(update_device, write_queue, execute_callback)
@@ -99,28 +98,3 @@ class RamModule(MatrixModule):
             traceback.print_exc(*sys.exc_info())
             super().stop()
             super().clear_module(update_device, write_queue)
-
-    def write_fraction(
-        self,
-        fraction_value: int,
-        comparison_value: int,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_col: int,
-        start_row: int,
-    ) -> None:
-        if fraction_value > comparison_value:
-            write_queue(
-                (
-                    start_col,
-                    start_row,
-                    True,
-                )
-            )
-        else:
-            write_queue(
-                (
-                    start_col,
-                    start_row,
-                    False,
-                )
-            )
