@@ -1,46 +1,33 @@
 {
-    "devices": [
+  "devices": [
+    {
+      "name": "left",
+      "device_address": "/dev/ttyACM1",
+      "speed": 115200,
+      "brightness": 3,
+      "on_bytes": 1,
+      "off_bytes": 0,
+      "modules": [
         {
-            "name": "left",
-            "device_address": "/dev/ttyACM1",
-            "speed": 115200,
-            "brightness": 10,
-            "on_bytes": 1,
-            "off_bytes": 0,
-            "modules": [
-                {
-                    "module_type": "CpuModule",
-                    "position": {
-                        "x": 1,
-                        "y": 15
-                    },
-                    "refresh_interval": 1000
-                },
-                {
-                    "module_type": "ClockModule",
-                    "position": {
-                        "x": 0,
-                        "y": 1
-                    },
-                    "refresh_interval": 1000,
-                    "arguments": {
-                        "clock_mode": "24h",
-                        "show_seconds_indicator": true
-                    }
-                },
-                {
-                    "module_type": "LineModule",
-                    "position": {
-                        "x": 0,
-                        "y": 13
-                    },
-                    "refresh_interval": 0,
-                    "arguments": {
-                        "width": 9,
-                        "line_style": "dashed"
-                    }
-                }
-            ]
+          "name": "cpu",
+          "module_type": "CpuHModule",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "refresh_interval": 1000
         }
-    ]
+      ],
+      "scenes": [
+        {
+          "name": "Scene 1",
+          "show_for": 0,
+          "scene_order": 0,
+          "modules": [
+            "cpu"
+          ]
+        }
+      ]
+    }
+  ]
 }

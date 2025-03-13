@@ -872,9 +872,9 @@ I'm not great at naming things, but, essentially, I want to add the ability to c
 
 I don't know how feasible this is, and I think it'll be very OS specific when I get here
 
-As a part of this, I also want to add "rotating" layouts. Since our real estate is so small, we can't fit a lot of information onto the matrix. For things like the horizontal cpu module, it takes up over half the matrix. To get around this, I might "rotate" the modules on an interval. As an example, every 10 seconds, I swap the horizontal CPU module for network information, or you swap the clock for weather. That continues in a constant cycle, displaying as many rotating modules as you want.
+~~As a part of this, I also want to add "rotating" layouts. Since our real estate is so small, we can't fit a lot of information onto the matrix. For things like the horizontal cpu module, it takes up over half the matrix. To get around this, I might "rotate" the modules on an interval. As an example, every 10 seconds, I swap the horizontal CPU module for network information, or you swap the clock for weather. That continues in a constant cycle, displaying as many rotating modules as you want.~~
 
-Maybe every minute, you swap in an animation that lasts for 5 seconds before rotating back through the information. It gives you a lot of power and flexibility to display more information with the limited real estate
+~~Maybe every minute, you swap in an animation that lasts for 5 seconds before rotating back through the information. It gives you a lot of power and flexibility to display more information with the limited real estate~~
 
 #### More modules * In Progress
 

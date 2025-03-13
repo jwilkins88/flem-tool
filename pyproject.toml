@@ -1,14 +1,22 @@
 [build-system]
-requires = ["flit_core >=3.11,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "flem-tool"
-authors = [{name = "Joel Wilkins"}]
+name = "flem_tool"
+authors = [{ name = "Joel Wilkins" }]
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-dynamic = ["version", "description"]
+version = "0.0.1"
+dependencies = [
+    "loguru==0.7.3",
+    "marshmallow==3.26.1",
+    "packaging==24.2",
+    "psutil==7.0.0",
+    "pylint==3.3.5",
+    "pyserial==3.5",
+]
 
 [project.urls]
 Home = "https://github.com/jwilkins88/flem-tool"
