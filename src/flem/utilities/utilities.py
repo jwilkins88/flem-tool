@@ -12,24 +12,6 @@ from flem.matrix.matrix import Matrix
 
 __CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
 
-modules_to_load = glob.glob(
-    os.path.join(os.path.dirname(__file__), "../modules", "*.py")
-)
-
-modules_to_load = [
-    os.path.basename(f)[:-3]
-    for f in modules_to_load
-    if os.path.isfile(f) and not f.endswith("__init__.py")
-]
-
-imports = {}
-for module in modules_to_load:
-    module_import = importlib.import_module(f"flem.modules.{module}")
-    class_name = "".join([segment.capitalize() for segment in module.split("_")])
-    class_import = getattr(module_import, class_name)
-
-    imports[class_name] = class_import
-
 
 def load_module(module_config: ModuleConfig):
     """
@@ -44,6 +26,25 @@ def load_module(module_config: ModuleConfig):
     Raises:
         KeyError: If the module type specified in the configuration is not found in loaded_modules.
     """
+    modules_to_load = glob.glob(
+        os.path.join(os.path.dirname(__file__), "../modules", "*.py")
+    )
+
+    modules_to_load = [
+        os.path.basename(f)[:-3]
+        for f in modules_to_load
+        if os.path.isfile(f) and not f.endswith("__init__.py")
+    ]
+
+    imports = {}
+    for module_to_load in modules_to_load:
+        module_import = importlib.import_module(f"flem.modules.{module_to_load}")
+        class_name = "".join(
+            [segment.capitalize() for segment in module_to_load.split("_")]
+        )
+        class_import = getattr(module_import, class_name)
+
+        imports[class_name] = class_import
     print(imports)
     if module_config.module_type in imports:
         logger.debug(f"module {module_config.module_type} found")
