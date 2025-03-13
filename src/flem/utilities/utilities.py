@@ -13,6 +13,32 @@ from flem.matrix.matrix import Matrix
 __CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
 
 
+def check_and_create_user_directory():
+    """
+    Checks if the user directory exists and creates it if it does not.
+    """
+    logger.info("Checking for user directory")
+    user_directory = f"{os.path.expanduser('~')}/.flem"
+    if not os.path.exists(user_directory):
+        logger.info("Creating user directory")
+        os.makedirs(user_directory)
+        config_source_path = os.path.join(os.path.dirname(__file__), "../config.json")
+        config_destination_path = os.path.join(user_directory, "config.json")
+        if os.path.exists(config_source_path):
+            logger.info(
+                f"Copying config file from {config_source_path} to {config_destination_path}"
+            )
+            with (
+                open(config_source_path, "r", encoding="utf-8") as src,
+                open(config_destination_path, "w", encoding="utf-8") as dst,
+            ):
+                dst.write(src.read())
+        else:
+            logger.warning(f"Config file {config_source_path} does not exist")
+    else:
+        logger.info("User directory already exists")
+
+
 def load_module(module_config: ModuleConfig):
     """
     Loads and initializes a module based on the provided configuration.

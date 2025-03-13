@@ -46,6 +46,7 @@ from flem.utilities.utilities import (
     read_config_from_file,
     has_config_changed,
     run_matrices_from_config,
+    check_and_create_user_directory,
 )
 from flem.matrix.matrix import Matrix
 
@@ -58,6 +59,8 @@ def main():
         if arg == "--debug":
             logger.remove()
             logger.add(sys.stderr, level="DEBUG")
+
+    check_and_create_user_directory()
 
     config: Config
     config_hash: str

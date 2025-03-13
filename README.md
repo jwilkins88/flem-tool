@@ -2,6 +2,8 @@
 
 ##### Disclaimer: This is poorly tested, poorly optimized, incomplete. It works on my machine though
 
+<img src="docs/images/logo.jpeg" height="400px" />
+
 ## What is FLEM
 
 When I got my LED Matrices from Framework, my head was spinning with the possibilities. As I implemented things that I wanted, I realized that what I really wanted was a utility that could manage all these different pieces that I wanted in a sane way. Managing the layout of the matrices was a bit painful. Having to keep track of what LEDs were lit by what piece was painful, so I started writing a utility that would help manage that.
@@ -10,7 +12,7 @@ Enter the FLEM Tool. FLEM Tool is a config based renderer that renders modules (
 
 I hope you find it as useful as I have!
 
-<img src="docs/images/action.gif" height="400" />
+<img src="docs/images/flem_action.jpg" height="400" />
 
 ## Table of Contents
 - [Setup](#setup)
