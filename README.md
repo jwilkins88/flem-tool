@@ -14,10 +14,6 @@ I hope you find it as useful as I have!
 
 ## Table of Contents
 - [Setup](#setup)
-  - [Before you get started](#before-you-get-started)
-  - [I'm not a developer. Make this easy](#im-not-a-developer-make-this-easy)
-  - [I'm a developer](#im-a-developer)
-- [Running FLEM](#running-flem)
 - [Customizing](#customizing)
   - [Config Reference](#config-reference)
   - [Existing Modules](#existing-modules)
@@ -52,7 +48,11 @@ Currently, I have:
 
 ### Scenes
 
-Scenes add power to FLEM. Scenes are exactly what they 
+Scenes add power to FLEM. Scenes are exactly what they sound like. It's the ability to have a rotating selection of modules display on your matrix(s). Scenes show for a preset amount of time before loading the next set of modules and refreshing the display. Right now, the scene transition is a bit clunky and jarring, but I have plans of adding animated scene changes in the future. 
+
+Scenes are set up independently from modules. What that means is that you define your modules (per matrix), and then scenes just reference the module configuration by name. This way, you don't have to set up the same module multiple times if its reused across scenes (i.e., always show clock module, but rotate GPU/CPU).
+
+Scenes provides the foundation work for [trigger configs](#add-trigger-configs--in-progress). I'm excited to get to that one, but I'm working out all the basics and fundamentals before I start trying to get fancy.
 
 ## Setup
 
@@ -66,60 +66,39 @@ This is untested on anything except my system with my environment. Eventually, I
 
 If you want to check your Python version, just type `python --version` in your terminal. This will _probably_ work in most recent Python versions (definitely won't in Python 2), but probably not in early versions of 3
 
-#### I'm not a developer. Make this easy
-
-If you're not a developer and don't spend a lot of time in a terminal, running this is going to be a little weird. I don't have this thing packaged as a standalone ([yet](#convert-into-pip-package)), so you're going to have to get into your terminal. Before you get started on this open up your terminal (called `Terminal` on most systems)
-
-1. Clone this repository (alternatively, download and unzip the source)
-
-If you're on Linux, git should come preinstalled (mostly). In your terminal:
+### Installing
 
 ```bash
-git clone https://github.com/jwilkins88/flem-tool.git
-cd flem-tool
+pip install flem-tool
 ```
 
-2. Install the dependencies
+### Running Flem
+
+FLEM comes with a default layout that's very, very basic. If you want to customize it, you'll have to create your own config. The default config is buried in the python directory, and I don't recommend messing around in there too much. See [Customizing](#customizing) for more details on how you can configure flem
 
 ```bash
-pip install -r requirements.txt
-```
-
-3. That's it. Now try running:
-
-```bash
-./flem-tool
-```
-
-If you get an error about permissions denied, run, then try again:
-
-```bash
-chmod +x ./flem.py
-```
-
-#### I'm a developer
-
-1. Clone the repository from github
-2. Set up your virtual environment (or not if you're not doing any development)
-
-```bash
-python -m venv venv
-source ./venv/bin/activate
-```
-
-3. Continue from step 2 in the easy mode instructions
-
-## Running Flem
-
-FLEM comes with a default layout (a layout that I find useful, and I know will run on *most* systems). Out of the box, you should be able to use it. Once you've got FLEM cloned from the repository, navigate to the directory and run the following command:
-
-```bash
-./flem.py
+flem
 ```
 
 Once that's done, your terminal should be spitting out logs, and you should see things happening on your matrix(s)!
 
 ## Customizing
+
+### Config Location
+
+The default config that comes with FLEM is located (for me) at `/home/<my_user>/.pyenv/versions/3.13.2/lib/python3.13/site-packages/flem/config.json` (switch out your python version as is necessary)
+
+**BUT**
+
+I do not recommend tinkering too much in the python directories. Rather, I recommend you create an override config in your home directory. At some point, this will be automated, but, for now, you'll have to do it manually
+
+```bash
+mkdir ~/.flem
+touch config.json
+nano config.json # or whatever your preferred editor is
+```
+
+Once that's done, any changes to that config will reload your matrices with the contents.
 
 ### Config Reference
 
@@ -971,8 +950,8 @@ I want to keep this light, but there's a few more modules that I want to figure 
 4. Weather Module
 5. Battery Module
 6. Binary Clock
-7. CPU Bar
-8. GPU Bar
+7. ~~CPU Bar~~ Done!
+8. ~~GPU Bar~~ Done!
 9. RAM Bar
 
 For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other. I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
