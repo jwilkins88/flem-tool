@@ -98,6 +98,7 @@ def main():
     while any_matrix_running:
         logger.info("Checking if any matrix is running")
         for matrix in matrices:
+            print(matrix)
             logger.info(f"Matrix {matrix.name} is running: {matrix.running}")
             if matrix.running:
                 logger.info("At least one matrix is running")

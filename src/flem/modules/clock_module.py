@@ -23,9 +23,9 @@ class ClockModule(MatrixModule):
 
     def __init__(self, config: ModuleConfig, width: int = 9, height: int = 11):
         self.__config = config
-        clock_mode = config.arguments.get(self.__clock_mode_argument)
+        clock_mode = config.arguments.get(self.__clock_mode_argument, "12h")
         self.__show_seconds_indicator = config.arguments.get(
-            self.__show_seconds_indicator_argument
+            self.__show_seconds_indicator_argument, False
         )
         if clock_mode in self.__clock_modes:
             self.__clock_mode = clock_mode

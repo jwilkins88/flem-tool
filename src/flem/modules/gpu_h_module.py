@@ -27,6 +27,12 @@ class GpuHModule(MatrixModule):
     __show_temp_argument = "show_temp"
     __show_temp: bool = False
 
+    __use_bar_graph: bool = False
+    __max_gpu_percentage = 100
+
+    # I might parameterize this, but 100 seems like a reasonable max
+    __max_temperature = 100
+
     running = True
     module_name = "GPU Module"
 
@@ -41,13 +47,16 @@ class GpuHModule(MatrixModule):
             module_type="line",
         )
         self.__line_module = LineModule(line_config, self.__width)
-        self.__show_temp = config.arguments.get(self.__show_temp_argument)
+
+        self.__use_bar_graph = config.arguments.get("use_bar_graph", False)
+        self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
         if self.__show_temp:
-            self.__height = self.__height + 7
+            # self.__height = self.__height + 7
             temperature_line_config = ModuleConfig(
                 name="temperature_line",
                 position=ModulePositionConfig(
-                    x=config.position.x, y=config.position.y + 13
+                    x=config.position.x,
+                    y=config.position.y + (10 if self.__use_bar_graph else 13),
                 ),
                 refresh_interval=config.refresh_interval,
                 module_type="line",
@@ -81,6 +90,9 @@ class GpuHModule(MatrixModule):
             )
 
             self.__line_module.write(update_device, write_queue, False)
+
+            if self.__show_temp:
+                self.__temperature_line_module.write(update_device, write_queue, False)
             while self.running:
 
                 gpu_info = json.loads(
@@ -91,102 +103,117 @@ class GpuHModule(MatrixModule):
                         ].split(",")
                     )
                 )
+
                 gpu_percentage = gpu_info[
                     self.__config.arguments[self.__gpu_index_argument]
                 ][self.__config.arguments[self.__gpu_util_output_property]][:-1]
 
-                gpu_cols = len(gpu_percentage)
+                temperature = gpu_info[
+                    self.__config.arguments[self.__gpu_index_argument]
+                ]["temp"][:-1]
 
-                if gpu_cols == 1:
-                    gpu_percentage = "0" + gpu_percentage
-
-                start_row = self.__config.position.y + 7
-                start_col = self.__config.position.x + 1
-
-                if gpu_percentage == "100":
-                    self._write_text("!", write_queue, start_row, start_col)
+                if not self.__use_bar_graph:
+                    self._write_gpu_value(gpu_percentage, write_queue)
                 else:
-                    for i, char in enumerate(gpu_percentage):
-                        if char == self.__previous_value[i]:
-                            start_col += 4
-                            continue
-
-                        self._write_number(
-                            char,
-                            write_queue,
-                            start_row,
-                            start_col,
-                        )
-                        start_col += 4
-
-                if self.__previous_value == "100":
-                    for i in range(3):
-                        write_queue(
-                            (
-                                self.__config.position.x + i,
-                                self.__config.position.y + 12,
-                                False,
-                            )
-                        )
+                    self._write_gpu_pips(gpu_percentage, write_queue)
 
                 if self.__show_temp:
-                    start_col = 1
+                    if not self.__use_bar_graph:
+                        self._write_gpu_temp(temperature, write_queue)
+                    else:
+                        self._write_temperature_pips(temperature, write_queue)
 
-                    self.__temperature_line_module.write(
-                        update_device, write_queue, False
-                    )
-
-                    temperature = gpu_info[
-                        self.__config.arguments[self.__gpu_index_argument]
-                    ]["temp"][:-1]
-
-                    start_row += 8
-                    for i, char in enumerate(temperature):
-                        if char == self.__previous_temp[i]:
-                            start_col += 4
-                            continue
-
-                        self._write_number(
-                            char,
-                            write_queue,
-                            start_row,
-                            start_col,
-                        )
-                        start_col += 4
-
-                    self.__previous_temp = temperature
-
-                if self.__previous_value == "100":
-                    for i in range(5):
-                        write_queue(
-                            (
-                                self.__config.position.x + 4,
-                                self.__config.position.y + i,
-                                False,
-                            )
-                        )
-                        write_queue(
-                            (
-                                self.__config.position.x + 7,
-                                self.__config.position.y + i,
-                                False,
-                            )
-                        )
-                        write_queue(
-                            (
-                                self.__config.position.x + 8,
-                                self.__config.position.y + i,
-                                False,
-                            )
-                        )
-
-                self.__previous_value = gpu_percentage
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)
+
+    def _write_gpu_value(
+        self, gpu_percentage: str, write_queue: Callable[[tuple[int, int, bool]], None]
+    ) -> None:
+        gpu_cols = len(gpu_percentage)
+
+        if gpu_cols == 1:
+            gpu_percentage = "0" + gpu_percentage
+
+        start_row = self.__config.position.y + 7
+        start_col = self.__config.position.x + 1
+
+        if gpu_percentage == "100":
+            self._write_text("!", write_queue, start_row, start_col)
+        else:
+            for i, char in enumerate(gpu_percentage):
+                if char == self.__previous_value[i]:
+                    start_col += 4
+                    continue
+
+                self._write_number(
+                    char,
+                    write_queue,
+                    start_row,
+                    start_col,
+                )
+                start_col += 4
+
+    def _write_gpu_temp(
+        self, temperature: str, write_queue: Callable[[tuple[int, int, bool]], None]
+    ) -> None:
+        start_row = self.__config.position.y + 15
+        start_col = self.__config.position.x + 1
+        for i, char in enumerate(temperature):
+            if char == self.__previous_temp[i]:
+                start_col += 4
+                continue
+
+            self._write_number(
+                char,
+                write_queue,
+                start_row,
+                start_col,
+            )
+            start_col += 4
+
+        self.__previous_temp = temperature
+
+    def _write_temperature_pips(
+        self,
+        gpu_temperature: str,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+        start_row = self.__config.position.y + 12
+        num_pips = super()._calculate_pips_to_show(
+            int(gpu_temperature), self.__max_temperature, 18
+        )
+
+        col = 0
+        for i in range(18):
+            pip_on = i <= num_pips
+            if i % 2 == 0:
+                write_queue((col, start_row, pip_on))
+            else:
+                write_queue((col, start_row + 1, pip_on))
+                col += 1
+
+    def _write_gpu_pips(
+        self,
+        gpu_percentage: str,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+        start_row = self.__config.position.y + 7
+        num_pips = super()._calculate_pips_to_show(
+            int(gpu_percentage), self.__max_gpu_percentage, 18
+        )
+
+        col = 0
+        for i in range(18):
+            pip_on = i <= num_pips
+            if i % 2 == 0:
+                write_queue((col, start_row, pip_on))
+            else:
+                write_queue((col, start_row + 1, pip_on))
+                col += 1
 
     def _g(
         self,

@@ -408,6 +408,7 @@ This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This t
 | `show_temp`      | true                                                         | Whether we're going to show the temperature or not. If this is set to true, the other two arguments are required |
 | `temp_sensor` | string | **If `show_temp` is true, this is required**. There's a few ways you can find your sensor name. One of the easiest is to install lm-sensors and find you sensor in the list. It's not always obvious. For my AMD processor it's `k10temp`                                                       |
 | `temp_sensor_index` | int | For my AMD processor, I have one sensor. When you have more than one sensor, you'll need to specify which one you want to see. Most the time, this is individual core temperature |
+| `use_bar_graph` | bool | Show the CPU utilization (and, optionally, temp) as a bar graph. Slightly more compact. It uses a 2x9 grid that lights up sequentially. For both temp and utilization, I'm setting a max of 100. For now, that's hardcoded as it seems reasonable. I may make that value adjustable in case you're targeting specific temps and want to keep track of a specific threshold.<br><br>It looks pretty cool. Thanks to [Kitsunebi](https://community.frame.work/u/kitsunebi/summary) from the Framework community for the idea! |
 
 **Sample Module Config**
 
@@ -422,11 +423,13 @@ This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This t
     "arguments": {
         "show_temp": true,
         "temp_sensor": "k10temp",
-        "temp_sensor_index": 0
+        "temp_sensor_index": 0,
+        "use_bar_graph": true
     }
 }
 ```
 
+**"use_bar_graph": false**
 ```
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
@@ -449,6 +452,46 @@ This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This t
 ⬛ ⚫ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
 ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
+**"use_bar_graph": true**
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
@@ -560,6 +603,7 @@ Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can s
 | `gpu_command_arguments`    | array (comma separated string) | If you need to specify arguments for your command, this is how you'll need to do it. This is an array, but I haven't tested the argument values as an array. For now, specify multiple options separated by commas (i.e., `-s,-i=0,-etc`)                                                                                                                        |
 | `gpu_util_output_property` | string                         | This is the property that we're going to read from the JSON. Keep in mind that, as of now, I don't have any validation around this. I'll add that as a part of [improving error handling](#improved-error-handling), but, for now, this is fairly brittle. It can only handle digits, and I don't do any sanitization. My value for this is typically `gpu_util` |
 | `show_temp` | bool | Unlike the cpu temp module, this one doesn't require any extra config. Set this to true, and you can see your GPU temperature live. It's handy dandy |
+| `use_bar_graph` | bool | Show the GPU utilization (and, optionally, temp) as a bar graph. Slightly more compact. It uses a 2x9 grid that lights up sequentially. For both temp and utilization, I'm setting a max of 100. For now, that's hardcoded as it seems reasonable. I may make that value adjustable in case you're targeting specific temps and want to keep track of a specific threshold.<br><br>It looks pretty cool. Thanks to [Kitsunebi](https://community.frame.work/u/kitsunebi/summary) from the Framework community for the idea! |
 
 **Sample Module Config**
 
@@ -581,6 +625,7 @@ Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can s
 }
 ```
 
+**"use_bar_graph": false**
 ```
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
@@ -603,6 +648,46 @@ Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can s
 ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
+**"use_bar_graph": true**
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛

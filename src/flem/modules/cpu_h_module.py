@@ -21,6 +21,11 @@ class CpuHModule(MatrixModule):
     __temp_sensor_type_argument = "temp_sensor"
     __temp_sensor_index_argument = "temp_sensor_index"
     __show_temp: bool = False
+    __use_bar_graph: bool = False
+    __max_cpu_percentage = 100
+
+    # I might parameterize this, but 100 seems like a reasonable max
+    __max_temperature = 100
 
     running = True
     module_name = "CPU Module"
@@ -35,7 +40,10 @@ class CpuHModule(MatrixModule):
         )
 
         self.__line_module = LineModule(header_line_config, width)
-        self.__show_temp = config.arguments.get(self.__show_temp_argument)
+
+        self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
+        self.__use_bar_graph = config.arguments.get("use_bar_graph", False)
+
         if self.__show_temp:
             # I'm probably going to use these properties and any calculations associated
             # with them when I start implementing matrix validations
@@ -43,7 +51,8 @@ class CpuHModule(MatrixModule):
             temperature_line_config = ModuleConfig(
                 name="temperature_line",
                 position=ModulePositionConfig(
-                    x=config.position.x, y=config.position.y + 13
+                    x=config.position.x,
+                    y=config.position.y + (10 if self.__use_bar_graph else 13),
                 ),
                 refresh_interval=config.refresh_interval,
                 module_type="line",
@@ -86,89 +95,151 @@ class CpuHModule(MatrixModule):
 
             self.__line_module.write(update_device, write_queue, False)
             while self.running:
-                cpu_percentage = str(round(psutil.cpu_percent()))
-
-                cpu_cols = len(cpu_percentage)
-
-                if cpu_cols == 1:
-                    cpu_percentage = "0" + cpu_percentage
-
-                start_row = self.__config.position.y + 7
-                start_col = self.__config.position.x + 1
-
-                if cpu_percentage == "100":
-                    self._write_text("!", write_queue, start_row, start_col)
+                cpu_percentage = psutil.cpu_percent()
+                if self.__use_bar_graph:
+                    self._write_cpu_pips(cpu_percentage, write_queue)
                 else:
-                    for i, char in enumerate(cpu_percentage):
-                        if char == self.__previous_value[i]:
-                            start_col += 4
-                            continue
-
-                        self._write_number(
-                            char,
-                            write_queue,
-                            start_row,
-                            start_col,
-                        )
-                        start_col += 4
+                    self._write_cpu_value(cpu_percentage, write_queue)
 
                 if self.__show_temp:
-                    start_col = 1
                     sensor_category = psutil.sensors_temperatures().get(
                         self.__config.arguments.get(self.__temp_sensor_type_argument)
                     )
                     target_sensor = sensor_category[
                         self.__config.arguments.get(self.__temp_sensor_index_argument)
                     ]
-                    temperature = str(round(target_sensor.current))
-
-                    start_row += 8
-                    for i, char in enumerate(temperature):
-                        if char == self.__previous_temp[i]:
-                            start_col += 4
-                            continue
-
-                        self._write_number(
-                            char,
+                    if self.__use_bar_graph:
+                        self._write_temperature_pips(target_sensor.current, write_queue)
+                    else:
+                        self._write_temperature_value(
+                            target_sensor.current,
                             write_queue,
-                            start_row,
-                            start_col,
-                        )
-                        start_col += 4
-
-                    self.__previous_temp = temperature
-
-                if self.__previous_value == "100":
-                    for i in range(5):
-                        write_queue(
-                            (
-                                self.__config.position.x + 4,
-                                self.__config.position.y + i,
-                                False,
-                            )
-                        )
-                        write_queue(
-                            (
-                                self.__config.position.x + 7,
-                                self.__config.position.y + i,
-                                False,
-                            )
-                        )
-                        write_queue(
-                            (
-                                self.__config.position.x + 8,
-                                self.__config.position.y + i,
-                                False,
-                            )
                         )
 
-                self.__previous_value = cpu_percentage
                 super().write(update_device, write_queue, execute_callback)
                 sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError, psutil.Error) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)
+
+    def _write_cpu_pips(
+        self,
+        cpu_percentage: float,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+        start_row = self.__config.position.y + 7
+        num_pips = super()._calculate_pips_to_show(
+            cpu_percentage, self.__max_cpu_percentage, 18
+        )
+
+        col = 0
+        for i in range(18):
+            pip_on = i <= num_pips
+            if i % 2 == 0:
+                write_queue((col, start_row, pip_on))
+            else:
+                write_queue((col, start_row + 1, pip_on))
+                col += 1
+
+    def _write_cpu_value(
+        self,
+        cpu_percentage: float,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+        cpu_text = str(round(cpu_percentage))
+        cpu_cols = len(cpu_text)
+
+        if cpu_cols == 1:
+            cpu_text = "0" + cpu_text
+
+        start_row = self.__config.position.y + 7
+        start_col = self.__config.position.x + 1
+
+        if cpu_text == "100":
+            self._write_text("!", write_queue, start_row, start_col)
+        else:
+            for i, char in enumerate(cpu_text):
+                if char == self.__previous_value[i]:
+                    start_col += 4
+                    continue
+
+                self._write_number(
+                    char,
+                    write_queue,
+                    start_row,
+                    start_col,
+                )
+                start_col += 4
+
+        if self.__previous_value == "100":
+            for i in range(5):
+                write_queue(
+                    (
+                        self.__config.position.x + 4,
+                        self.__config.position.y + i,
+                        False,
+                    )
+                )
+                write_queue(
+                    (
+                        self.__config.position.x + 7,
+                        self.__config.position.y + i,
+                        False,
+                    )
+                )
+                write_queue(
+                    (
+                        self.__config.position.x + 8,
+                        self.__config.position.y + i,
+                        False,
+                    )
+                )
+
+        self.__previous_value = cpu_text
+
+    def _write_temperature_value(
+        self,
+        cpu_temperature: float,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+
+        start_col = 1
+        start_row = self.__config.position.y + 15
+        temperature = str(round(cpu_temperature))
+        for i, char in enumerate(temperature):
+            if char == self.__previous_temp[i]:
+                start_col += 4
+                continue
+
+            self._write_number(
+                char,
+                write_queue,
+                start_row,
+                start_col,
+            )
+            start_col += 4
+
+        self.__previous_temp = temperature
+
+    def _write_temperature_pips(
+        self,
+        cpu_temperature: float,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ):
+        start_row = self.__config.position.y + 12
+        num_pips = super()._calculate_pips_to_show(
+            cpu_temperature, self.__max_temperature, 18
+        )
+
+        col = 0
+        for i in range(18):
+            pip_on = i <= num_pips
+            if i % 2 == 0:
+                write_queue((col, start_row, pip_on))
+            else:
+                write_queue((col, start_row + 1, pip_on))
+                col += 1
 
     def _c(
         self,

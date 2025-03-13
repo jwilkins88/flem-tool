@@ -168,6 +168,8 @@ class LedDevice:
         """Send a command to the device.
         Opens new serial connection every time"""
         try:
+            if not self.is_open():
+                return None
             self.__serial_device.write(command)
 
             if with_response:

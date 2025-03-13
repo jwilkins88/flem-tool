@@ -20,7 +20,7 @@ class LineModule(MatrixModule):
     def __init__(self, config: ModuleConfig, width: int = None, height: int = 1):
         self.__config = config
 
-        line_style = config.arguments.get(self.__line_style_argument)
+        line_style = config.arguments.get(self.__line_style_argument, "solid")
         if line_style in self.__line_style_options:
             self.__line_style = line_style
 

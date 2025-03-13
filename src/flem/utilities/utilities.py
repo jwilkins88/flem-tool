@@ -45,7 +45,6 @@ def load_module(module_config: ModuleConfig):
         class_import = getattr(module_import, class_name)
 
         imports[class_name] = class_import
-    print(imports)
     if module_config.module_type in imports:
         logger.debug(f"module {module_config.module_type} found")
         return imports[module_config.module_type](module_config)
