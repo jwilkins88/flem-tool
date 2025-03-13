@@ -1,6 +1,9 @@
-from .cpu import CpuModule, CpuHModule
-from .generic import ClockModule, LineModule
-from .gpu import GpuModule, GpuHModule
-from .matrix_module import MatrixModule
-from .utilities import load_module
-from .ram import RamModule
+from modules.utilities.module_loader import load_module
+from modules.matrix_module import MatrixModule
+from modules.cpu.cpu_module import CpuModule
+from modules.cpu.cpu_h_module import CpuHModule
+from modules.gpu.gpu_module import GpuModule
+from modules.gpu.gpu_h_module import GpuHModule
+from modules.generic.line_module import LineModule
+from modules.generic.clock_module import ClockModule
+from modules.ram.ram_module import RamModule

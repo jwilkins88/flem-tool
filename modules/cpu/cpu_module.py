@@ -9,7 +9,7 @@ import psutil
 
 
 from modules.matrix_module import MatrixModule
-from modules.generic import LineModule
+from modules.generic.line_module import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 

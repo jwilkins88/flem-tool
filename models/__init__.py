@@ -1,11 +1,11 @@
 # pylint: disable=missing-module-docstring
-from .config_schema import (
+from models.config_schema import (
     ConfigSchema,
     DeviceSchema,
     ModuleSchema,
     ModulePositionSchema,
 )
-from .config import (
+from models.config import (
     Config,
     DeviceConfig,
     ModuleConfig,

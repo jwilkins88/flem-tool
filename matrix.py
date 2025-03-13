@@ -7,7 +7,7 @@ from loguru import logger
 
 from led_device import LedDevice
 from models import SceneConfig
-from modules import MatrixModule
+from modules.matrix_module import MatrixModule
 from scene import Scene
 
 
@@ -78,6 +78,7 @@ class Matrix:
             scene_modules = []
             for module in scene.modules:
                 for module in self.__modules:
+                    print(module)
                     if module.module_name in scene.modules:
                         if any(
                             module.module_name in scene_module.module_name

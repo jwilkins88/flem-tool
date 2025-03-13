@@ -19,6 +19,7 @@ def load_module(module_config: ModuleConfig):
     Raises:
         KeyError: If the module type specified in the configuration is not found in loaded_modules.
     """
+    print(loaded_modules)
     if module_config.module_type in loaded_modules.__dict__:
         return loaded_modules.__dict__[module_config.module_type](module_config)
 

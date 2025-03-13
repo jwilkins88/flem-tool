@@ -6,7 +6,7 @@ from time import sleep
 from typing import Callable
 
 from modules.matrix_module import MatrixModule
-from modules.generic import LineModule
+from modules.generic.line_module import LineModule
 from models import ModuleConfig, ModulePositionConfig
 
 
