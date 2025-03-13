@@ -55,12 +55,18 @@ def main():
     logger.remove()
     logger.add(sys.stderr, level="INFO")
 
+    check_and_create_user_directory()
+
     for arg in sys.argv:
-        if arg == "--debug":
+        if arg == "--debug" or arg == "-d":
             logger.remove()
             logger.add(sys.stderr, level="DEBUG")
-
-    check_and_create_user_directory()
+        if arg == "--log-dump" or arg == "-l":
+            logger.add(
+                f"{os.path.expanduser('~')}/.flem/logs/flem.log",
+                rotation="50 MB",
+                compression="zip",
+            )
 
     config: Config
     config_hash: str
