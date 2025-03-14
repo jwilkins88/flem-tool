@@ -26,6 +26,7 @@ class GpuHModule(MatrixModule):
     __gpu_util_output_property = "gpu_util_output_property"
     __show_temp_argument = "show_temp"
     __show_temp: bool = False
+    __use_bar_graph_argument = "use_bar_graph"
 
     __use_bar_graph: bool = False
     __max_gpu_percentage = 100
@@ -47,7 +48,9 @@ class GpuHModule(MatrixModule):
         )
         self.__line_module = LineModule(line_config, self.__width)
 
-        self.__use_bar_graph = config.arguments.get("use_bar_graph", False)
+        self.__use_bar_graph = config.arguments.get(
+            self.__use_bar_graph_argument, False
+        )
         self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
         if self.__show_temp:
             # self.__height = self.__height + 7

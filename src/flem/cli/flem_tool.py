@@ -55,6 +55,9 @@ def main():
     logger.remove()
     logger.add(sys.stderr, level="INFO")
 
+    # This is mostly useful for development work and testing
+    print_matrix = False
+
     check_and_create_user_directory()
 
     if "--debug" in sys.argv or "-d" in sys.argv:
@@ -66,6 +69,8 @@ def main():
             rotation="50 MB",
             compression="zip",
         )
+    if "--print-matrix" in sys.argv or "-p" in sys.argv:
+        print_matrix = True
 
     config: Config
     config_hash: str
@@ -106,6 +111,8 @@ def main():
     while any_matrix_running:
         logger.info("Checking if any matrix is running")
         for matrix in matrices:
+            if print_matrix:
+                print(matrix)
             logger.info(f"Matrix {matrix.name} is running: {matrix.running}")
             if matrix.running:
                 logger.info("At least one matrix is running")

@@ -693,17 +693,27 @@ This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-mo
 
 ```json
 {
-  "module_type": "GpuModule",
+  "module_type": "LineModule",
   "position": {
     "x": 0,
     "y": 0
   },
   "refresh_interval": 1000,
   "arguments": {
-    "gpu_index": 0,
-    "gpu_command": "/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop",
-    "gpu_command_arguments": "-s",
-    "gpu_util_output_property": "gpu_util"
+    "line_style": "dashed",
+    "width": 9
+  }
+},
+{
+  "module_type": "LineModule",
+  "position": {
+    "x": 0,
+    "y": 2
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "line_style": "solid",
+    "width": 9
   }
 }
 ```
@@ -793,6 +803,101 @@ This is a simple clock module that shows the current system time. Why use a modu
 ⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⬛
 ⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
+#### Binary Clock Module
+
+Another cool idea from [Kitsunebi](https://community.frame.work/u/kitsunebi/summary). Based off the KDE Plasma binary clock, this tracks time using the magic of binary! For users who are comfortable reading binary, this module saves a lot of precious real estate. It also just looks super cool. It's really lively with the seconds column constantly changing, so it'a a really neat module to have on your display. The one thing that doesn't work great is that it's 6 pixels wide, and our display is 9 pixels wide. That means that it can't be centered. Not a big deal, though, and maybe I'll come up with some sort of a companion for it to fill in the 3 pixel gap. I'll think on it.
+
+In a binary clock, each row represents a bit (on/off). In order to read the column value, you transpose the digits into a standard binary string. From my example below:
+
+```
+8️⃣⚪
+4️⃣⚫
+2️⃣⚫
+1️⃣⚫
+```
+
+Would be transposed as:
+
+```
+⚪⚫⚫⚫ = 1000
+```
+
+Which equals 8. If we do that for the rest of the grid below,
+
+```
+8️⃣⚫ ⚪ ⚫ ⚫ ⚫ ⚪
+4️⃣⚫ ⚫ ⚫ ⚪ ⚫ ⚫
+2️⃣⚫ ⚫ ⚫ ⚪ ⚫ ⚫
+1️⃣⚪ ⚪ ⚪ ⚫ ⚪ ⚫
+```
+
+We get `19:16:18` as the current time
+
+Pretty cool stuff. Try it out!
+
+**Module Type**: BinaryClockModule
+
+**Dimensions (width x height)**: 6x4
+
+**Custom Arguments**:
+
+| Argument                 | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clock_mode`             | string<br>Allowed values: `12h`, `24h`<br>Default: `12h` | Specifies whether you want to show 12 hour time, or 24 hour time (i.e., 03:30 vs 15:30)                                                                                                                                                                                                                                                                                                                                                                                                                    |
+```json
+{
+  "name": "binary_clock",
+  "module_type": "BinaryClockModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "clock_mode": "24h"
+  }
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛

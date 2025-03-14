@@ -22,6 +22,7 @@ class CpuHModule(MatrixModule):
     __temp_sensor_index_argument = "temp_sensor_index"
     __show_temp: bool = False
     __use_bar_graph: bool = False
+    __use_bar_graph_argument = "use_bar_graph"
     __max_cpu_percentage = 100
 
     # I might parameterize this, but 100 seems like a reasonable max
@@ -42,7 +43,9 @@ class CpuHModule(MatrixModule):
         self.__line_module = LineModule(header_line_config, width)
 
         self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
-        self.__use_bar_graph = config.arguments.get("use_bar_graph", False)
+        self.__use_bar_graph = config.arguments.get(
+            self.__use_bar_graph_argument, False
+        )
 
         if self.__show_temp:
             # I'm probably going to use these properties and any calculations associated

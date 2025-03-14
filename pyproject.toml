@@ -8,7 +8,7 @@ authors = [{ name = "Joel Wilkins" }]
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
-version = "0.0.6"
+version = "0.0.7"
 dependencies = [
     "loguru==0.7.3",
     "marshmallow==3.26.1",
