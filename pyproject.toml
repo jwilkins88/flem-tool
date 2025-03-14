@@ -4,6 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "flem_tool"
+description = "Utility for managing the Framework LED Matrix Input Module"
 authors = [{ name = "Joel Wilkins" }]
 readme = "README.md"
 license = "GPL-3.0-or-later"
