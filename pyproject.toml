@@ -20,7 +20,7 @@ dependencies = [
 requires-python = ">=3.13"
 
 [project.urls]
-Home = "https://github.com/jwilkins88/flem-tool"
+Home = "https://github.com/jwilkins88/flem_tool"
 
 [project.scripts]
 flem = "flem.cli.flem_tool:main"
