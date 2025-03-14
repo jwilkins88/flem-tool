@@ -32,7 +32,7 @@ As of the latest update, Scenes are supported, and this makes the tool even more
 
 ### Modules
 
-Modules are the core of FLEM. Each module is self-contained, and is only concerned about rendering its own information to the matrix. Each module runs in isolation, and isn't affected by other modules that are also running (well, sort of... more on that in [limitation](#limitations)).
+Modules are the core of FLEM. Each module is self-contained, and is only concerned about rendering its own information to the matrix. Each module runs in isolation, and isn't affected by other modules that are also running (well, sort of... more on that in [limitations](#limitations)).
 
 Currently, I have:
 
@@ -42,8 +42,10 @@ Currently, I have:
 - GPU***
   - [Minimalist GPU Module](#gpu-module)
   - [Full GPU Module (include GPU temp)](#horizontal-gpu-module)
+- Clocks
+  - [Clock Module](#clock-module)
+  - [Binary Clock Module](#binary-clock-module)
 - [RAM Module](#ram-module)
-- [Clock Module](#clock-module)
 - [Line Module (more of a building block)](#line-module)
 
 *** The GPU module **will not** work out of the box. It requires a custom built version of NVTOP (can be found on my github). I'm hoping that my changes will make it to the stable version of NVTOP, but, for now, there's a bit of monkeying required to get the GPU modules working. See [the GPU module](#gpu-module) section for more information
@@ -1044,7 +1046,7 @@ I want to keep this light, but there's a few more modules that I want to figure 
 3. ~~GPU Temp Module~~ Done! (kinda) - Same as the CPU Temp
 4. Weather Module
 5. Battery Module
-6. Binary Clock
+6. ~~Binary Clock~~
 7. ~~CPU Bar~~ Done!
 8. ~~GPU Bar~~ Done!
 9. RAM Bar
