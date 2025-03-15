@@ -242,27 +242,37 @@ class MatrixModule:
         return round(pip_value * value)
 
     @abc.abstractmethod
+    def _write_array(
+        self,
+        array: list[list[int]],
+        start_row: int,
+        start_col: int,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+    ) -> None:
+        # pylint: disable=consider-using-enumerate
+        for i in range(len(array)):
+            for j, col in enumerate(array[i]):
+                write_queue((start_col + j, start_row + i, col))
+        # pylint: enable=consider-using-enumerate
+
+    @abc.abstractmethod
     def _zero(
         self,
         write_queue: Callable[[tuple[int, int, bool]], None],
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, False))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 0, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _one(
@@ -271,21 +281,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, False))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, False))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, True))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, False))
-        write_queue((start_col + 2, start_row + 1, False))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, False))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _two(
@@ -294,21 +300,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, False))
-        write_queue((start_col, start_row + 2, False))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, False))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [0, 0, 1],
+            [0, 1, 0],
+            [1, 0, 0],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _three(
@@ -317,21 +319,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, False))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [0, 0, 1],
+            [1, 1, 1],
+            [0, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _four(
@@ -340,21 +338,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, False))
-        write_queue((start_col + 1, start_row, False))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, False))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 0, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [0, 0, 1],
+            [0, 0, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _five(
@@ -363,21 +357,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, False))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _six(
@@ -386,21 +376,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, False))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _seven(
@@ -409,21 +395,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, False))
-        write_queue((start_col, start_row + 2, False))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, False))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, False))
-        write_queue((start_col + 2, start_row + 4, False))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [0, 0, 1],
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _eight(
@@ -432,21 +414,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _nine(
@@ -455,21 +433,17 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [0, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     # This is garbage
     # Don't Use this
@@ -480,21 +454,16 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, False))
-        write_queue((start_col, start_row + 2, False))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, False))
-        write_queue((start_col + 1, start_row, False))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, False))
-        write_queue((start_col + 2, start_row, False))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, False))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [1, 0, 1],
+            [0, 1, 0],
+            [0, 0, 0],
+            [1, 0, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _b(
@@ -503,18 +472,16 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col + 1, start_row, False))
-        write_queue((start_col + 1, start_row + 1, True))
-        write_queue((start_col + 1, start_row + 2, False))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 2, start_row, False))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
+        # fmt: off
+        char_arr = [
+            [1, 0, 0],
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _c(
@@ -523,18 +490,16 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, False))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, False))
-        write_queue((start_col + 2, start_row + 2, False))
-        write_queue((start_col + 2, start_row + 3, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _g(
@@ -543,18 +508,14 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, False))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, False))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
 
     @abc.abstractmethod
     def _p(
@@ -563,18 +524,16 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, False))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [1, 0, 0],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _u(
@@ -583,18 +542,16 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col + 1, start_row, False))
-        write_queue((start_col + 1, start_row + 1, False))
-        write_queue((start_col + 1, start_row + 2, False))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
+        # fmt: off
+        char_arr = [
+            [1, 0, 1],
+            [1, 0, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _exclamation(
@@ -603,18 +560,14 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, False))
-        write_queue((start_col, start_row + 1, False))
-        write_queue((start_col, start_row + 2, False))
-        write_queue((start_col, start_row + 3, False))
-        write_queue((start_col, start_row + 4, False))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, True))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, False))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, False))
-        write_queue((start_col + 2, start_row + 4, True))
+        # fmt: off
+        char_arr = [
+            [0, 1, 1],
+            [0, 1, 1],
+            [0, 1, 1],
+            [0, 0, 0],
+            [0, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)

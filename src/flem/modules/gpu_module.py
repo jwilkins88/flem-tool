@@ -115,38 +115,25 @@ class GpuModule(MatrixModule):
             super().clear_module(update_device, write_queue)
 
     def _exclamation(
-        self, write_queue: callable, start_row: int, start_col: int
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
     ) -> None:
-        write_queue((start_col, start_row, True))
-        write_queue((start_col, start_row + 1, True))
-        write_queue((start_col, start_row + 2, True))
-        write_queue((start_col, start_row + 3, True))
-        write_queue((start_col, start_row + 4, True))
-        write_queue((start_col, start_row + 5, True))
-        write_queue((start_col, start_row + 6, True))
-        write_queue((start_col, start_row + 7, True))
-        write_queue((start_col, start_row + 8, True))
-        write_queue((start_col, start_row + 9, True))
-        write_queue((start_col, start_row + 10, True))
-        write_queue((start_col + 1, start_row, True))
-        write_queue((start_col + 1, start_row + 1, True))
-        write_queue((start_col + 1, start_row + 2, True))
-        write_queue((start_col + 1, start_row + 3, True))
-        write_queue((start_col + 1, start_row + 4, True))
-        write_queue((start_col + 1, start_row + 5, True))
-        write_queue((start_col + 1, start_row + 6, True))
-        write_queue((start_col + 1, start_row + 7, True))
-        write_queue((start_col + 1, start_row + 8, True))
-        write_queue((start_col + 1, start_row + 9, True))
-        write_queue((start_col + 1, start_row + 10, True))
-        write_queue((start_col + 2, start_row, True))
-        write_queue((start_col + 2, start_row + 1, True))
-        write_queue((start_col + 2, start_row + 2, True))
-        write_queue((start_col + 2, start_row + 3, True))
-        write_queue((start_col + 2, start_row + 4, True))
-        write_queue((start_col + 2, start_row + 5, True))
-        write_queue((start_col + 2, start_row + 6, True))
-        write_queue((start_col + 2, start_row + 7, True))
-        write_queue((start_col + 2, start_row + 8, True))
-        write_queue((start_col + 2, start_row + 9, True))
-        write_queue((start_col + 2, start_row + 10, True))
+        # fmt: off
+        char_arr = [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1],
+        ]
+        # fmt: on
+
+        self._write_array(char_arr, start_row, start_col, write_queue)
