@@ -1,6 +1,7 @@
 # pylint: disable=missing-module-docstring
 
 import abc
+from time import sleep
 from typing import Callable
 
 from loguru import logger
@@ -172,6 +173,11 @@ class MatrixModule:
         if execute_callback:
             try:
                 update_device()
+
+                if self.is_static:
+                    return
+
+                sleep(self.__config.refresh_interval / 1000)
             except Exception as e:
                 logger.exception(f"An error occurred while updating the device: {e}")
 

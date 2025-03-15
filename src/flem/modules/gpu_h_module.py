@@ -126,7 +126,6 @@ class GpuHModule(MatrixModule):
                         self._write_temperature_pips(temperature, write_queue)
 
                 super().write(update_device, write_queue, execute_callback)
-                sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()

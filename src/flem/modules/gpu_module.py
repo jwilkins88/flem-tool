@@ -108,7 +108,6 @@ class GpuModule(MatrixModule):
 
                 self.__previous_value = gpu_percentage
                 super().write(update_device, write_queue, execute_callback)
-                sleep(self.__config.refresh_interval / 1000)
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
