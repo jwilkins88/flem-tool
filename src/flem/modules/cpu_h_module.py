@@ -83,13 +83,13 @@ class CpuHModule(MatrixModule):
         Horizontal style
         """
         try:
-            self._write_text(
+            self._write_object(
                 "c", write_queue, self.__config.position.y, self.__config.position.x
             )
-            self._write_text(
+            self._write_object(
                 "p", write_queue, self.__config.position.y, self.__config.position.x + 3
             )
-            self._write_text(
+            self._write_object(
                 "u", write_queue, self.__config.position.y, self.__config.position.x + 6
             )
 
@@ -160,14 +160,14 @@ class CpuHModule(MatrixModule):
         start_col = self.__config.position.x + 1
 
         if cpu_text == "100":
-            self._write_text("!", write_queue, start_row, start_col)
+            self._write_object("!", write_queue, start_row, start_col)
         else:
             for i, char in enumerate(cpu_text):
                 if char == self.__previous_value[i]:
                     start_col += 4
                     continue
 
-                self._write_number(
+                self._write_object(
                     char,
                     write_queue,
                     start_row,
@@ -215,7 +215,7 @@ class CpuHModule(MatrixModule):
                 start_col += 4
                 continue
 
-            self._write_number(
+            self._write_object(
                 char,
                 write_queue,
                 start_row,

@@ -53,7 +53,7 @@ class CpuModule(MatrixModule):
         Writes the CPU usage to the matrix display and executes the callback if specified.
         """
         try:
-            self._write_text(
+            self._write_object(
                 "c", write_queue, self.__config.position.y, self.__config.position.x
             )
 
@@ -77,7 +77,7 @@ class CpuModule(MatrixModule):
                             start_row += 6
                             continue
 
-                        self._write_number(
+                        self._write_object(
                             char,
                             write_queue,
                             start_row,

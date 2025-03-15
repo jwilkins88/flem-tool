@@ -52,7 +52,7 @@ class GpuModule(MatrixModule):
         Writes the GPU usage to the matrix display and executes the callback if specified.
         """
         try:
-            self._write_text(
+            self._write_object(
                 "g", write_queue, self.__config.position.y, self.__config.position.x
             )
 
@@ -79,7 +79,7 @@ class GpuModule(MatrixModule):
                 start_row = self.__config.position.y + 7
 
                 if gpu_percentage == "100":
-                    self._write_text(
+                    self._write_object(
                         "!", write_queue, start_row, self.__config.position.x
                     )
                 else:
@@ -88,7 +88,7 @@ class GpuModule(MatrixModule):
                             start_row += 6
                             continue
 
-                        self._write_number(
+                        self._write_object(
                             char,
                             write_queue,
                             start_row,

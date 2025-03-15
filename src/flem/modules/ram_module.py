@@ -30,13 +30,13 @@ class RamModule(MatrixModule):
         execute_callback: bool = True,
     ) -> None:
         try:
-            self._write_text(
+            self._write_object(
                 "g",
                 write_queue,
                 self.__config.position.y + 6,
                 self.__config.position.x + 2,
             )
-            self._write_text(
+            self._write_object(
                 "b",
                 write_queue,
                 self.__config.position.y + 6,
@@ -55,7 +55,7 @@ class RamModule(MatrixModule):
                     if char == self.__previous_value[0][i]:
                         start_col += 4
                         continue
-                    self._write_number(char, write_queue, start_row, start_col)
+                    self._write_object(char, write_queue, start_row, start_col)
                     start_col += 4
 
                 used_memory[1] = int(used_memory[1])

@@ -54,7 +54,7 @@ class ClockModule(MatrixModule):
                         start_col = 2
                     elif i == 3:
                         start_col = 6
-                    self._write_number(char, write_queue, start_row, start_col)
+                    self._write_object(char, write_queue, start_row, start_col)
                     if i < 2:
                         start_col += 4
 

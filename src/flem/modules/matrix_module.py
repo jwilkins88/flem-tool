@@ -6,6 +6,26 @@ from typing import Callable
 from loguru import logger
 
 from flem.models.config import ModuleConfig
+from flem.modules.characters import (
+    zero,
+    one,
+    two,
+    three,
+    four,
+    five,
+    six,
+    seven,
+    eight,
+    nine,
+    c,
+    g,
+    b,
+    p,
+    u,
+    percent,
+    exclamation,
+    cloud,
+)
 
 
 class MatrixModule:
@@ -81,8 +101,7 @@ class MatrixModule:
     """
 
     __metaclass__ = abc.ABCMeta
-    __number_funcs = None
-    __string_funcs = None
+    __write_funcs: {}
     __config: ModuleConfig = None
     __width: int = None
     __height: int = None
@@ -92,7 +111,7 @@ class MatrixModule:
     running = True
 
     def __init__(self, config: ModuleConfig, width: int, height: int):
-        self.__number_funcs = {
+        self.__write_funcs = {
             "0": self._zero,
             "1": self._one,
             "2": self._two,
@@ -103,9 +122,6 @@ class MatrixModule:
             "7": self._seven,
             "8": self._eight,
             "9": self._nine,
-        }
-
-        self.__string_funcs = {
             "%": self._percent,
             "!": self._exclamation,
             "b": self._b,
@@ -113,6 +129,7 @@ class MatrixModule:
             "g": self._g,
             "p": self._p,
             "u": self._u,
+            "cloud": self._cloud,
         }
 
         self.__config = config
@@ -182,44 +199,31 @@ class MatrixModule:
         except Exception as e:
             logger.exception(f"An error occurred while clearing the module: {e}")
 
-    def _write_number(
+    def _write_object(
         self,
-        number: str,
+        thing: str,
         write_queue: Callable[[tuple[int, int, bool]], None],
         start_row: int,
         start_col: int,
     ) -> None:
         """
-        Writes a number into the given matrix starting at the specified row and column.
-
+        Writes an object to a specified location using a provided write function.
         Args:
-            number (str): The number to write into the matrix.
-            matrix (list of list of int): The matrix where the number will be written.
-            start_row (int): The starting row index in the matrix.
-            start_col (int): The starting column index in the matrix.
-
+            thing (str): The key identifying the object to write. This key is used
+                to look up the corresponding write function in `self.__write_funcs`.
+            write_queue (Callable[[tuple[int, int, bool]], None]): A callable that
+                processes the write operation, typically a queue or function that
+                handles writing tasks.
+            start_row (int): The starting row index for the write operation.
+            start_col (int): The starting column index for the write operation.
         Returns:
-            bool: True if the number was successfully written, False otherwise.
+            None
         """
-        self.__number_funcs[number](write_queue, start_row, start_col)
+        if not thing in self.__write_funcs:
+            logger.error(f"Unknown object: {thing}")
+            return
 
-    def _write_text(
-        self,
-        text: str,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        """
-        Writes the given text to the specified position in the matrix.
-
-        Args:
-            text (str): The text to write into the matrix.
-            matrix (list of list of any): The matrix where the text will be written.
-            start_row (int): The starting row index in the matrix.
-            start_col (int): The starting column index in the matrix.
-        """
-        self.__string_funcs[text](write_queue, start_row, start_col)
+        self.__write_funcs[thing](write_queue, start_row, start_col)
 
     @abc.abstractmethod
     def _blink(self, start_row: int, start_col: int) -> None:
@@ -255,6 +259,8 @@ class MatrixModule:
                 write_queue((start_col + j, start_row + i, col))
         # pylint: enable=consider-using-enumerate
 
+    # Numbers
+
     @abc.abstractmethod
     def _zero(
         self,
@@ -262,17 +268,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 0, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(zero, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _one(
@@ -281,17 +277,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 0],
-            [0, 1, 0],
-            [0, 1, 0],
-            [0, 1, 0],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(one, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _two(
@@ -300,17 +286,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 1, 0],
-            [1, 0, 0],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(two, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _three(
@@ -319,17 +295,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(three, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _four(
@@ -338,17 +304,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 0, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 0, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(four, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _five(
@@ -357,17 +313,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 0],
-            [0, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(five, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _six(
@@ -376,17 +322,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(six, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _seven(
@@ -395,17 +331,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [0, 0, 1],
-            [0, 1, 0],
-            [0, 1, 0],
-            [0, 1, 0],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(seven, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _eight(
@@ -414,17 +340,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(eight, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _nine(
@@ -433,17 +349,60 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-            [0, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
+        self._write_array(nine, start_row, start_col, write_queue)
 
-        self._write_array(char_arr, start_row, start_col, write_queue)
+    # Numbers
+
+    # Letters
+
+    @abc.abstractmethod
+    def _b(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(b, start_row, start_col, write_queue)
+
+    @abc.abstractmethod
+    def _c(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(c, start_row, start_col, write_queue)
+
+    @abc.abstractmethod
+    def _g(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(g, start_row, start_col, write_queue)
+
+    @abc.abstractmethod
+    def _p(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(p, start_row, start_col, write_queue)
+
+    @abc.abstractmethod
+    def _u(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(u, start_row, start_col, write_queue)
+
+    # Letters
+
+    # Symbols
 
     # This is garbage
     # Don't Use this
@@ -454,104 +413,7 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 0, 1],
-            [0, 1, 0],
-            [0, 0, 0],
-            [1, 0, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
-
-    @abc.abstractmethod
-    def _b(
-        self,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 0, 0],
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
-
-    @abc.abstractmethod
-    def _c(
-        self,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 0, 0],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
-
-    @abc.abstractmethod
-    def _g(
-        self,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-    @abc.abstractmethod
-    def _p(
-        self,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-            [1, 0, 0],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
-
-    @abc.abstractmethod
-    def _u(
-        self,
-        write_queue: Callable[[tuple[int, int, bool]], None],
-        start_row: int,
-        start_col: int,
-    ) -> None:
-        # fmt: off
-        char_arr = [
-            [1, 0, 1],
-            [1, 0, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-        ]
-        # fmt: on
-
-        self._write_array(char_arr, start_row, start_col, write_queue)
+        self._write_array(percent, start_row, start_col, write_queue)
 
     @abc.abstractmethod
     def _exclamation(
@@ -560,14 +422,18 @@ class MatrixModule:
         start_row: int,
         start_col: int,
     ) -> None:
-        # fmt: off
-        char_arr = [
-            [0, 1, 1],
-            [0, 1, 1],
-            [0, 1, 1],
-            [0, 0, 0],
-            [0, 1, 1],
-        ]
-        # fmt: on
+        self._write_array(exclamation, start_row, start_col, write_queue)
 
-        self._write_array(char_arr, start_row, start_col, write_queue)
+    # Symbols
+
+    # "Art"
+
+    def _cloud(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(cloud, start_row, start_col, write_queue)
+
+    # "Art"
