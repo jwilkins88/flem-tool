@@ -26,17 +26,17 @@ class WeatherModule(MatrixModule):
         "Clear": f"{__animator_files_root}/weather/clear.json",
         "Rain": f"{__animator_files_root}/weather/cloud_rain.json",
         "Drizzle": f"{__animator_files_root}/weather/cloud_rain.json",
-        "Thunderstorm": "cloud_storm",
-        "Snow": "snowflake",
-        "Mist": "fog",
-        "Smoke": "fog",
-        "Haze": "fog",
-        "Dust": "fog",
-        "Fog": "fog",
-        "Sand": "fog",
-        "Ash": "fog",
-        "Squall": "fog",
-        "Tornado": "fog",
+        "Thunderstorm": f"{__animator_files_root}/weather/cloud_storm.json",
+        "Snow": f"{__animator_files_root}/weather/snowflake.json",
+        "Mist": f"{__animator_files_root}/weather/fog.json",
+        "Smoke": f"{__animator_files_root}/weather/fog.json",
+        "Haze": f"{__animator_files_root}/weather/fog.json",
+        "Dust": f"{__animator_files_root}/weather/fog.json",
+        "Fog": f"{__animator_files_root}/weather/fog.json",
+        "Sand": f"{__animator_files_root}/weather/fog.json",
+        "Ash": f"{__animator_files_root}/weather/fog.json",
+        "Squall": f"{__animator_files_root}/weather/fog.json",
+        "Tornado": f"{__animator_files_root}/weather/fog.json",
     }
     __wind_directions = {
         "N": [[0, 1, 0], [0, 1, 0], [0, 0, 0]],
@@ -120,8 +120,7 @@ class WeatherModule(MatrixModule):
                 start_row = self.__config.position.y
 
                 self.__draw_icon(
-                    # weather_icon,
-                    "Rain",
+                    weather_icon,
                     start_row,
                     self.__config.position.x,
                     write_queue,
@@ -325,29 +324,23 @@ class WeatherModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         update_device: Callable[[], None],
     ) -> None:
-        animated_scenes = ["Clouds", "Clear", "Rain", "Drizzle"]
-        if icon in animated_scenes:
-            self.__icon_module = AnimatorModule(
-                AnimatorConfig(
-                    position=ModulePositionConfig(x=start_col, y=start_row),
-                    arguments=AnimatorConfigArguments(
-                        animation_file=self.__condition_mapping[icon],
-                        width=9,
-                        height=6,
-                        frames=[],
-                    ),
-                    name=icon,
-                    refresh_interval=1000,
-                    module_type="animator",
-                )
+        self.__icon_module = AnimatorModule(
+            AnimatorConfig(
+                position=ModulePositionConfig(x=start_col, y=start_row),
+                arguments=AnimatorConfigArguments(
+                    animation_file=self.__condition_mapping[icon],
+                    width=9,
+                    height=6,
+                    frames=[],
+                ),
+                name=icon,
+                refresh_interval=1000,
+                module_type="animator",
             )
-            self.__icon_module_thread = Thread(
-                target=self.__icon_module.start,
-                args=(update_device, write_queue),
-                name=f"weather_{icon}_{id(self)}_{id(self.__icon_module)}",
-            )
-            self.__icon_module_thread.start()
-        else:
-            self._write_object(
-                self.__condition_mapping[icon], write_queue, start_row, start_col
-            )
+        )
+        self.__icon_module_thread = Thread(
+            target=self.__icon_module.start,
+            args=(update_device, write_queue),
+            name=f"weather_{icon}_{id(self)}_{id(self.__icon_module)}",
+        )
+        self.__icon_module_thread.start()
