@@ -177,7 +177,7 @@ Here's the full structure of the config and all the allowed properties
       /**
       This is an array of the modules that we want to load.
       This is where the magic happens. These modules are defined once per device
-      and then references in the scenes. This way, we don't have to duplicate 
+      and then referenced in the scenes. This way, we don't have to duplicate 
       modules if we have multiple scenes with the same module.
       (i.e., we want to show clock and CPU in scene 1 and Clock and GPU in Scene 2)
       **/
@@ -185,7 +185,7 @@ Here's the full structure of the config and all the allowed properties
         {
           /**
           The name is how the scenes will reference the module. This way, we can 
-          have multiple of the same module, but referenced differntly in scenes.
+          have multiple of the same module, but referenced differently in scenes.
           (i.e., When I implement trigger configs, we might want to define two CPU
           Modules, but have them displayed at different coordinates)
           **/
@@ -346,7 +346,7 @@ Example:
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
-### Horizontal CPU Module
+#### Horizontal CPU Module
 
 Reading top to bottom is hard for those of us who are used to reading left to right. I initially created the CPU module thinking about how I could display the most information in the smallest space, but, variety is the spice of life. For when maximalism is the order of the day, consider the horizontal CPU module. It's capable of displaying both the utilization and temperature, and it's a bit easier on the eyes.
 
@@ -356,15 +356,15 @@ This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This t
 
 **Module Type**: CpuHModule
 
-**Dimensions (width x height)**: 8x12 (without temperature); 8x19 (with temperature)
+**Dimensions (width x height)**: 9x12 (without temperature); 9x19 (with temperature)
 
 **Custom Arguments**:
 
 | Argument     | Type                                                            | Description                                                                                                                                                                      |
 | :----------- | :-------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `show_temp`      | true                                                         | Whether we're going to show the temperature or not. If this is set to true, the other two arguments are required |
+| `show_temp`      | true                                                         | Whether we're going to show the temperature or not. If this is set to true, `temp_sensor` and `temp_sensor_index` are required |
 | `temp_sensor` | string | **If `show_temp` is true, this is required**. There's a few ways you can find your sensor name. One of the easiest is to install lm-sensors and find you sensor in the list. It's not always obvious. For my AMD processor it's `k10temp`                                                       |
-| `temp_sensor_index` | int | For my AMD processor, I have one sensor. When you have more than one sensor, you'll need to specify which one you want to see. Most the time, this is individual core temperature |
+| `temp_sensor_index` | int | **If `show_temp` is true, this is required** For my AMD processor, I have one sensor. When you have more than one sensor, you'll need to specify which one you want to see. Most the time, this is individual core temperature |
 | `use_bar_graph` | bool | Show the CPU utilization (and, optionally, temp) as a bar graph. Slightly more compact. It uses a 2x9 grid that lights up sequentially. For both temp and utilization, I'm setting a max of 100. For now, that's hardcoded as it seems reasonable. I may make that value adjustable in case you're targeting specific temps and want to keep track of a specific threshold.<br><br>It looks pretty cool. Thanks to [Kitsunebi](https://community.frame.work/u/kitsunebi/summary) from the Framework community for the idea! |
 
 **Sample Module Config**
@@ -434,7 +434,7 @@ This, once again, utilizes [psutil](https://github.com/giampaolo/psutil). This t
 
 #### GPU Module
 
-This command is a little bit more complex because it relies on an OS utility to get the GPU utilization. This is currently only tested on Linux Mint (should work fine on Ubuntu as well). I haven't tested this on Windows or any other Linux flavor. The theory is that it should work. The tool that I'm using to get the GPU info is called [NVTOP](https://github.com/Syllo/nvtop). It's a super neat utility that works with both AMD and NVIDIA (and a whole lot of other stuff). Can't say enough good things about the the utility.
+This command is a little bit more complex because it relies on an OS utility to get the GPU utilization. This is currently only tested on Linux Mint (should work fine on Ubuntu as well). I haven't tested this on Windows or any other Linux flavor. The theory is that it should work. The tool that I'm using to get the GPU info is called [NVTOP](https://github.com/Syllo/nvtop). It's a super neat utility that works with both AMD and NVIDIA (and a whole lot of other stuff). Can't say enough good things about it.
 
 To make things even more complicated, this uses a custom version that I modified to suit my needs. I have a [PR open to get those changes into the main version](https://github.com/Syllo/nvtop/pull/358), but until that's merged and published, you're going to need to build your own version of this utility from [my fork](https://github.com/jwilkins88/nvtop/tree/master). The build instructions are really good, and I promise it's not too hard.
 
@@ -448,7 +448,7 @@ To make things even more complicated, this uses a custom version that I modified
 | :------------------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `gpu_index`                | integer                        | In the case that you have multiple GPUs (iGPU and discrete GPU), you need to select your index. `0` Is a pretty safe bet for most use cases, but check the output of your command of choice (no reason this _has_ to be nvtop)                                                                                                                                   |
 | `gpu_command`              | string                         | This is the command to run to get the GPU info. In my case, this is `/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop`. Again, this can be whatever you want it to be so long as it outputs json                                                                                                                                                                       |
-| `gpu_command_arguments`    | array (comma separated string) | If you need to specify arguments for your command, this is how you'll need to do it. This is an array, but I haven't tested the argument values as an array. For now, specify multiple options separated by commas (i.e., `-s,-i=0,-etc`)                                                                                                                        |
+| `gpu_command_arguments`    | array[string] | If you need to specify arguments for your command, this is how you'll need to do it                                                                                                                        |
 | `gpu_util_output_property` | string                         | This is the property that we're going to read from the JSON. Keep in mind that, as of now, I don't have any validation around this. I'll add that as a part of [improving error handling](#improved-error-handling), but, for now, this is fairly brittle. It can only handle digits, and I don't do any sanitization. My value for this is typically `gpu_util` |
 
 **Sample Module Config**
@@ -495,11 +495,11 @@ To make things even more complicated, this uses a custom version that I modified
 
 #### Horizontal GPU Module
 
-Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can show temp and utilization in a left-to-right fashion. Other than that, it's exactly the same as the [GPU module](#gpu-module). All the same things apply. It's still using my custom version of [NVTOP](https://github.com/Syllo/nvtop), and you'll need that if you want to use it. The nice think about NVTOP is that it gives me all the information I want in one go, so I don't need to worry about making multiple calls to get the utilization and then the temperature. 
+Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can show temp and utilization in a left-to-right fashion. Other than that, it's exactly the same as the [GPU module](#gpu-module). All the same things apply. It's still using my custom version of [NVTOP](https://github.com/Syllo/nvtop), and you'll need that if you want to use it. The nice thing about NVTOP is that it gives me all the information I want in one go, so I don't need to worry about making multiple calls to get the utilization and then the temperature. 
 
-**Module Type**: GpuModule
+**Module Type**: GpuHModule
 
-**Dimensions (width x height)**: 8x12 (without temperature); 8x19 (with temperature)
+**Dimensions (width x height)**: 9x12 (without temperature); 9x19 (with temperature)
 
 **Custom Arguments**:
 
@@ -507,7 +507,7 @@ Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can s
 | :------------------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `gpu_index`                | integer                        | In the case that you have multiple GPUs (iGPU and discrete GPU), you need to select your index. `0` Is a pretty safe bet for most use cases, but check the output of your command of choice (no reason this _has_ to be nvtop)                                                                                                                                   |
 | `gpu_command`              | string                         | This is the command to run to get the GPU info. In my case, this is `/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop`. Again, this can be whatever you want it to be so long as it outputs json                                                                                                                                                                       |
-| `gpu_command_arguments`    | array (comma separated string) | If you need to specify arguments for your command, this is how you'll need to do it. This is an array, but I haven't tested the argument values as an array. For now, specify multiple options separated by commas (i.e., `-s,-i=0,-etc`)                                                                                                                        |
+| `gpu_command_arguments`    | array[string] | If you need to specify arguments for your command, this is how you'll need to do it                                                                                                               |
 | `gpu_util_output_property` | string                         | This is the property that we're going to read from the JSON. Keep in mind that, as of now, I don't have any validation around this. I'll add that as a part of [improving error handling](#improved-error-handling), but, for now, this is fairly brittle. It can only handle digits, and I don't do any sanitization. My value for this is typically `gpu_util` |
 | `show_temp` | bool | Unlike the cpu temp module, this one doesn't require any extra config. Set this to true, and you can see your GPU temperature live. It's handy dandy |
 | `use_bar_graph` | bool | Show the GPU utilization (and, optionally, temp) as a bar graph. Slightly more compact. It uses a 2x9 grid that lights up sequentially. For both temp and utilization, I'm setting a max of 100. For now, that's hardcoded as it seems reasonable. I may make that value adjustable in case you're targeting specific temps and want to keep track of a specific threshold.<br><br>It looks pretty cool. Thanks to [Kitsunebi](https://community.frame.work/u/kitsunebi/summary) from the Framework community for the idea! |
@@ -580,7 +580,7 @@ Just like the [Horizontal CPU Module](#horizontal-cpu-module), this module can s
 
 #### Line Module
 
-This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-module) and the [GPU Module](#gpu-module), but it also has more uses. In my gif in the intro, I'm using the line module to create separation between the Clock Module and the gpu/cpu info. Currently, this is my only "static" module (i.e., it doesn't run a thread, and it never updates - unless there's a config update). Currently only supports horizontal lines.
+This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-module) and the [GPU Module](#gpu-module), but it also has more uses. Currently, this is my only "static" module (i.e., it doesn't run a thread, and it never updates - unless there's a config update). Currently only supports horizontal lines.
 
 **Module Type**: LineModule
 
@@ -624,15 +624,15 @@ This is most useful as a "sub-module". I use it in both the [CPU Module](#cpu-mo
 
 ```
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
-⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛  DASHED
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
-⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛  SOLID
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
 #### Clock Module
 
-This is a simple clock module that shows the current system time. Why use a module when you have a clock on your computer? Because it's dope. There's no other reason you need. Optionally, displays an indicator showing how many the progression of seconds until the next minute (think of it like a seconds hand, but with far less precision and slightly whacky timing). The seconds indicator blinks, giving another indicator of seconds passing. One full cycle of blinks (blink on, blink off) represents 2 seconds. I might add support for custom timezones.
+This is a simple clock module that shows the current system time. Why use a module when you have a clock on your computer? Because it's dope. There's no other reason you need. Optionally, displays an indicator showing the progression of seconds until the next minute (think of it like a seconds hand, but with far less precision). The seconds indicator blinks, giving another indicator of seconds passing. One full cycle of blinks (blink on, blink off) represents 2 seconds. I might add support for custom timezones.
 
 **Module Type**: ClockModule
 
@@ -900,7 +900,7 @@ FRAME 2
 
 The weather module is one of the more complex modules that I've built to date. It's mostly complicated because it relies on something other than easily obtained system data. I've set it up so that it can *theoretically* use most APIs that return the weather with a simple `get` request, but I recommend setting it up with `OpenWeatherMap`, since that's what I've done my testing with. If you'd like to use a different service, reach out, and I'll see what I can do to make it happen.
 
-In its most basic form, the weather module shows the current conditions (via an animated header) and the temperature (you choose between `imperial`, `standard`, or `metric`). It has an option to show the humidity as well as an option to show windspeed and direction.
+In its most basic form, the weather module shows the current conditions (via an animated header) and the temperature (you choose between `imperial`, `standard`, or `metric`). It has an option to show the humidity as well as an option to show wind speed and direction.
 
 This is a **BIG** module. Big as in, it'll take up a lot of the panel. I highly recommend swapping this one in via scenes or not enabling all the stats and just using the temperature if you're concerned about real estate.
 
@@ -944,7 +944,7 @@ If you want to use this and make it as simple as possible, copy the example conf
 | `api_key` | string | This is the api key that you'll create for your service. Absolutely required |
 | `city_id` | string | For openweathermap, this is an integer, but I'm using a string to make this as compatible as possible with other services that folks may want to use |
 | `response_temperature_property` | string | This is a json selector. If you're using `openweathermap`, this will be `main.temp`. If you're using anything else, you'll have to inspect the response object and set accordingly |
-| `response_icon_property` | string | This is a json selector. If you're using `openweathermap`, this will be `weather.[0].main`. If you're using anything else, you'll have to inspect the response object and set accordingly. This is the current condition. I support all of the statuses [specified by OpenWeatherMap](https://openweathermap.org/weather-conditions). I don't support the subconditions right now, just the main groups |
+| `response_icon_property` | string | This is a json selector. If you're using `openweathermap`, this will be `weather.[0].main`. If you're using anything else, you'll have to inspect the response object and set accordingly. This is the current condition. I support all of the statuses [specified by OpenWeatherMap](https://openweathermap.org/weather-conditions). I don't support the sub-conditions right now, just the main groups |
 | `show_wind_speed` | bool | Whether or not to show the wind speed information along with the weather. If this is specified, **you must** also specify `response_wind_direction_property` and `response_wind_speed_property` |
 | `response_wind_speed_property` | string | This is a json selector. If you're using `openweathermap`, the value will be `wind.speed`. If you're using anything else, you'll have to inspect the json response and adjust accordingly |
 | `response_wind_direction_property` | string | This is a json selector. If you're using `openweathermap`, the value will be `wind.deg`. If you're using anything else, you'll have to inspect the json response and adjust accordingly. <br>**NOTE**: The module code is expecting this to be in degrees (i.e., 0 degrees == North). If your API returns cardinal directions, **it will not work** |
@@ -1005,9 +1005,9 @@ If you want to use this and make it as simple as possible, copy the example conf
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
 ⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
-⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛  WINDSPEED
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛  WIND SPEED
 ⬛ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛
-⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⬛  WIND DIRECTION INDICATOR (showing southeast here) 
+⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⬛  WIND DIRECTION INDICATOR (showing southwest here) 
 ⬛ ⚪ ⚫ ⚪ ⚫ ⚫ ⚪ ⚪ ⚫ ⚫ ⬛
 ⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
@@ -1033,9 +1033,9 @@ In no specific order, here's a list of things that I'm still working on getting 
 
 #### Modify LED matrix firmware to allow for atomic "pixel" updates
 
-Currently, the firmware only allows you to write an entire matrix at once. This works fine, but I'd prefer to have fewer shared resources between the modules. Right now, it works fine, but as your number of modules increases, so too does contention between threads for updates. The ideal end state is to have each module (and its thread) completely decoupled from the state of the matrix. As far as each module is concerned, it's living in its own sandbox
+Currently, the firmware only allows you to write an entire matrix at once. This works fine, but I'd prefer to have fewer shared resources between the modules. As your number of modules increases, so, too, does contention between threads for updates. The ideal end state is to have each module (and its thread) completely decoupled from the state of the matrix. As far as each module is concerned, it's living in its own sandbox
 
-This would be a bit of an overhaul for all the existing code, and, when (if) this happens, I'll make sure I bake in backward compatibility and feature detection so this doesn't stop working if you matrix doesn't have the custom firmware. Backward compatibility is essential
+This would be a bit of an overhaul for all the existing code, and, when (if) this happens, I'll make sure I bake in backward compatibility and feature detection so this doesn't stop working if your matrix doesn't have the custom firmware. Backward compatibility is essential
 
 #### Create a C# version of FLEM
 
@@ -1072,7 +1072,7 @@ I want to keep this light, but there's a few more modules that I want to figure 
 8. ~~GPU Bar~~ Done!
 9. RAM Bar
 
-For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other. I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
+For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. ~~I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other~~ I've made some double wide modules. That said, I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
 
 #### Mega Matrix
 
@@ -1084,7 +1084,7 @@ I don't like writing tests, so this will probably hang out for a while until I k
 
 #### ~~Improved error handling~~ - Mostly done!
 
-Right now, it's very easy to break this. It's a bit brittle. As an example, each of the modules is naive and assumes that it will always have exactly the width and height that it needs in order to render. That would be incorrect. Right now, there's nothing stopping a module from trying to render itself off the screen. This creates an error, and it'll crash the module.
+Right now, it's very easy to break this. It's a bit brittle. As an example, each of the modules is naive and assumes that it will always have exactly the width and height that it needs in order to render. That would be incorrect. There's nothing stopping a module from trying to render itself off the matrix. This creates an error, and it'll crash the module.
 
 This is just one of the many examples of a way that you could break this on accident. I want add some more robust checking and error handling to the tool in order to make it a bit more user friendly. Apple isn't successful because they make the best stuff. They're successful because their stuff is hard to break.
 
