@@ -326,7 +326,7 @@ class WeatherModule(MatrixModule):
     ) -> None:
         if self.__icon_module and self.__icon_module.module_name == icon:
             return
-        elif self.__icon_module and self.__icon_module.running:
+        if self.__icon_module and self.__icon_module.running:
             self.__icon_module.stop()
             self.__icon_module_thread.join()
 
