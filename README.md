@@ -60,7 +60,7 @@ I hope you find it as useful as I have!
 
 ### Scene Transition + Animator Module
 
-![In Action](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbms0Nzc3MHE1bzl2dmNraWpxdmp0eWZ0Mzl0NzVyYnJzanZsYncwcSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sr0jdXoe1DQq8OiqOs/giphy.gif)
+![alt text](docs/images/action.gif)
 
 ## Basic Information
 
