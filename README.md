@@ -1,6 +1,6 @@
 # FLEM Tool - Framework Light Emitting Matrix Tool
 
-##### Disclaimer: This is poorly tested, poorly optimized, incomplete. It works on my machine though
+##### Disclaimer: This is only somewhat tested, somewhat optimized, and somewhat incomplete. It works on my machine though
 
 <img src="docs/images/logo.jpeg" height="400px" />
 
@@ -981,7 +981,7 @@ If you want to use this and make it as simple as possible, copy the example conf
 ```
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
-⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛  ANIMATED CONDITION INDICATOR
 ⬛ ⚫ ⚫ ⚪ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
 ⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⬛
 ⬛ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⬛
@@ -1074,24 +1074,23 @@ I want to keep this light, but there's a few more modules that I want to figure 
 
 For the GPU and CPU temp modules, I'm trying to think of a way that I can bake that into the existing module, but space is extremely limited. I might end up making "combo" modules that are essentially double wide. If you have two matrices, you can then display the double wide CPU Module on one matrix and the double wide GPU Module on the other. I'm trying to come up with minimalist ways to display information (see the seconds indicator on the clock module) where possible, so stay tuned. I'll probably also end up making stand alone and minimalist versions of most of the modules as time allows. I want to have a fairly robust library of modules that ships with the framework, but I'm focused on things that I want for the time being. If you want something custom, feel free to reach out, and I'll try my best to make it happen (or, [make it yourself](#adding-custom-modules-wip))
 
-#### Improved logging/debugging * In Progress!
+#### Mega Matrix
 
-Right now, I don't have much in the way of logging. I'm not a Python guy typically, so I don't even know what the standards are around logging. I definitely want to add some better logging in for debugging issues. Once this is out into the wild, it's going to be very difficult to troubleshoot in its current state
+Again, I'm bad at naming things, but I've had the idea that if I could join both my matrices (currently one on the left and one on the right) into a single screen, I'd have so much more room for activities. With the current architecture, this just isn't possible. It's something I definitely want to consider at some point though (reading text top to bottom just isn't great). This might be more of a gimmick, but it's something I want to look into
 
-#### Improved error handling
+#### Add a test suite
+
+I don't like writing tests, so this will probably hang out for a while until I know more people are using it. For now, I'm moving fast and breaking things, and it'll probably stay that way for a little while
+
+#### ~~Improved error handling~~ - Mostly done!
 
 Right now, it's very easy to break this. It's a bit brittle. As an example, each of the modules is naive and assumes that it will always have exactly the width and height that it needs in order to render. That would be incorrect. Right now, there's nothing stopping a module from trying to render itself off the screen. This creates an error, and it'll crash the module.
 
 This is just one of the many examples of a way that you could break this on accident. I want add some more robust checking and error handling to the tool in order to make it a bit more user friendly. Apple isn't successful because they make the best stuff. They're successful because their stuff is hard to break.
 
-#### Mega Matrix
+#### ~~Improved logging/debugging~~ * Done!
 
-Again, I'm bad at naming things, but I've had the idea that if I could join both my matrices (currently one on the left and one on the right) into a single screen, I'd have so much more room for activities. With the current architecture, this just isn't possible. It's something I definitely want to consider at some point though (reading text top to bottom just isn't great). This might be more of a gimmick, but it's something I want to look into
-
-
-#### Add a test suite
-
-I don't like writing tests, so this will probably hang out for a while until I know more people are using it. For now, I'm moving fast and breaking things, and it'll probably stay that way for a little while
+~~Right now, I don't have much in the way of logging. I'm not a Python guy typically, so I don't even know what the standards are around logging. I definitely want to add some better logging in for debugging issues. Once this is out into the wild, it's going to be very difficult to troubleshoot in its current state~~
 
 #### ~~Convert into PIP Package~~ Done!
 
