@@ -324,6 +324,12 @@ class WeatherModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         update_device: Callable[[], None],
     ) -> None:
+        if self.__icon_module and self.__icon_module.module_name == icon:
+            return
+        elif self.__icon_module and self.__icon_module.running:
+            self.__icon_module.stop()
+            self.__icon_module_thread.join()
+
         self.__icon_module = AnimatorModule(
             AnimatorConfig(
                 position=ModulePositionConfig(x=start_col, y=start_row),

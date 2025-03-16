@@ -45,6 +45,8 @@ Currently, I have:
 - Clocks
   - [Clock Module](#clock-module)
   - [Binary Clock Module](#binary-clock-module)
+- [Weather Module](#weather-module)
+- [Animator Module](#animator-module)
 - [RAM Module](#ram-module)
 - [Line Module (more of a building block)](#line-module)
 
@@ -743,7 +745,7 @@ Pretty cool stuff. Try it out!
 
 #### RAM Module
 
-Shows current RAM usage. Once again, this uses psutil. Should work on Windows, but I'm not going to be testing on Windows for a little while. This currently only shows RAM usage rounded to the nearest gigabyte. I did add an indicator (similar to the [clock module](#clock-module)) that shows little pips for each 1/10th of a gigabye. In the sample output below, I'm using 9.1GB of RAM.
+Shows current RAM usage. Once again, this uses psutil. Should work on Windows, but I'm not going to be testing on Windows for a little while. This currently only shows RAM usage rounded to the nearest gigabyte. I did add an indicator (similar to the [clock module](#clock-module)) that shows little pips for each 1/9th of a gigabyte. In the sample output below, I'm using ~9.1GB of RAM.
 
 **Module Type**: RamModule
 
@@ -777,6 +779,237 @@ Shows current RAM usage. Once again, this uses psutil. Should work on Windows, b
 ⬛ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⬛
 ⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
 ⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
+#### Animator Module
+
+This one is big. I can see this being the bread and butter of most setups. Allows arbitrary "animations" through config. It can also display static drawings if you only have one frame and set the frame duration to 0. The frame duration overrides the module level `refresh_interval`. For this specific type of module, the refresh interval is irrelevant, but for now it'll need to be set to some arbitrary value. I'll fix that in the future
+
+See examples animations that I've made (poorly) in the [weather animation directory](src/flem/animator_files/)
+
+**Module Type**: AnimatorModule
+
+**Dimensions (width x height)**: *no set size. specify in config*
+
+**Custom Arguments**:
+
+| Argument                 | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frames`             | array[Frame]  | This is what sets all the individual frames for the module. I'll define the frames object below |
+| `width` | int | Necessary to let the module know how many columns it will span |
+| `height` | int | Necessary to let the module know how many rows it will span |
+| `animation_file` | string | This can be a path to anywhere on your system, but it has to be an absolute path (for now). I.E., `/home/blah/.flem/animator_files/my_animation/animation.json`. I recommend sticking this in flem's home directory just so they're all in the same place. I provide this because animations can get lengthy and bloat your config. See examples in the [animator_files directory](src/flem/animator_files/) |
+
+<br>
+
+**Frame Object**
+
+| Property                 | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frame` | array[array[int]] | This defines a single frame for the animation. If there's only one animation, it'll just be a static drawing
+| `frame_duration` | int | This is how long the frame should display (in milliseconds). If this is set to 0, it is considered a static frame, and no frame changes will happen. |
+
+**Full Module Config**
+
+```json
+{
+  "name": "animator",
+  "module_type": "AnimatorModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "frames": [
+      {
+          "frame": [
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 0, 1, 1, 1, 1, 1, 0 ,0],
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ],
+          "frame_duration": 1000
+      },
+      {
+          "frame": [
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 1, 1, 1, 1, 1, 1, 1 ,0],
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 1, 1, 1, 1, 1, 1, 1, 0],
+              [0, 0, 1, 1, 1, 1, 1, 0, 0],
+              [0, 1, 0, 1, 0, 1, 0, 1, 0]
+          ],
+          "frame_duration": 1000
+      }
+    ],
+    "width": 9,
+    "height": 6
+  }
+}
+```
+
+**File Module Config**
+
+```json
+{
+  "name": "animator",
+  "module_type": "AnimatorModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "animation_file": "/home/myuser/.flem/animator_files/weather/fog.json",
+    "width": 9,
+    "height": 6
+  }
+}
+```
+
+```
+FRAME 1
+
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+
+FRAME 2
+
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+
+```
+
+#### Weather Module
+
+The weather module is one of the more complex modules that I've built to date. It's mostly complicated because it relies on something other than easily obtained system data. I've set it up so that it can *theoretically* use most APIs that return the weather with a simple `get` request, but I recommend setting it up with `OpenWeatherMap`, since that's what I've done my testing with. If you'd like to use a different service, reach out, and I'll see what I can do to make it happen.
+
+In its most basic form, the weather module shows the current conditions (via an animated header) and the temperature (you choose between `imperial`, `standard`, or `metric`). It has an option to show the humidity as well as an option to show windspeed and direction.
+
+This is a **BIG** module. Big as in, it'll take up a lot of the panel. I highly recommend swapping this one in via scenes or not enabling all the stats and just using the temperature if you're concerned about real estate.
+
+Because this makes an external API call, I wanted to keep performance in mind and I'm using a cached file in the `~/.flem` directory. The module will make one API call every 10 minutes to update the cache file, and the module will load the results from that file when it refreshes. I'm considering making an option to have that update parameterized, but, for now, it's set statically at 10 minutes.
+
+I'll make some instructions for how to set up your API key in a future update, but it's a pretty straight forward process. In brief:
+
+1. Head to https://openweathermap.org/
+2. Sign up for an account
+3. Go to your user profile and find `My API Keys`
+4. Generate a new key
+5. Stick it in the config
+6. Find your city id by searching for your city and copying it from the URL
+   1. example: `https://openweathermap.org/city/4997787` - Copy 4997787
+
+For the URL string, it's important that you note that there are some key placeholders that have to be there (especially if you're trying some service other than `openweathermap`). Those are:
+
+1. `{city_id}` - This is just a string, so if your service goes by string rather than an integer id, that should be fine
+2. `{api_key}` - This is obviously your api key. Very important
+3. `{temperature_unit}` - This is probably the most optional, but for now it's still required or my code will break
+
+If you want to use this and make it as simple as possible, copy the example config below and pop your API key in. It'll work right out of the box.
+
+
+**Module Type**: WeatherModule
+
+**Dimensions (width x height)**: 
+
+* Just temperature
+  * 9x14
+* With Humidity or Wind Speed
+  * 9x22
+* With all
+  * 9x30
+
+**Custom Arguments**:
+
+| Argument                 | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api_url`             | string  | The API endpoint to make the request to. For now, I recommend sticking with what I know will work, and that value is: `"https://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={api_key}&cnt=5&units={temperature_unit}"` |
+| `api_key` | string | This is the api key that you'll create for your service. Absolutely required |
+| `city_id` | string | For openweathermap, this is an integer, but I'm using a string to make this as compatible as possible with other services that folks may want to use |
+| `response_temperature_property` | string | This is a json selector. If you're using `openweathermap`, this will be `main.temp`. If you're using anything else, you'll have to inspect the response object and set accordingly |
+| `response_icon_property` | string | This is a json selector. If you're using `openweathermap`, this will be `weather.[0].main`. If you're using anything else, you'll have to inspect the response object and set accordingly. This is the current condition. I support all of the statuses [specified by OpenWeatherMap](https://openweathermap.org/weather-conditions). I don't support the subconditions right now, just the main groups |
+| `show_wind_speed` | bool | Whether or not to show the wind speed information along with the weather. If this is specified, **you must** also specify `response_wind_direction_property` and `response_wind_speed_property` |
+| `response_wind_speed_property` | string | This is a json selector. If you're using `openweathermap`, the value will be `wind.speed`. If you're using anything else, you'll have to inspect the json response and adjust accordingly |
+| `response_wind_direction_property` | string | This is a json selector. If you're using `openweathermap`, the value will be `wind.deg`. If you're using anything else, you'll have to inspect the json response and adjust accordingly. <br>**NOTE**: The module code is expecting this to be in degrees (i.e., 0 degrees == North). If your API returns cardinal directions, **it will not work** |
+| `show_humidity`| bool | Shows the humidity in percent. If this is set to `true`, **you must** also specify `response_humidity_property`
+| `response_humidity_property` | string | This is a json selector. If you're using `openweathermap`, this will be `main.humidity`. If you're using anything else, you'll have to inspect the json response and adjust accordingly.
+
+**Sample Module Config**
+
+```json
+{
+  "name": "weather",
+  "module_type": "WeatherModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 10000,
+  "arguments": {
+    "api_url": "https://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={api_key}&cnt=5&units={temperature_unit}",
+    "api_key": "<my api key>",
+    "city_id": "4997787",
+    "show_wind_speed": true,
+    "show_humidity": true,
+    "temperature_unit": "imperial",
+    "response_temperature_property": "main.temp",
+    "response_icon_property": "weather.0.main",
+    "response_wind_speed_property": "wind.speed",
+    "response_wind_direction_property": "wind.deg",
+    "response_humidity_property": "main.humidity"
+  }
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⬛
+⬛ ⚪ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚪ ⚪ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚪ ⬛  TEMPERATURE
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛  HUMIDITY
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛  WINDSPEED
+⬛ ⚪ ⚫ ⚪ ⚪ ⚫ ⚪ ⚫ ⚫ ⚫ ⬛
+⬛ ⚪ ⚫ ⚪ ⚪ ⚪ ⚪ ⚫ ⚪ ⚫ ⬛  WIND DIRECTION INDICATOR (showing southeast here) 
+⬛ ⚪ ⚫ ⚪ ⚫ ⚫ ⚪ ⚪ ⚫ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⬛
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
@@ -832,7 +1065,7 @@ I want to keep this light, but there's a few more modules that I want to figure 
 1. ~~RAM Module~~ Done!
 2. ~~CPU Temp Module~~ Done! (kinda) - I still want to find a minimalist way to display temp in the vertical cpu module
 3. ~~GPU Temp Module~~ Done! (kinda) - Same as the CPU Temp
-4. Weather Module
+4. ~~Weather Module~~ Done!
 5. Battery Module
 6. ~~Binary Clock~~
 7. ~~CPU Bar~~ Done!

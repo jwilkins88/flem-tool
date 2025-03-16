@@ -101,7 +101,7 @@ class Scene:
         try:
             if self.__timer and self.__timer.is_alive() and not from_scene:
                 logger.debug(f"Attempting to join timer for scene {self.__config.name}")
-                self.__timer.join()
+                self.__timer.join(5)
         except (RuntimeError, TimeoutError) as e:
             logger.exception(
                 f"Error while joining timer for scene {self.__config.name}: {e}"

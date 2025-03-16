@@ -195,7 +195,7 @@ class Matrix:
 
         try:
             if self.__thread.is_alive():
-                self.__thread.join()
+                self.__thread.join(5)
 
             self.reset_matrix()
             logger.debug("Closing device")
