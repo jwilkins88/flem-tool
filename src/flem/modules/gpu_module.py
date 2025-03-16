@@ -39,6 +39,16 @@ class GpuModule(MatrixModule):
         )
         self.__line_module = LineModule(line_config, self.__width)
 
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
+
     def stop(self) -> None:
         self.running = False
         return super().stop()

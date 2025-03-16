@@ -41,6 +41,16 @@ class AnimatorModule(MatrixModule):
         self.running = False
         return super().stop()
 
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
+
     def write(
         self,
         update_device: Callable[[], None],
@@ -48,7 +58,6 @@ class AnimatorModule(MatrixModule):
         execute_callback: bool = True,
         refresh_override: int = None,
     ) -> None:
-        self.running = True
         try:
             current_frame = 0
             while self.running:

@@ -25,6 +25,16 @@ class ClockModule(MatrixModule):
         else:
             self.__config = config
 
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
+
     def stop(self) -> None:
         self.running = False
         return super().stop()
@@ -38,6 +48,7 @@ class ClockModule(MatrixModule):
     ) -> None:
         try:
             while self.running:
+                logger.debug(f"Module {self.__config.name} restarting main loop")
                 time = datetime.now().strftime(
                     self.__time_format_12h
                     if self.__config.arguments.clock_mode == "12h"

@@ -74,6 +74,7 @@ class Scene:
                 f"Setting up timer for {self.__config.show_for}ms for scene {self.__config.name}"
             )
             self.__timer = Timer(self.__config.show_for / 1000, self.__scene_finished)
+            self.__timer.name = f"{self.__config.name}-{id(self)}"
             self.__timer.start()
 
     def stop(self, from_scene: bool = False) -> None:

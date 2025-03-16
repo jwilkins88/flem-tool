@@ -40,7 +40,7 @@ class Matrix:
     __lock: Lock = None
     __scenes: list[Scene]
     __current_scene: int = 0
-    __scene_stop_event: Event = Event()
+    __scene_stop_event: Event = None
     __thread: Thread = None
 
     running: bool = True
@@ -117,6 +117,8 @@ class Matrix:
                     )
                 )
             self._matrix = matrix
+
+        self.__scene_stop_event = Event()
         if not self.__device.is_open():
             self.__device.connect()
 
@@ -192,6 +194,9 @@ class Matrix:
                 logger.exception(f"Error while stopping scene: {e}")
 
         try:
+            if self.__thread.is_alive():
+                self.__thread.join()
+
             self.reset_matrix()
             logger.debug("Closing device")
             self.__device.close()
@@ -230,8 +235,8 @@ class Matrix:
 
     def __write_queue(self, value: tuple[int, int, bool]) -> None:
         try:
-            logger.debug(f"Writing value to queue: {value}")
-            self.__change_queue.put(value, block=False)
+            logger.trace(f"Writing value to queue: {value}")
+            self.__change_queue.put(value)
         except queue.ShutDown:
             logger.debug("Queue is shutdown")
 
@@ -243,10 +248,11 @@ class Matrix:
                 not self.__change_queue.empty() and not self.__change_queue.is_shutdown
             ):
                 try:
-                    x, y, on = self.__change_queue.get(block=False)
+                    x, y, on = self.__change_queue.get()
                     self._matrix[x][y] = on
+                    self.__change_queue.task_done()
                 except queue.Empty as e:
-                    logger.debug(f"Queue is empty: {e}")
+                    logger.warning(f"Queue is empty: {e}")
                     break
                 except IndexError as ie:
                     logger.exception(f"[{x}][{y}] Index out of bounds: {ie}")

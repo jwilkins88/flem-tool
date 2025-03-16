@@ -187,10 +187,8 @@ class MatrixModule:
             try:
                 update_device()
 
-                if (
-                    self.is_static
-                    or self.__config.refresh_interval == 0
-                    and not refresh_override
+                if self.is_static or (
+                    self.__config.refresh_interval == 0 and not refresh_override
                 ):
                     return
 

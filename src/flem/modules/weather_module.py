@@ -24,8 +24,8 @@ class WeatherModule(MatrixModule):
     __condition_mapping = {
         "Clouds": f"{__animator_files_root}/weather/cloudy.json",
         "Clear": f"{__animator_files_root}/weather/clear.json",
-        "Rain": "cloud_rain",
-        "Drizzle": "cloud_rain",
+        "Rain": f"{__animator_files_root}/weather/cloud_rain.json",
+        "Drizzle": f"{__animator_files_root}/weather/cloud_rain.json",
         "Thunderstorm": "cloud_storm",
         "Snow": "snowflake",
         "Mist": "fog",
@@ -65,7 +65,18 @@ class WeatherModule(MatrixModule):
         self.__weather_timer = Timer(
             self.__weather_update_interval, self.__get_weather_from_api
         )
+        self.__weather_timer.name = "weather_update"
         self.__weather_timer.start()
+
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
 
     def stop(self) -> None:
         if self.__icon_module and self.__icon_module.running:
@@ -82,10 +93,12 @@ class WeatherModule(MatrixModule):
     ) -> None:
         try:
             while self.running:
-                if self.__weather_timer.finished:
+                if self.__weather_timer.finished.is_set():
+                    logger.info("weather timer is finishe")
                     self.__weather_timer = Timer(
                         self.__weather_update_interval, self.__get_weather_from_api
                     )
+                    self.__weather_timer.name = "weather_update"
                     self.__weather_timer.start()
 
                 weather = None
@@ -108,7 +121,7 @@ class WeatherModule(MatrixModule):
 
                 self.__draw_icon(
                     # weather_icon,
-                    "Clear",
+                    "Rain",
                     start_row,
                     self.__config.position.x,
                     write_queue,
@@ -312,7 +325,8 @@ class WeatherModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         update_device: Callable[[], None],
     ) -> None:
-        if icon == "Clouds" or icon == "Clear":
+        animated_scenes = ["Clouds", "Clear", "Rain", "Drizzle"]
+        if icon in animated_scenes:
             self.__icon_module = AnimatorModule(
                 AnimatorConfig(
                     position=ModulePositionConfig(x=start_col, y=start_row),
@@ -330,7 +344,7 @@ class WeatherModule(MatrixModule):
             self.__icon_module_thread = Thread(
                 target=self.__icon_module.start,
                 args=(update_device, write_queue),
-                name=f"weather_{icon}_{id(self)}",
+                name=f"weather_{icon}_{id(self)}_{id(self.__icon_module)}",
             )
             self.__icon_module_thread.start()
         else:

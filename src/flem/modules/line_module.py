@@ -23,6 +23,16 @@ class LineModule(MatrixModule):
         else:
             self.__config = config
 
+    def start(
+        self,
+        update_device: Callable[[], None],
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        execute_callback: bool = True,
+    ):
+        self.running = True
+        self.reset()
+        self.write(update_device, write_queue, execute_callback)
+
     def stop(self) -> None:
         self.running = False
         return super().stop()
