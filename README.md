@@ -58,6 +58,10 @@ I hope you find it as useful as I have!
 - **Built for Tinkerers**  
   Encourages customization and user-driven development, with a roadmap for features like trigger configs and multi-threading.
 
+### Scene Transition + Animator Module
+
+![In Action](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbms0Nzc3MHE1bzl2dmNraWpxdmp0eWZ0Mzl0NzVyYnJzanZsYncwcSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sr0jdXoe1DQq8OiqOs/giphy.gif)
+
 ## Basic Information
 
 FLEM Tool is a way to easily manage your LED Matrix Panels from Framework. It takes a modular, asynchronous approach to updating and managing the panels. This means that you can have many modules updating on their own schedule, and you only have to worry about what's in your config file. The plan is to ship this with some prebuilt modules and give users the tools they need to build whatever they want.
