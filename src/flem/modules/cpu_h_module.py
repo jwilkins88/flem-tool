@@ -1,28 +1,23 @@
 # pylint: disable=abstract-method, missing-module-docstring
-
-from time import sleep
 from typing import Callable
 
 import psutil
 from loguru import logger
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.line_config import LineConfig, LineConfigArguments
 from flem.modules.matrix_module import MatrixModule
 from flem.modules.line_module import LineModule
-from flem.models.config import ModuleConfig, ModulePositionConfig
+from flem.models.config import ModulePositionConfig
+from flem.models.modules.cpu_config import CpuConfig, CpuConfigSchema
 
 
 class CpuHModule(MatrixModule):
     __line_module: LineModule = None
     __temperature_line_module: LineModule = None
-    __config: ModuleConfig = None
+    __config: CpuConfig = None
     __previous_value: str = "NA"
     __previous_temp: str = "NA"
-    __show_temp_argument = "show_temp"
-    __temp_sensor_type_argument = "temp_sensor"
-    __temp_sensor_index_argument = "temp_sensor_index"
-    __show_temp: bool = False
-    __use_bar_graph: bool = False
-    __use_bar_graph_argument = "use_bar_graph"
     __max_cpu_percentage = 100
 
     # I might parameterize this, but 100 seems like a reasonable max
@@ -31,38 +26,40 @@ class CpuHModule(MatrixModule):
     running = True
     module_name = "CPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 9, height: int = 12):
-        self.__config = config
-        header_line_config = ModuleConfig(
+    def __init__(self, config: CpuConfig = None, width: int = 9, height: int = 12):
+        super().__init__(config, width, height)
+
+        if not isinstance(config, CpuConfig):
+            self.__config = CpuConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
+
+        header_line_config = LineConfig(
             name="header_line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
+            arguments=LineConfigArguments(line_style="solid", width=width),
         )
 
         self.__line_module = LineModule(header_line_config, width)
 
-        self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
-        self.__use_bar_graph = config.arguments.get(
-            self.__use_bar_graph_argument, False
-        )
-
-        if self.__show_temp:
+        if self.__config.arguments.show_temp:
             # I'm probably going to use these properties and any calculations associated
             # with them when I start implementing matrix validations
             # self.__height = self.__height + 7
-            temperature_line_config = ModuleConfig(
+            temperature_line_config = LineConfig(
                 name="temperature_line",
                 position=ModulePositionConfig(
-                    x=config.position.x,
-                    y=config.position.y + (10 if self.__use_bar_graph else 13),
+                    x=self.__config.position.x,
+                    y=self.__config.position.y
+                    + (10 if self.__config.arguments.use_bar_graph else 13),
                 ),
                 refresh_interval=config.refresh_interval,
                 module_type="line",
-                arguments={"line_style": "dashed"},
+                arguments=LineConfigArguments(line_style="dashed", width=width),
             )
             self.__temperature_line_module = LineModule(temperature_line_config, width)
-        super().__init__(config, width, height)
 
     def reset(self):
         """
@@ -93,25 +90,25 @@ class CpuHModule(MatrixModule):
                 "u", write_queue, self.__config.position.y, self.__config.position.x + 6
             )
 
-            if self.__show_temp:
+            if self.__config.arguments.show_temp:
                 self.__temperature_line_module.write(update_device, write_queue, False)
 
             self.__line_module.write(update_device, write_queue, False)
             while self.running:
                 cpu_percentage = psutil.cpu_percent()
-                if self.__use_bar_graph:
+                if self.__config.arguments.use_bar_graph:
                     self._write_cpu_pips(cpu_percentage, write_queue)
                 else:
                     self._write_cpu_value(cpu_percentage, write_queue)
 
-                if self.__show_temp:
+                if self.__config.arguments.show_temp:
                     sensor_category = psutil.sensors_temperatures().get(
-                        self.__config.arguments.get(self.__temp_sensor_type_argument)
+                        self.__config.arguments.temp_sensor
                     )
                     target_sensor = sensor_category[
-                        self.__config.arguments.get(self.__temp_sensor_index_argument)
+                        self.__config.arguments.temp_sensor_index
                     ]
-                    if self.__use_bar_graph:
+                    if self.__config.arguments.use_bar_graph:
                         self._write_temperature_pips(target_sensor.current, write_queue)
                     else:
                         self._write_temperature_value(

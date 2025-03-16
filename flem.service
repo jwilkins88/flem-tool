@@ -1,0 +1,13 @@
+[Unit]
+Description=FLEM Tool Service
+
+
+[Service]
+ExecStart=flem
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+Type=notify
+
+
+[Install]
+WantedBy=default.target

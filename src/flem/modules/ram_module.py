@@ -1,5 +1,4 @@
 # pylint: disable=abstract-method, missing-module-docstring
-from time import sleep
 from typing import Callable
 
 import psutil
@@ -16,8 +15,8 @@ class RamModule(MatrixModule):
     module_name = "RAM Module"
 
     def __init__(self, config: ModuleConfig, width: int = 9, height: int = 11):
-        self.__config = config
         super().__init__(config, width, height)
+        self.__config = config
 
     def reset(self):
         self.__previous_value = ["NA", 0]

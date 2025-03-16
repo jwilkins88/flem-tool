@@ -1,35 +1,29 @@
 # pylint: disable=abstract-method, missing-module-docstring
 from datetime import datetime
-from time import sleep
 from typing import Callable
 
 from loguru import logger
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.clock_config import ClockConfig, ClockConfigSchema
 from flem.modules.matrix_module import MatrixModule
 from flem.models.config import ModuleConfig
 
 
 class ClockModule(MatrixModule):
-    __clock_mode_argument = "clock_mode"
-    __clock_modes = ["12h", "24h"]
-    __clock_mode = "12h"
     __time_format_12h = "%I%M"
     __time_format_24h = "%H%M"
-    __show_seconds_indicator = False
-    __show_seconds_indicator_argument = "show_seconds_indicator"
-    __config: ModuleConfig = None
+    __config: ClockConfig = None
 
     module_name = "Clock Module"
 
     def __init__(self, config: ModuleConfig, width: int = 9, height: int = 11):
-        self.__config = config
-        clock_mode = config.arguments.get(self.__clock_mode_argument, "12h")
-        self.__show_seconds_indicator = config.arguments.get(
-            self.__show_seconds_indicator_argument, False
-        )
-        if clock_mode in self.__clock_modes:
-            self.__clock_mode = clock_mode
         super().__init__(config, width, height)
+
+        if not isinstance(config, ClockConfig):
+            self.__config = ClockConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
 
     def write(
         self,
@@ -41,7 +35,7 @@ class ClockModule(MatrixModule):
             while self.running:
                 time = datetime.now().strftime(
                     self.__time_format_12h
-                    if self.__clock_mode == "12h"
+                    if self.__config.arguments.clock_mode == "12h"
                     else self.__time_format_24h
                 )
 
@@ -58,7 +52,7 @@ class ClockModule(MatrixModule):
                     if i < 2:
                         start_col += 4
 
-                if self.__show_seconds_indicator:
+                if self.__config.arguments.show_seconds_indicator:
                     seconds = int(datetime.now().strftime("%S"))
                     pips_to_show = super()._calculate_pips_to_show(seconds, 60, 10)
 

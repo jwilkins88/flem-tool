@@ -2,38 +2,42 @@
 
 import json
 import subprocess
-from time import sleep
 from typing import Callable
 
 from loguru import logger
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.gpu_config import GpuConfig, GpuConfigSchema
+from flem.models.modules.line_config import LineConfig, LineConfigArguments
 from flem.modules.matrix_module import MatrixModule
 from flem.modules.line_module import LineModule
-from flem.models.config import ModuleConfig, ModulePositionConfig
+from flem.models.config import ModulePositionConfig
 
 
 class GpuModule(MatrixModule):
     __line_module: LineModule = None
-    __config: ModuleConfig = None
+    __config: GpuConfig = None
     __previous_value: str = "NA"
-    __gpu_command_argument = "gpu_command"
-    __gpu_index_argument = "gpu_index"
-    __gpu_command_arguments_argument = "gpu_command_arguments"
-    __gpu_util_output_property = "gpu_util_output_property"
 
     running = True
     module_name = "GPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
-        self.__config = config
-        line_config = ModuleConfig(
+    def __init__(self, config: GpuConfig = None, width: int = 3, height: int = 18):
+        super().__init__(config, width, height)
+
+        if not isinstance(config, GpuConfig):
+            self.__config = GpuConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
+
+        line_config = LineConfig(
             name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
+            arguments=LineConfigArguments(line_style="solid", width=width),
         )
         self.__line_module = LineModule(line_config, self.__width)
-        super().__init__(config, width, height)
 
     def reset(self):
         """
@@ -57,19 +61,17 @@ class GpuModule(MatrixModule):
             )
 
             self.__line_module.write(update_device, write_queue, False)
-            while self.running:
 
+            while self.running:
                 gpu_info = json.loads(
                     subprocess.check_output(
-                        [self.__config.arguments[self.__gpu_command_argument]]
-                        + self.__config.arguments[
-                            self.__gpu_command_arguments_argument
-                        ].split(",")
+                        [self.__config.arguments.gpu_command]
+                        + self.__config.arguments.gpu_command_arguments.split(",")
                     )
                 )
-                gpu_percentage = gpu_info[
-                    self.__config.arguments[self.__gpu_index_argument]
-                ][self.__config.arguments[self.__gpu_util_output_property]][:-1]
+                gpu_percentage = gpu_info[self.__config.arguments.gpu_index][
+                    self.__config.arguments.gpu_util_property
+                ][:-1]
 
                 gpu_cols = len(gpu_percentage)
 

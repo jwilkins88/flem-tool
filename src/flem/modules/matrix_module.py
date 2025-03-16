@@ -7,7 +7,7 @@ from typing import Callable
 from loguru import logger
 
 from flem.models.config import ModuleConfig
-from flem.modules.characters import (
+from flem.modules.utilities.characters import (
     zero,
     one,
     two,
@@ -26,6 +26,12 @@ from flem.modules.characters import (
     percent,
     exclamation,
     cloud,
+    cloud_rain,
+    cloud_storm,
+    degree,
+    fog,
+    sun,
+    snowflake,
 )
 
 
@@ -102,7 +108,7 @@ class MatrixModule:
     """
 
     __metaclass__ = abc.ABCMeta
-    __write_funcs: {}
+    __write_funcs: dict = {}
     __config: ModuleConfig = None
     __width: int = None
     __height: int = None
@@ -131,6 +137,12 @@ class MatrixModule:
             "p": self._p,
             "u": self._u,
             "cloud": self._cloud,
+            "cloud_rain": self._cloud_rain,
+            "cloud_storm": self._cloud_storm,
+            "degree": self._degree,
+            "fog": self._fog,
+            "sun": self._sun,
+            "snowflake": self._snowflake,
         }
 
         self.__config = config
@@ -441,5 +453,53 @@ class MatrixModule:
         start_col: int,
     ) -> None:
         self._write_array(cloud, start_row, start_col, write_queue)
+
+    def _cloud_rain(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(cloud_rain, start_row, start_col, write_queue)
+
+    def _cloud_storm(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(cloud_storm, start_row, start_col, write_queue)
+
+    def _degree(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(degree, start_row, start_col, write_queue)
+
+    def _fog(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(fog, start_row, start_col, write_queue)
+
+    def _snowflake(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(snowflake, start_row, start_col, write_queue)
+
+    def _sun(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(sun, start_row, start_col, write_queue)
 
     # "Art"

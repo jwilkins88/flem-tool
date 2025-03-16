@@ -2,14 +2,16 @@
 
 import json
 import subprocess
-from time import sleep
 from typing import Callable
 
 from loguru import logger
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.gpu_config import GpuConfig, GpuConfigSchema
+from flem.models.modules.line_config import LineConfig, LineConfigArguments
 from flem.modules.matrix_module import MatrixModule
 from flem.modules.line_module import LineModule
-from flem.models.config import ModuleConfig, ModulePositionConfig
+from flem.models.config import ModulePositionConfig
 
 
 class GpuHModule(MatrixModule):
@@ -17,18 +19,9 @@ class GpuHModule(MatrixModule):
     __temperature_line_module: LineModule = None
     __width = 9
     __height = 12
-    __config: ModuleConfig = None
+    __config: GpuConfig = None
     __previous_value: str = "NA"
     __previous_temp: str = "NA"
-    __gpu_command_argument = "gpu_command"
-    __gpu_index_argument = "gpu_index"
-    __gpu_command_arguments_argument = "gpu_command_arguments"
-    __gpu_util_output_property = "gpu_util_output_property"
-    __show_temp_argument = "show_temp"
-    __show_temp: bool = False
-    __use_bar_graph_argument = "use_bar_graph"
-
-    __use_bar_graph: bool = False
     __max_gpu_percentage = 100
 
     # I might parameterize this, but 100 seems like a reasonable max
@@ -37,37 +30,40 @@ class GpuHModule(MatrixModule):
     running = True
     module_name = "GPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 9, height: int = 12):
-        self.__config = config
+    def __init__(self, config: GpuConfig = None, width: int = 9, height: int = 12):
+        super().__init__(config, width, height)
+
+        if not isinstance(config, GpuConfig):
+            self.__config = GpuConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
+
         self.__width = width
-        line_config = ModuleConfig(
+        line_config = LineConfig(
             name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
+            arguments=LineConfigArguments(line_style="solid", width=width),
         )
         self.__line_module = LineModule(line_config, self.__width)
 
-        self.__use_bar_graph = config.arguments.get(
-            self.__use_bar_graph_argument, False
-        )
-        self.__show_temp = config.arguments.get(self.__show_temp_argument, False)
-        if self.__show_temp:
+        if self.__config.arguments.show_temp:
             # self.__height = self.__height + 7
-            temperature_line_config = ModuleConfig(
+            temperature_line_config = LineConfig(
                 name="temperature_line",
                 position=ModulePositionConfig(
                     x=config.position.x,
-                    y=config.position.y + (10 if self.__use_bar_graph else 13),
+                    y=config.position.y
+                    + (10 if self.__config.arguments.use_bar_graph else 13),
                 ),
                 refresh_interval=config.refresh_interval,
                 module_type="line",
-                arguments={"line_style": "dashed"},
+                arguments=LineConfigArguments(line_style="dashed", width=width),
             )
             self.__temperature_line_module = LineModule(
                 temperature_line_config, self.__width
             )
-        super().__init__(config, width, height)
 
     def reset(self):
         self.__previous_temp = "NA"
@@ -93,37 +89,35 @@ class GpuHModule(MatrixModule):
 
             self.__line_module.write(update_device, write_queue, False)
 
-            if self.__show_temp:
+            if self.__config.arguments.show_temp:
                 self.__temperature_line_module.write(update_device, write_queue, False)
+
             while self.running:
 
                 gpu_info = json.loads(
                     subprocess.check_output(
-                        [self.__config.arguments[self.__gpu_command_argument]]
-                        + self.__config.arguments[
-                            self.__gpu_command_arguments_argument
-                        ].split(",")
+                        [self.__config.arguments.gpu_command]
+                        + self.__config.arguments.gpu_command_arguments
                     )
                 )
 
-                gpu_percentage = gpu_info[
-                    self.__config.arguments[self.__gpu_index_argument]
-                ][self.__config.arguments[self.__gpu_util_output_property]][:-1]
+                gpu_percentage = gpu_info[self.__config.arguments.gpu_index][
+                    self.__config.arguments.gpu_util_argument
+                ][:-1]
 
-                temperature = gpu_info[
-                    self.__config.arguments[self.__gpu_index_argument]
-                ]["temp"][:-1]
-
-                if not self.__use_bar_graph:
-                    self._write_gpu_value(gpu_percentage, write_queue)
-                else:
+                if self.__config.arguments.use_bar_graph:
                     self._write_gpu_pips(gpu_percentage, write_queue)
+                else:
+                    self._write_gpu_value(gpu_percentage, write_queue)
 
-                if self.__show_temp:
-                    if not self.__use_bar_graph:
-                        self._write_gpu_temp(temperature, write_queue)
-                    else:
+                if self.__config.arguments.show_temp:
+                    temperature = gpu_info[self.__config.arguments.gpu_index][
+                        self.__config.arguments.gpu_temp_argument
+                    ][:-1]
+                    if self.__config.arguments.use_bar_graph:
                         self._write_temperature_pips(temperature, write_queue)
+                    else:
+                        self._write_gpu_temp(temperature, write_queue)
 
                 super().write(update_device, write_queue, execute_callback)
         except (IndexError, ValueError, TypeError) as e:

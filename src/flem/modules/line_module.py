@@ -3,29 +3,25 @@ from typing import Callable
 
 from loguru import logger
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.line_config import LineConfig, LineConfigSchema
 from flem.modules.matrix_module import MatrixModule
-from flem.models.config import ModuleConfig
 
 
 class LineModule(MatrixModule):
-    __line_style_options = ["dashed", "solid"]
-    __line_style = "solid"
-    __line_style_argument = "line_style"
-    __config: ModuleConfig = None
+    __config: LineConfig = None
     __width: int = None
 
     is_static = True
     module_name = "Line Module"
 
-    def __init__(self, config: ModuleConfig, width: int = None, height: int = 1):
-        self.__config = config
-
-        line_style = config.arguments.get(self.__line_style_argument, "solid")
-        if line_style in self.__line_style_options:
-            self.__line_style = line_style
-
-        self.__width = width
+    def __init__(self, config: LineConfig, width: int = None, height: int = 1):
         super().__init__(config, width, height)
+
+        if not isinstance(config, LineConfig):
+            self.__config = LineConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
 
     def write(
         self,
@@ -36,14 +32,12 @@ class LineModule(MatrixModule):
         try:
             i = self.__config.position.x
             while i < self.__config.position.x + (
-                self.__width or self.__config.arguments["width"]
+                self.__width or self.__config.arguments.width
             ):
-                if (
-                    self.__line_style == "dashed"
-                    and i % 2 == 0
-                    or self.__line_style == "solid"
-                ):
-                    write_queue((i, self.__config.position.y, True))
+                write_queue((i, self.__config.position.y, True))
+
+                if self.__config.arguments.line_style == "dashed" and i % 2 != 0:
+                    write_queue((i, self.__config.position.y, False))
                 i += 1
 
             super().write(update_device, write_queue, execute_callback)

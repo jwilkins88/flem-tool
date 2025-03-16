@@ -33,10 +33,10 @@ Global Variables:
     ROW (int): Current row being updated in the main loop.
 """
 
-import signal
 import os
-from time import sleep
+import signal
 import sys
+from time import sleep
 
 from loguru import logger
 
@@ -60,6 +60,7 @@ def main():
 
     check_and_create_user_directory()
 
+    # child_pid = -1
     if "--debug" in sys.argv or "-d" in sys.argv:
         logger.remove()
         logger.add(sys.stderr, level="DEBUG")
@@ -71,6 +72,9 @@ def main():
         )
     if "--print-matrix" in sys.argv or "-p" in sys.argv:
         print_matrix = True
+    # if "--background" in sys.argv or "-b" in sys.argv:
+    #     # child_pid = os.fork()
+    #     pass
 
     config: Config
     config_hash: str

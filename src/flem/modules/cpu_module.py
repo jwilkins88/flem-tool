@@ -1,35 +1,42 @@
 # pylint: disable=abstract-method, missing-module-docstring
-
-from time import sleep
 from typing import Callable
 
 import psutil
 from loguru import logger
 
 
+from flem.models.config_schema import ModuleSchema
+from flem.models.modules.cpu_config import CpuConfig, CpuConfigSchema
+from flem.models.modules.line_config import LineConfig, LineConfigArguments
 from flem.modules.matrix_module import MatrixModule
 from flem.modules.line_module import LineModule
-from flem.models.config import ModuleConfig, ModulePositionConfig
+from flem.models.config import ModulePositionConfig
 
 
 class CpuModule(MatrixModule):
     __line_module: LineModule = None
-    __config: ModuleConfig = None
+    __config: CpuConfig = None
     __previous_value: str = "NA"
 
     running = True
     module_name = "CPU Module"
 
-    def __init__(self, config: ModuleConfig = None, width: int = 3, height: int = 18):
-        self.__config = config
-        line_config = ModuleConfig(
+    def __init__(self, config: CpuConfig = None, width: int = 3, height: int = 18):
+        super().__init__(config, width, height)
+
+        if not isinstance(config, CpuConfig):
+            self.__config = CpuConfigSchema().load(ModuleSchema().dump(config))
+        else:
+            self.__config = config
+
+        line_config = LineConfig(
             name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
             refresh_interval=config.refresh_interval,
             module_type="line",
+            arguments=LineConfigArguments(line_style="solid", width=width),
         )
         self.__line_module = LineModule(line_config, self.__width)
-        super().__init__(config, width, height)
 
     def reset(self):
         """

@@ -184,3 +184,17 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
             logger.exception(f"Error while running matrix {matrix.name}: {e}")
 
     return matrices
+
+
+def parse_int(value: str) -> int | None:
+    """
+    Parses a string value to an integer.
+    Args:
+        value (str): The string value to parse.
+    Returns:
+        int: The parsed integer value.
+    """
+    try:
+        return int(value)
+    except ValueError:
+        return None
