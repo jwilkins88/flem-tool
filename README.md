@@ -1179,3 +1179,168 @@ If you make something, I'd love to give you a shout out. If you want to make you
 ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛           ⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛           ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
+
+```json
+{
+  "devices": [
+    {
+      "name": "left",
+      "device_address": "/dev/ttyACM1",
+      "speed": 115200,
+      "brightness": 100,
+      "on_bytes": 1,
+      "off_bytes": 0,
+      "modules": [
+        {
+          "name": "cpu",
+          "module_type": "CpuHModule",
+          "position": {
+            "x": 0,
+            "y": 12
+          },
+          "refresh_interval": 1000,
+          "arguments": {
+            "show_temp": true,
+            "temp_sensor": "k10temp",
+            "temp_sensor_index": 0,
+            "use_bar_graph": true
+          }
+        },
+        {
+          "name": "clock",
+          "module_type": "ClockModule",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "refresh_interval": 1000,
+          "arguments": {
+            "clock_mode": "24h",
+            "show_seconds_indicator": true
+          }
+        },
+        {
+          "name": "weather",
+          "module_type": "WeatherModule",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "refresh_interval": 10000,
+          "arguments": {
+            "api_url": "https://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={api_key}&cnt=5&units={temperature_unit}",
+            "api_key": "api_key",
+            "city_id": "123467",
+            "show_wind_speed": true,
+            "show_humidity": true,
+            "temperature_unit": "imperial",
+            "response_temperature_property": "main.temp",
+            "response_icon_property": "weather.0.main",
+            "response_wind_speed_property": "wind.speed",
+            "response_wind_direction_property": "wind.deg",
+            "response_humidity_property": "main.humidity"
+          }
+        }
+      ],
+      "scenes": [
+        {
+          "name": "scene 1",
+          "show_for": 10000,
+          "scene_order": 0,
+          "modules": [
+            "clock",
+            "cpu"
+          ]
+        },
+        {
+          "name": "scene 2",
+          "show_for": 10000,
+          "scene_order": 1,
+          "modules": [
+            "weather"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right",
+      "device_address": "/dev/ttyACM0",
+      "speed": 115200,
+      "brightness": 100,
+      "on_bytes": 1,
+      "off_bytes": 0,
+      "modules": [
+        {
+          "name": "gpu_0",
+          "module_type": "GpuHModule",
+          "position": {
+            "x": 0,
+            "y": 11
+          },
+          "refresh_interval": 1000,
+          "arguments": {
+            "show_temp": true,
+            "gpu_index": 0,
+            "gpu_command": "/home/xxxxx/nvtop-dev/usr/local/bin/nvtop",
+            "gpu_command_arguments": [
+              "-s"
+            ],
+            "gpu_util_property": "gpu_util",
+            "gpu_temp_property": "temp",
+            "use_bar_graph": true
+          }
+        },
+        {
+          "name": "gpu_1",
+          "module_type": "GpuHModule",
+          "position": {
+            "x": 0,
+            "y": 11
+          },
+          "refresh_interval": 1000,
+          "arguments": {
+            "show_temp": true,
+            "gpu_index": 1,
+            "gpu_command": "/home/xxxxxx/nvtop-dev/usr/local/bin/nvtop",
+            "gpu_command_arguments": [
+              "-s"
+            ],
+            "gpu_util_property": "gpu_util",
+            "gpu_temp_property": "temp",
+            "use_bar_graph": true
+          }
+        },
+        {
+          "name": "ram",
+          "module_type": "RamModule",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "refresh_interval": 1000
+        }
+      ],
+      "scenes": [
+        {
+          "name": "scene 1",
+          "show_for": 10000,
+          "scene_order": 0,
+          "modules": [
+            "gpu_0",
+            "ram"
+          ]
+        },
+        {
+          "name": "scene 2",
+          "show_for": 10000,
+          "scene_order": 1,
+          "modules": [
+            "gpu_1",
+            "ram"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```

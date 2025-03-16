@@ -324,12 +324,17 @@ class WeatherModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         update_device: Callable[[], None],
     ) -> None:
-        if self.__icon_module and self.__icon_module.module_name == icon:
+        if (
+            self.__icon_module
+            and self.__icon_module_thread.name
+            == f"weather_{icon}_{id(self)}_{id(self.__icon_module)}"
+            and self.__icon_module_thread.is_alive()
+        ):
             return
         if self.__icon_module and self.__icon_module.running:
             self.__icon_module.stop()
             self.__icon_module_thread.join()
-
+        logger.info(f"Drawing icon: {icon}")
         self.__icon_module = AnimatorModule(
             AnimatorConfig(
                 position=ModulePositionConfig(x=start_col, y=start_row),
