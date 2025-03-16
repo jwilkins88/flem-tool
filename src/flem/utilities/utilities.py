@@ -2,6 +2,7 @@ from hashlib import md5
 import os
 import glob
 import importlib
+import shutil
 
 from loguru import logger
 
@@ -11,6 +12,24 @@ from flem.devices.led_device import LedDevice
 from flem.matrix.matrix import Matrix
 
 __CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
+
+
+def create_animator_files():
+    """
+    Creates the animator files directory if it does not exist.
+    """
+    animator_files_directory = f"{os.path.expanduser('~')}/.flem/animator_files"
+    if os.path.exists(animator_files_directory):
+        logger.info("Animator files directory already exists")
+        logger.info("Copying animator files")
+        shutil.copytree(
+            f"{os.path.dirname(os.path.abspath(__file__))}/../animator_files/",
+            animator_files_directory,
+            dirs_exist_ok=True,
+        )
+    else:
+        os.makedirs(animator_files_directory)
+        logger.info("Creating animator files directory")
 
 
 def check_and_create_user_directory():
@@ -179,7 +198,7 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
     for matrix in matrices:
         try:
             logger.info(f"Running matrix {matrix.name}")
-            matrix.run_next_scene()
+            matrix.start()
         except (RuntimeError, TypeError, NameError) as e:
             logger.exception(f"Error while running matrix {matrix.name}: {e}")
 

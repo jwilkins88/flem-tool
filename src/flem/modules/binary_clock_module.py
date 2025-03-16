@@ -13,6 +13,18 @@ class BinaryClockModule(MatrixModule):
     __time_format_12h = "%I%M%S"
     __time_format_24h = "%H%M%S"
     __config: ClockConfig = None
+    __binary_values = {
+        "0": [0, 0, 0, 0],
+        "1": [0, 0, 0, 1],
+        "2": [0, 0, 1, 0],
+        "3": [0, 0, 1, 1],
+        "4": [0, 1, 0, 0],
+        "5": [0, 1, 0, 1],
+        "6": [0, 1, 1, 0],
+        "7": [0, 1, 1, 1],
+        "8": [1, 0, 0, 0],
+        "9": [1, 0, 0, 1],
+    }
 
     module_name = "Binary Clock Module"
 
@@ -24,25 +36,18 @@ class BinaryClockModule(MatrixModule):
         else:
             self.__config = config
 
+    def stop(self) -> None:
+        self.running = False
+        return super().stop()
+
     def write(
         self,
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         try:
-            binary_values = {
-                "0": [0, 0, 0, 0],
-                "1": [0, 0, 0, 1],
-                "2": [0, 0, 1, 0],
-                "3": [0, 0, 1, 1],
-                "4": [0, 1, 0, 0],
-                "5": [0, 1, 0, 1],
-                "6": [0, 1, 1, 0],
-                "7": [0, 1, 1, 1],
-                "8": [1, 0, 0, 0],
-                "9": [1, 0, 0, 1],
-            }
             while self.running:
                 time = datetime.now().strftime(
                     self.__time_format_12h
@@ -51,7 +56,7 @@ class BinaryClockModule(MatrixModule):
                 )
 
                 for i, char in enumerate(time):
-                    for j, value in enumerate(binary_values[char]):
+                    for j, value in enumerate(self.__binary_values[char]):
                         write_queue(
                             (
                                 self.__config.position.x + i,
@@ -60,7 +65,9 @@ class BinaryClockModule(MatrixModule):
                             )
                         )
 
-                super().write(update_device, write_queue, execute_callback)
+                super().write(
+                    update_device, write_queue, execute_callback, refresh_override
+                )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()

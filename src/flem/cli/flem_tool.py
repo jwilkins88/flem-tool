@@ -36,6 +36,7 @@ Global Variables:
 import os
 import signal
 import sys
+import threading
 from time import sleep
 
 from loguru import logger
@@ -47,6 +48,7 @@ from flem.utilities.utilities import (
     has_config_changed,
     run_matrices_from_config,
     check_and_create_user_directory,
+    create_animator_files,
 )
 from flem.matrix.matrix import Matrix
 
@@ -59,6 +61,7 @@ def main():
     print_matrix = False
 
     check_and_create_user_directory()
+    create_animator_files()
 
     # child_pid = -1
     if "--debug" in sys.argv or "-d" in sys.argv:
@@ -132,6 +135,8 @@ def main():
             config, config_hash = get_config()
             matrices = run_matrices_from_config(config, matrices)
 
+        for thread in threading.enumerate():
+            print(thread.name)
         sleep(10)
 
 

@@ -65,6 +65,10 @@ class GpuHModule(MatrixModule):
                 temperature_line_config, self.__width
             )
 
+    def stop(self) -> None:
+        self.running = False
+        return super().stop()
+
     def reset(self):
         self.__previous_temp = "NA"
         self.__previous_value = "NA"
@@ -75,6 +79,7 @@ class GpuHModule(MatrixModule):
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         try:
             self._write_object(
@@ -119,7 +124,9 @@ class GpuHModule(MatrixModule):
                     else:
                         self._write_gpu_temp(temperature, write_queue)
 
-                super().write(update_device, write_queue, execute_callback)
+                super().write(
+                    update_device, write_queue, execute_callback, refresh_override
+                )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()

@@ -180,16 +180,22 @@ class MatrixModule:
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         "The main function that draws the matrix info for the module"
         if execute_callback:
             try:
                 update_device()
 
-                if self.is_static:
+                if (
+                    self.is_static
+                    or self.__config.refresh_interval == 0
+                    and not refresh_override
+                ):
                     return
 
-                sleep(self.__config.refresh_interval / 1000)
+                sleep((refresh_override or self.__config.refresh_interval) / 1000)
+
             except Exception as e:
                 logger.exception(f"An error occurred while updating the device: {e}")
 

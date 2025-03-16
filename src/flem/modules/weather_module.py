@@ -2,12 +2,15 @@
 import json
 import os
 from typing import Callable
-from threading import Timer
+from threading import Timer, Thread
 
 from loguru import logger
 import requests
+from flem.models.config import ModulePositionConfig
 from flem.models.config_schema import ModuleSchema
+from flem.models.modules.animator_config import AnimatorConfig, AnimatorConfigArguments
 from flem.models.modules.weather_config import WeatherConfig, WeatherConfigSchema
+from flem.modules.animator_module import AnimatorModule
 from flem.modules.matrix_module import MatrixModule
 from flem.utilities.utilities import parse_int
 
@@ -17,9 +20,10 @@ class WeatherModule(MatrixModule):
     __weather_file = f"{os.path.expanduser('~')}/.flem/weather_cache.json"
     __weather_timer: Timer = None
     __weather_update_interval = 600
+    __animator_files_root = f"{os.path.expanduser('~')}/.flem/animator_files"
     __condition_mapping = {
-        "Clouds": "cloud",
-        "Clear": "sun",
+        "Clouds": f"{__animator_files_root}/weather/cloudy.json",
+        "Clear": f"{__animator_files_root}/weather/clear.json",
         "Rain": "cloud_rain",
         "Drizzle": "cloud_rain",
         "Thunderstorm": "cloud_storm",
@@ -44,6 +48,8 @@ class WeatherModule(MatrixModule):
         "W": [[0, 0, 0], [1, 1, 0], [0, 0, 0]],
         "NW": [[1, 0, 0], [0, 1, 0], [0, 0, 0]],
     }
+    __icon_module: MatrixModule = None
+    __icon_module_thread: Thread = None
 
     module_name = "Weather Module"
 
@@ -61,11 +67,18 @@ class WeatherModule(MatrixModule):
         )
         self.__weather_timer.start()
 
+    def stop(self) -> None:
+        if self.__icon_module and self.__icon_module.running:
+            self.__icon_module.stop()
+
+        super().stop()
+
     def write(
         self,
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         try:
             while self.running:
@@ -93,11 +106,13 @@ class WeatherModule(MatrixModule):
 
                 start_row = self.__config.position.y
 
-                self._write_object(
-                    self.__condition_mapping[weather_icon],
-                    write_queue,
-                    self.__config.position.y,
+                self.__draw_icon(
+                    # weather_icon,
+                    "Clear",
+                    start_row,
                     self.__config.position.x,
+                    write_queue,
+                    update_device,
                 )
 
                 del weather_icon
@@ -127,7 +142,9 @@ class WeatherModule(MatrixModule):
 
                 del weather
 
-                super().write(update_device, write_queue, execute_callback)
+                super().write(
+                    update_device, write_queue, execute_callback, refresh_override
+                )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
@@ -286,3 +303,37 @@ class WeatherModule(MatrixModule):
             cardinal_direction = "NW"
 
         return cardinal_direction
+
+    def __draw_icon(
+        self,
+        icon: str,
+        start_row: int,
+        start_col: int,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        update_device: Callable[[], None],
+    ) -> None:
+        if icon == "Clouds" or icon == "Clear":
+            self.__icon_module = AnimatorModule(
+                AnimatorConfig(
+                    position=ModulePositionConfig(x=start_col, y=start_row),
+                    arguments=AnimatorConfigArguments(
+                        animation_file=self.__condition_mapping[icon],
+                        width=9,
+                        height=6,
+                        frames=[],
+                    ),
+                    name=icon,
+                    refresh_interval=1000,
+                    module_type="animator",
+                )
+            )
+            self.__icon_module_thread = Thread(
+                target=self.__icon_module.start,
+                args=(update_device, write_queue),
+                name=f"weather_{icon}_{id(self)}",
+            )
+            self.__icon_module_thread.start()
+        else:
+            self._write_object(
+                self.__condition_mapping[icon], write_queue, start_row, start_col
+            )

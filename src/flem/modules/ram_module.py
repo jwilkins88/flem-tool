@@ -18,6 +18,10 @@ class RamModule(MatrixModule):
         super().__init__(config, width, height)
         self.__config = config
 
+    def stop(self) -> None:
+        self.running = False
+        return super().stop()
+
     def reset(self):
         self.__previous_value = ["NA", 0]
         return super().reset()
@@ -27,6 +31,7 @@ class RamModule(MatrixModule):
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         try:
             self._write_object(
@@ -89,7 +94,9 @@ class RamModule(MatrixModule):
                     )
 
                 self.__previous_value = used_memory
-                super().write(update_device, write_queue, execute_callback)
+                super().write(
+                    update_device, write_queue, execute_callback, refresh_override
+                )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()

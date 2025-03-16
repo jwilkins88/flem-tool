@@ -73,12 +73,10 @@ class Scene:
             logger.debug(
                 f"Setting up timer for {self.__config.show_for}ms for scene {self.__config.name}"
             )
-            self.__timer = Timer(
-                self.__config.show_for / 1000, self.__scene_finished, args=(self,)
-            )
+            self.__timer = Timer(self.__config.show_for / 1000, self.__scene_finished)
             self.__timer.start()
 
-    def stop(self):
+    def stop(self, from_scene: bool = False) -> None:
         """
         Stops the scene by performing the following actions:
         1. Attempts to join the timer thread with a timeout of 2 seconds.
@@ -100,11 +98,11 @@ class Scene:
                 )
 
         try:
-            if self.__timer and not self.__timer.is_alive():
+            if self.__timer and self.__timer.is_alive() and not from_scene:
                 logger.debug(f"Attempting to join timer for scene {self.__config.name}")
                 self.__timer.join()
         except (RuntimeError, TimeoutError) as e:
-            logger.error(
+            logger.exception(
                 f"Error while joining timer for scene {self.__config.name}: {e}"
             )
 

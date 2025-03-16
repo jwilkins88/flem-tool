@@ -1,6 +1,6 @@
 # pylint: disable=missing-module-docstring
 
-from threading import Lock
+from threading import Lock, Event, Thread
 import queue
 
 from loguru import logger
@@ -40,6 +40,8 @@ class Matrix:
     __lock: Lock = None
     __scenes: list[Scene]
     __current_scene: int = 0
+    __scene_stop_event: Event = Event()
+    __thread: Thread = None
 
     running: bool = True
     name = None
@@ -118,6 +120,12 @@ class Matrix:
         if not self.__device.is_open():
             self.__device.connect()
 
+    def start(self) -> None:
+        self.running = True
+
+        self.__thread = Thread(target=self.__run, name=f"{self.name}_thread")
+        self.__thread.start()
+
     def set_matrix(self, matrix: list[list[int]]) -> None:
         """
         Sets the matrix to the given 2D list of integers and updates the device.
@@ -146,10 +154,6 @@ class Matrix:
         """
         logger.debug("Running next scene")
         self.__scenes[self.__current_scene].start()
-
-        self.__current_scene = self.__current_scene + 1
-        if self.__current_scene > len(self.__scenes) - 1:
-            self.__current_scene = 0
 
     def reset_matrix(self, update_device: bool = True) -> None:
         """
@@ -194,7 +198,20 @@ class Matrix:
         except Exception as e:
             logger.exception(f"Error while stopping matrix: {e}")
 
-    def __stop_scene(self, scene: Scene) -> None:
+    def __run(self):
+        self.run_next_scene()
+        while self.running:
+            if self.__scene_stop_event.wait():
+                self.__stop_scene(self.__scenes[self.__current_scene], False)
+
+            self.__current_scene = self.__current_scene + 1
+            if self.__current_scene > len(self.__scenes) - 1:
+                self.__current_scene = 0
+
+            self.run_next_scene()
+            self.__scene_stop_event.clear()
+
+    def __stop_scene(self, scene: Scene, from_scene: bool = False) -> None:
         """
         Stops the given scene by resetting the matrix to its default state.
 
@@ -204,13 +221,12 @@ class Matrix:
         Returns:
             None
         """
-        scene.stop()
+        scene.stop(from_scene)
 
         self.reset_matrix(False)
 
-    def __scene_finished(self, scene: Scene):
-        self.__stop_scene(scene)
-        self.run_next_scene()
+    def __scene_finished(self) -> None:
+        self.__scene_stop_event.set()
 
     def __write_queue(self, value: tuple[int, int, bool]) -> None:
         try:

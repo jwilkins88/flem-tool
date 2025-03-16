@@ -38,6 +38,10 @@ class CpuModule(MatrixModule):
         )
         self.__line_module = LineModule(line_config, self.__width)
 
+    def stop(self) -> None:
+        self.running = False
+        return super().stop()
+
     def reset(self):
         """
         Resets the CPU module to its initial state.
@@ -55,6 +59,7 @@ class CpuModule(MatrixModule):
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        refresh_override: int = None,
     ) -> None:
         """
         Writes the CPU usage to the matrix display and executes the callback if specified.
@@ -103,7 +108,9 @@ class CpuModule(MatrixModule):
                         )
 
                 self.__previous_value = cpu_percentage
-                super().write(update_device, write_queue, execute_callback)
+                super().write(
+                    update_device, write_queue, execute_callback, refresh_override
+                )
         except (IndexError, ValueError, TypeError, psutil.Error) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
