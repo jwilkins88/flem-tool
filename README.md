@@ -1,8 +1,9 @@
 # FLEM Tool - Framework Light Emitting Matrix Tool
 
+<img src="docs/images/logo.jpeg" height="400px" />
+
 ##### Disclaimer: This is only somewhat tested, somewhat optimized, and somewhat incomplete. It works on my machine though
 
-<img src="docs/images/logo.jpeg" height="400px" />
 
 ## What is FLEM
 
@@ -15,6 +16,8 @@ I hope you find it as useful as I have!
 <img src="docs/images/flem_action.jpg" height="400" />
 
 ## Table of Contents
+- [Key Features](#key-features)
+- [Basic Information](#basic-information)
 - [Setup](#setup)
 - [Customizing](#customizing)
   - [Config Reference](#config-reference)
@@ -23,6 +26,37 @@ I hope you find it as useful as I have!
 - [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
+
+## Key Features
+
+- **Modular, Asynchronous Design**  
+  FLEM's architecture allows each module to update independently, ensuring smooth operation and flexible configurations.
+
+- **Scene Management**  
+  Display multiple modules in rotating scenes, maximizing the limited matrix real estate. Scenes are fully customizable and support automatic transitions.
+
+- **Prebuilt Modules**  
+  Comes with a variety of ready-to-use modules, including:
+  - **CPU and GPU Usage**: Minimalist and full modules available, with optional temperature monitoring.
+  - **Clock Modules**: Standard digital clock, binary clock, and more.
+  - **RAM Usage**: Displays current memory usage.
+  - **Weather Module**: Displays real-time weather conditions, temperature, and optional humidity/wind details.
+  - **Animator Module**: Supports animated frames or static graphics for custom visuals.
+
+- **Custom Configuration**  
+  Easily customize layouts and behavior using a JSON-based config file. Add modules, adjust positions, refresh intervals, and more.
+
+- **Open API Integration**  
+  Modules like the Weather Module support external APIs for live data, with configurable endpoints and data mapping.
+
+- **Support for Multi-Device Setup**  
+  Manage multiple LED matrices with a single configuration, enabling cohesive displays across devices.
+
+- **Lightweight and Efficient**  
+  Designed to run seamlessly on Linux (tested on Linux Mint/Ubuntu), ensuring low resource usage and high performance.
+
+- **Built for Tinkerers**  
+  Encourages customization and user-driven development, with a roadmap for features like trigger configs and multi-threading.
 
 ## Basic Information
 
