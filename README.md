@@ -1,4 +1,5 @@
 # FLEM Tool - Framework Light Emitting Matrix Tool
+[![Pylint](https://github.com/jwilkins88/flem_tool/actions/workflows/build.yml/badge.svg)](https://github.com/jwilkins88/flem_tool/actions/workflows/build.yml)
 
 <img src="docs/images/logo.jpeg" height="400px" />
 
@@ -106,9 +107,14 @@ This is still a work in progress. The end goal is to have this be a package that
 
 This is untested on anything except my system with my environment. Eventually, I'll add more robust testing, but I'm not going to bother with that until I feel like I'm in a pretty good place with the tool (or people start wanting to use it)
 
-**Python version**: 3.13.2
+**Python versions**: 
+- 3.13
+- 3.12
+- 3.11
+- 3.10
+- 3.9
 
-If you want to check your Python version, just type `python --version` in your terminal. This will _probably_ work in most recent Python versions (definitely won't in Python 2), but probably not in early versions of 3
+If you want to check your Python version, just type `python --version` in your terminal. I have done rudimentary testing Python versions 3.9+. I haven't gotten around to doing thorough testing in anything but 3.13. Your mileage may vary
 
 ### Installing
 

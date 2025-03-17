@@ -36,7 +36,6 @@ Global Variables:
 import os
 import signal
 import sys
-import threading
 from time import sleep
 
 from loguru import logger
@@ -135,8 +134,6 @@ def main():
             config, config_hash = get_config()
             matrices = run_matrices_from_config(config, matrices)
 
-        for thread in threading.enumerate():
-            print(thread.name)
         sleep(10)
 
 

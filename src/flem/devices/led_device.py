@@ -212,7 +212,7 @@ class LedDevice:
         self.send_command(CommandVals.BRIGHTNESS, [brightness])
 
     def __str__(self):
-        return str(
-            f"Device: {self.__config.name} at {self.__config.location}",
-            f"({self.__config.speed} baud)",
+        return (
+            f"Device: {self.__config.name} at {self.__config.location}"
+            f"({self.__config.speed} baud)"
         )
