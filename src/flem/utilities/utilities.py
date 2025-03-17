@@ -205,7 +205,7 @@ def run_matrices_from_config(config: Config, matrices: list[Matrix]) -> list[Mat
     return matrices
 
 
-def parse_int(value: str) -> int | None:
+def parse_int(value: str) -> int:
     """
     Parses a string value to an integer.
     Args:
