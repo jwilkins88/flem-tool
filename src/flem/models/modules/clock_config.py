@@ -26,7 +26,7 @@ class ClockConfig(ModuleConfig):
     ):
         if arguments.clock_mode not in self.__clock_mode_options:
             logger.warning("Invalid clock mode, defaulting to 12h")
-            arguments.temperature_unit = "12h"
+            arguments.clock_mode = "12h"
 
         super().__init__(name, module_type, position, refresh_interval, arguments)
         self.arguments = arguments
@@ -34,7 +34,7 @@ class ClockConfig(ModuleConfig):
 
 class ClockConfigArgumentsSchema(Schema):
     clock_mode = fields.Str()
-    show_seconds_indicator = fields.Bool(required=False, missing=False)
+    show_seconds_indicator = fields.Bool(required=False, load_default=False)
 
     @post_load
     def make_module(self, data, **kwargs):

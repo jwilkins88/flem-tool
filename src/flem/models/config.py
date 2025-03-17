@@ -50,7 +50,7 @@ class DeviceConfig:
         scenes: list[SceneConfig],
     ):
         self.name = name
-        self.location = device_address
+        self.device_address = device_address
         self.speed = speed
         self.brightness = brightness
         self.on_bytes = on_bytes

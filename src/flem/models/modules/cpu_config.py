@@ -36,8 +36,8 @@ class CpuConfig(ModuleConfig):
 class CpuConfigArgumentsSchema(Schema):
     temp_sensor = fields.Str()
     temp_sensor_index = fields.Int()
-    show_temp = fields.Bool(required=False, missing=False)
-    use_bar_graph = fields.Bool(required=False, missing=False)
+    show_temp = fields.Bool(required=False, load_default=False)
+    use_bar_graph = fields.Bool(required=False, load_default=False)
 
     @post_load
     def make_module(self, data, **kwargs):

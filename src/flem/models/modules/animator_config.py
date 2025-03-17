@@ -56,7 +56,7 @@ class AnimatorConfigArgumentsSchema(Schema):
     frames = fields.List(fields.Nested(AnimatorFrameSchema))
     width = fields.Int()
     height = fields.Int()
-    animation_file = fields.Str(required=False, missing=None)
+    animation_file = fields.Str(required=False, load_default=None)
 
     @post_load
     def make_module(self, data, **kwargs):

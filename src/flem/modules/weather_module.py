@@ -164,7 +164,7 @@ class WeatherModule(MatrixModule):
 
     def __get_weather_from_api(self) -> None:
         try:
-            weather_api_url = self.__config.arguments.weather_api_url.format(
+            weather_api_url = self.__config.arguments.api_url.format(
                 api_key=self.__config.arguments.api_key,
                 city_id=self.__config.arguments.city_id,
                 temperature_unit=self.__config.arguments.temperature_unit,

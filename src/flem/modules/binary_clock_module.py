@@ -14,16 +14,16 @@ class BinaryClockModule(MatrixModule):
     __time_format_24h = "%H%M%S"
     __config: ClockConfig = None
     __binary_values = {
-        "0": [0, 0, 0, 0],
-        "1": [0, 0, 0, 1],
-        "2": [0, 0, 1, 0],
-        "3": [0, 0, 1, 1],
-        "4": [0, 1, 0, 0],
-        "5": [0, 1, 0, 1],
-        "6": [0, 1, 1, 0],
-        "7": [0, 1, 1, 1],
-        "8": [1, 0, 0, 0],
-        "9": [1, 0, 0, 1],
+        "0": [[0], [0], [0], [0]],
+        "1": [[0], [0], [0], [1]],
+        "2": [[0], [0], [1], [0]],
+        "3": [[0], [0], [1], [1]],
+        "4": [[0], [1], [0], [0]],
+        "5": [[0], [1], [0], [1]],
+        "6": [[0], [1], [1], [0]],
+        "7": [[0], [1], [1], [1]],
+        "8": [[1], [0], [0], [0]],
+        "9": [[1], [0], [0], [1]],
     }
 
     module_name = "Binary Clock Module"
@@ -66,14 +66,12 @@ class BinaryClockModule(MatrixModule):
                 )
 
                 for i, char in enumerate(time):
-                    for j, value in enumerate(self.__binary_values[char]):
-                        write_queue(
-                            (
-                                self.__config.position.x + i,
-                                self.__config.position.y + j,
-                                value,
-                            )
-                        )
+                    self._write_array(
+                        self.__binary_values[char],
+                        self.__config.position.y,
+                        self.__config.position.x + i,
+                        write_queue,
+                    )
 
                 super().write(
                     update_device, write_queue, execute_callback, refresh_override

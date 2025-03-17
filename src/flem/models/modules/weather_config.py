@@ -21,7 +21,7 @@ class WeatherConfigArguments:
         response_wind_direction_property: str = None,
         response_humidity_property: str = None,
     ):
-        self.weather_api_url = api_url
+        self.api_url = api_url
         self.api_key = api_key
         self.city_id = city_id
         self.temperature_unit = temperature_unit

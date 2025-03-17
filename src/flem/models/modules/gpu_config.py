@@ -22,8 +22,8 @@ class GpuConfigArguments:
         self.gpu_command = gpu_command
         self.gpu_index = gpu_index
         self.gpu_command_arguments = gpu_command_arguments
-        self.gpu_temp_argument = gpu_temp_property
-        self.gpu_util_argument = gpu_util_property
+        self.gpu_temp_property = gpu_temp_property
+        self.gpu_util_property = gpu_util_property
 
 
 class GpuConfig(ModuleConfig):
@@ -45,8 +45,8 @@ class GpuConfigArgumentsSchema(Schema):
     gpu_index = fields.Int()
     gpu_temp_property = fields.Str()
     gpu_util_property = fields.Str()
-    show_temp = fields.Bool(required=False, missing=False)
-    use_bar_graph = fields.Bool(required=False, missing=False)
+    show_temp = fields.Bool(required=False, load_default=False)
+    use_bar_graph = fields.Bool(required=False, load_default=False)
 
     @post_load
     def make_module(self, data, **kwargs):

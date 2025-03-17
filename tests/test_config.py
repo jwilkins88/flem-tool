@@ -84,7 +84,7 @@ def test_device_config():
         scenes=[scene],
     )
     assert device.name == "TestDevice"
-    assert device.location == "192.168.1.1"
+    assert device.device_address == "192.168.1.1"
     assert device.speed == 9600
     assert device.brightness == 255
     assert device.on_bytes == 1

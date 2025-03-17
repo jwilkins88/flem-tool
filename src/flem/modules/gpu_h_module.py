@@ -127,7 +127,7 @@ class GpuHModule(MatrixModule):
 
                 if self.__config.arguments.show_temp:
                     temperature = gpu_info[self.__config.arguments.gpu_index][
-                        self.__config.arguments.gpu_temp_argument
+                        self.__config.arguments.gpu_temp_property
                     ][:-1]
                     if self.__config.arguments.use_bar_graph:
                         self._write_temperature_pips(temperature, write_queue)

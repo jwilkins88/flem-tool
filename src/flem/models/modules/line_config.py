@@ -26,7 +26,7 @@ class LineConfig(ModuleConfig):
     ):
         if arguments.line_style not in self.__line_style_options:
             logger.warning("Invalid line style, defaulting to solid")
-            arguments.temperature_unit = "solid"
+            arguments.line_style = "solid"
 
         super().__init__(name, module_type, position, refresh_interval, arguments)
         self.arguments = arguments

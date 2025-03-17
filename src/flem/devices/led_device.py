@@ -93,7 +93,7 @@ class LedDevice:
             serial.SerialException: If the connection to the serial device fails.
         """
         self.__serial_device = serial.Serial(
-            self.__config.location, self.__config.speed
+            self.__config.device_address, self.__config.speed
         )
 
         self.brightness(self.__config.brightness)
@@ -213,6 +213,6 @@ class LedDevice:
 
     def __str__(self):
         return (
-            f"Device: {self.__config.name} at {self.__config.location}"
+            f"Device: {self.__config.name} at {self.__config.device_address}"
             f"({self.__config.speed} baud)"
         )

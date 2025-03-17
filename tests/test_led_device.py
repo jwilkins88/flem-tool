@@ -135,7 +135,7 @@ def test_led_device_brightness(led_device):
 
 def test_led_device_str(led_device):
     """Test the string representation of the LedDevice class."""
-    result = led_device.__str__()
+    result = str(led_device)
     assert "Device: TestDevice" in result
     assert "/dev/ttyUSB0" in result
     assert "9600 baud" in result
