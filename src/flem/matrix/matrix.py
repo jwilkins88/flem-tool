@@ -183,7 +183,6 @@ class Matrix:
         """
         logger.debug(f"Stopping matrix {self.name}")
         logger.debug("Shutting down change queue")
-        self.__change_queue.shutdown()
         if self.running:
             self.running = False
 
@@ -237,16 +236,14 @@ class Matrix:
         try:
             logger.trace(f"Writing value to queue: {value}")
             self.__change_queue.put(value)
-        except queue.ShutDown:
-            logger.debug("Queue is shutdown")
+        except Exception as e:
+            logger.exception(f"Error writing to queue: {e}")
 
     def __update_device(self) -> None:
         logger.debug("Updating device")
         logger.debug("Reading changes from queue")
         with self.__lock:
-            while (
-                not self.__change_queue.empty() and not self.__change_queue.is_shutdown
-            ):
+            while not self.__change_queue.empty() and self.__change_queue:
                 try:
                     x, y, on = self.__change_queue.get()
                     self._matrix[x][y] = on
