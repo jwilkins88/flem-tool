@@ -16,8 +16,11 @@ class LineModule(MatrixModule):
     module_name = "Line Module"
 
     def __init__(self, config: LineConfig, width: int = None, height: int = 1):
+        # pylint: disable=W0238
         self.__width = width
         self.__height = height
+        # pylint: enable=W0238
+
         super().__init__(config, width, height)
 
         if not isinstance(config, LineConfig):
