@@ -84,9 +84,10 @@ Currently, I have:
 - Clocks
   - [Clock Module](#clock-module)
   - [Binary Clock Module](#binary-clock-module)
+- [RAM Module](#ram-module)
+- [Battery Module](#battery-module)
 - [Weather Module](#weather-module)
 - [Animator Module](#animator-module)
-- [RAM Module](#ram-module)
 - [Line Module (more of a building block)](#line-module)
 
 *** The GPU module **will not** work out of the box. It requires a custom built version of NVTOP (can be found on my github). I'm hoping that my changes will make it to the stable version of NVTOP, but, for now, there's a bit of monkeying required to get the GPU modules working. See [the GPU module](#gpu-module) section for more information
