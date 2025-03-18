@@ -117,14 +117,16 @@ def main():
     while any_matrix_running:
         logger.info("Checking if any matrix is running")
         for matrix in matrices:
-            if print_matrix:
-                print(matrix)
             logger.info(f"Matrix {matrix.name} is running: {matrix.running}")
             if matrix.running:
                 logger.info("At least one matrix is running")
                 any_matrix_running = True
                 break
             any_matrix_running = False
+
+        if print_matrix:
+            for matrix in matrices:
+                print(matrix)
 
         logger.info("Checking if configuration has changed")
         config_string = read_config_from_file()

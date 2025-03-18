@@ -1057,6 +1057,61 @@ If you want to use this and make it as simple as possible, copy the example conf
 ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 ```
 
+#### Battery Module
+
+The battery module is a compact display that can show just the battery icon or, optionally, the numeric percentage. This module uses `psutil` to retrieve the battery information. The battery module has a few different states:
+
+**Unplugged**
+
+In this state, the current percentage "pip" blinks on and off to indicate a discharge state
+
+**Plugged in**
+
+In this state, an animation shows the battery filling from the current percentage "pip" to full. It follows the same sequence as all the other bars that I've implemented with pips. After the full battery animation finished, it resets to the current charge for 2 seconds
+
+**Critical**
+
+This is set to show when the battery reaches a minimum (configurable) threshold. In this state, all the battery pips will blink
+
+| Argument                 | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `show_percentage`             | bool  | Whether or not the numeric percentage shows below the battery icon |
+| `critical_threshold` | int | The battery percentage where the pips start blinking to indicate it's time to charge your laptop |
+
+
+**Battery Module Config**
+
+```json
+{
+  "name": "battery",
+  "module_type": "BatteryModule",
+  "position": {
+    "x": 0,
+    "y": 0
+  },
+  "refresh_interval": 1000,
+  "arguments": {
+    "show_percentage": true,
+    "critical_threshold": 20
+  }
+}
+```
+
+```
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚫ ⚫ ⚫ ⚫ ⚪ ⬛
+⬛ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚫ ⚫ ⚪ ⚫ ⚪ ⚫ ⚪ ⚫ ⬛
+⬛ ⚫ ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ ⚫ ⬛
+⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
+```
+
 ### Adding Custom Modules (WIP)
 
 Currently, I don't have a way for you to do this locally, so you'll have to clone this repo and work inside of it. Eventually, I want to be able to have you plug in modules that aren't a part of this tool itself. I'd recommend starting with the line module as a template and build out from there.
