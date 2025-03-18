@@ -114,7 +114,9 @@ def test_binary_clock_module_write(binary_clock_module):
         mock_super_write_array.assert_has_calls(expected_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_binary_clock_module_write_handles_exceptions(binary_clock_module):

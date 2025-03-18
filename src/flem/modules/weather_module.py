@@ -91,6 +91,7 @@ class WeatherModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         try:
             while self.running:
@@ -154,7 +155,11 @@ class WeatherModule(MatrixModule):
 
                 del weather
                 super().write(
-                    update_device, write_queue, execute_callback, refresh_override
+                    update_device,
+                    write_queue,
+                    execute_callback,
+                    refresh_override,
+                    self.running,
                 )
         except (IndexError, ValueError, TypeError, KeyError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")

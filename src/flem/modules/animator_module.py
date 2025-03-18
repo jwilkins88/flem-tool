@@ -14,7 +14,9 @@ from flem.modules.matrix_module import MatrixModule
 
 class AnimatorModule(MatrixModule):
     __config: AnimatorConfig = None
-
+    from_frame = 0
+    reset_frame = 0
+    reset_delay = 0
     module_name = "Animator Module"
 
     def __init__(self, config: AnimatorConfig, width: int = 6, height: int = 4):
@@ -57,6 +59,7 @@ class AnimatorModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         try:
             current_frame = 0
@@ -71,8 +74,11 @@ class AnimatorModule(MatrixModule):
                             )
                         )
 
+                while current_frame < self.from_frame:
+                    current_frame += 1
+
                 if current_frame > len(self.__config.arguments.frames) - 1:
-                    current_frame = 0
+                    current_frame = self.reset_frame
 
                 self._write_array(
                     self.__config.arguments.frames[current_frame].frame,
@@ -81,11 +87,17 @@ class AnimatorModule(MatrixModule):
                     write_queue,
                 )
 
+                delay = self.__config.arguments.frames[current_frame].frame_duration
+
+                if self.reset_delay != 0 and current_frame == self.reset_frame:
+                    delay = self.reset_delay
+
                 super().write(
                     update_device,
                     write_queue,
                     execute_callback,
-                    self.__config.arguments.frames[current_frame].frame_duration,
+                    delay,
+                    self.running,
                 )
                 current_frame += 1
         except (IndexError, ValueError, TypeError) as e:

@@ -125,10 +125,7 @@ def test_animator_module_write(animator_module):
             write_queue,
         )
         mock_super_write.assert_called_once_with(
-            update_device,
-            write_queue,
-            True,
-            500,
+            update_device, write_queue, True, 500, True
         )
 
 

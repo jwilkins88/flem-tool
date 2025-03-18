@@ -133,7 +133,7 @@ def test_gpu_h_module_write(gpu_h_module):
         col = 0
         for i in range(18):
             write_queue.assert_any_call(
-                (col, 7 if i % 2 == 0 else 8, True if i <= num_util_pips else False)
+                (col, 7 if i % 2 == 0 else 8, True if i < num_util_pips else False)
             )
             if i % 2 != 0:
                 col += 1
@@ -143,7 +143,7 @@ def test_gpu_h_module_write(gpu_h_module):
         col = 0
         for i in range(18):
             write_queue.assert_any_call(
-                (col, 12 if i % 2 == 0 else 13, True if i <= num_temp_pips else False)
+                (col, 12 if i % 2 == 0 else 13, True if i < num_temp_pips else False)
             )
             if i % 2 != 0:
                 col += 1
@@ -153,7 +153,9 @@ def test_gpu_h_module_write(gpu_h_module):
         mock_temp_line_write.assert_called_once_with(update_device, write_queue, False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_gpu_h_module_write_handles_exceptions(gpu_h_module):

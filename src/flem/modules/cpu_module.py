@@ -72,6 +72,7 @@ class CpuModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         """
         Writes the CPU usage to the matrix display and executes the callback if specified.
@@ -121,7 +122,11 @@ class CpuModule(MatrixModule):
 
                 self.__previous_value = cpu_percentage
                 super().write(
-                    update_device, write_queue, execute_callback, refresh_override
+                    update_device,
+                    write_queue,
+                    execute_callback,
+                    refresh_override,
+                    self.running,
                 )
         except (IndexError, ValueError, TypeError, psutil.Error) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")

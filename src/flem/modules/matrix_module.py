@@ -32,6 +32,7 @@ from flem.modules.utilities.characters import (
     fog,
     sun,
     snowflake,
+    battery,
 )
 
 
@@ -136,6 +137,7 @@ class MatrixModule:
             "g": self._g,
             "p": self._p,
             "u": self._u,
+            "battery": self._battery,
             "cloud": self._cloud,
             "cloud_rain": self._cloud_rain,
             "cloud_storm": self._cloud_storm,
@@ -181,8 +183,12 @@ class MatrixModule:
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         "The main function that draws the matrix info for the module"
+        if not running:
+            return
+
         if execute_callback:
             try:
                 update_device()
@@ -449,6 +455,14 @@ class MatrixModule:
     # Symbols
 
     # "Art"
+
+    def _battery(
+        self,
+        write_queue: Callable[[tuple[int, int, bool]], None],
+        start_row: int,
+        start_col: int,
+    ) -> None:
+        self._write_array(battery, start_row, start_col, write_queue)
 
     def _cloud(
         self,

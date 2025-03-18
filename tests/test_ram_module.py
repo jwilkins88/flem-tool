@@ -107,7 +107,9 @@ def test_ram_module_write(ram_module):
         write_queue.assert_has_calls(expected_pip_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_ram_module_write_handles_exceptions(ram_module):

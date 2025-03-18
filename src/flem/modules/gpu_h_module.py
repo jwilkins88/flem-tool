@@ -90,6 +90,7 @@ class GpuHModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         try:
             self._write_object(
@@ -135,7 +136,11 @@ class GpuHModule(MatrixModule):
                         self._write_gpu_temp(temperature, write_queue)
 
                 super().write(
-                    update_device, write_queue, execute_callback, refresh_override
+                    update_device,
+                    write_queue,
+                    execute_callback,
+                    refresh_override,
+                    self.running,
                 )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
@@ -201,7 +206,7 @@ class GpuHModule(MatrixModule):
 
         col = 0
         for i in range(18):
-            pip_on = i <= num_pips
+            pip_on = i < num_pips
             if i % 2 == 0:
                 write_queue((col, start_row, pip_on))
             else:
@@ -220,7 +225,7 @@ class GpuHModule(MatrixModule):
 
         col = 0
         for i in range(18):
-            pip_on = i <= num_pips
+            pip_on = i < num_pips
             if i % 2 == 0:
                 write_queue((col, start_row, pip_on))
             else:

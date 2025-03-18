@@ -105,7 +105,7 @@ def test_cpu_h_module_write(cpu_h_module):
         col = 0
         for i in range(18):
             write_queue.assert_any_call(
-                (col, 7 if i % 2 == 0 else 8, True if i <= num_util_pips else False)
+                (col, 7 if i % 2 == 0 else 8, True if i < num_util_pips else False)
             )
             if i % 2 != 0:
                 col += 1
@@ -115,7 +115,7 @@ def test_cpu_h_module_write(cpu_h_module):
         col = 0
         for i in range(18):
             write_queue.assert_any_call(
-                (col, 12 if i % 2 == 0 else 13, True if i <= num_temp_pips else False)
+                (col, 12 if i % 2 == 0 else 13, True if i < num_temp_pips else False)
             )
             if i % 2 != 0:
                 col += 1
@@ -123,9 +123,9 @@ def test_cpu_h_module_write(cpu_h_module):
         # Verify that the parent class's write method is called
         mock_super_write.assert_has_calls(
             [
-                call(update_device, write_queue, False, None),
-                call(update_device, write_queue, False, None),
-                call(update_device, write_queue, True, None),
+                call(update_device, write_queue, False, None, True),
+                call(update_device, write_queue, False, None, True),
+                call(update_device, write_queue, True, None, True),
             ],
             any_order=False,
         )

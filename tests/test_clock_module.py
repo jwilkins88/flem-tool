@@ -116,7 +116,9 @@ def test_clock_module_write(clock_module):
         mock_super_write_object.assert_has_calls(expected_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_clock_module_write_with_seconds_indicator(clock_module):
@@ -153,7 +155,9 @@ def test_clock_module_write_with_seconds_indicator(clock_module):
         write_queue.assert_has_calls(expected_pip_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_clock_module_write_handles_exceptions(clock_module):

@@ -100,7 +100,9 @@ def test_line_module_write_solid_line(line_module):
         write_queue.assert_has_calls(expected_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_line_module_write_dashed_line(mock_line_config):
@@ -133,7 +135,9 @@ def test_line_module_write_dashed_line(mock_line_config):
         write_queue.assert_has_calls(expected_calls, any_order=False)
 
         # Verify that the parent class's write method is called
-        mock_super_write.assert_called_once_with(update_device, write_queue, True, None)
+        mock_super_write.assert_called_once_with(
+            update_device, write_queue, True, None, True
+        )
 
 
 def test_line_module_write_handles_exceptions(line_module):

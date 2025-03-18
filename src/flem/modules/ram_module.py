@@ -42,6 +42,7 @@ class RamModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         try:
             self._write_object(
@@ -105,7 +106,11 @@ class RamModule(MatrixModule):
 
                 self.__previous_value = used_memory
                 super().write(
-                    update_device, write_queue, execute_callback, refresh_override
+                    update_device,
+                    write_queue,
+                    execute_callback,
+                    refresh_override,
+                    self.running,
                 )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")

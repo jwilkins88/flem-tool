@@ -89,6 +89,7 @@ class CpuHModule(MatrixModule):
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
         refresh_override: int = None,
+        running: bool = True,
     ) -> None:
         """
         Writes the CPU usage to the matrix display and executes the callback if specified.
@@ -132,7 +133,11 @@ class CpuHModule(MatrixModule):
                         )
 
                 super().write(
-                    update_device, write_queue, execute_callback, refresh_override
+                    update_device,
+                    write_queue,
+                    execute_callback,
+                    refresh_override,
+                    self.running,
                 )
         except (IndexError, ValueError, TypeError, psutil.Error) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
@@ -151,7 +156,7 @@ class CpuHModule(MatrixModule):
 
         col = 0
         for i in range(18):
-            pip_on = i <= num_pips
+            pip_on = i < num_pips
             if i % 2 == 0:
                 write_queue((col, start_row, pip_on))
             else:
@@ -250,7 +255,7 @@ class CpuHModule(MatrixModule):
 
         col = 0
         for i in range(18):
-            pip_on = i <= num_pips
+            pip_on = i < num_pips
             if i % 2 == 0:
                 write_queue((col, start_row, pip_on))
             else:

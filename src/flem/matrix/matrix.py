@@ -1,6 +1,7 @@
 # pylint: disable=missing-module-docstring
 
 from threading import Lock, Event, Thread
+from time import sleep
 import queue
 
 from loguru import logger
@@ -181,11 +182,11 @@ class Matrix:
         4. Resets the matrix to its initial state.
         5. Closes the device associated with the matrix.
         """
-        logger.debug(f"Stopping matrix {self.name}")
-        logger.debug("Shutting down change queue")
+        logger.info(f"Stopping matrix {self.name}")
         if self.running:
             self.running = False
 
+        logger.info("Stopping scenes")
         for scene in self.__scenes:
             try:
                 scene.stop()
@@ -193,11 +194,14 @@ class Matrix:
                 logger.exception(f"Error while stopping scene: {e}")
 
         try:
+            logger.info("Joining thread")
             if self.__thread.is_alive():
                 self.__thread.join(5)
 
+            logger.info("Resetting matrix")
+            sleep(5)
             self.reset_matrix()
-            logger.debug("Closing device")
+            logger.info("Closing device")
             self.__device.close()
         except Exception as e:
             logger.exception(f"Error while stopping matrix: {e}")

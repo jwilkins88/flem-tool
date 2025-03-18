@@ -177,7 +177,7 @@ class LedDevice:
                 return res
             return None
         except (IOError, OSError) as _ex:
-            logger.exception(f"Error: {_ex}")
+            logger.warning(f"Error: {_ex}")
             if self.is_open():
                 self.close()
                 self.connect()

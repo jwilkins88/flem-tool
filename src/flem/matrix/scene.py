@@ -91,7 +91,7 @@ class Scene:
 
         for module in self.__modules:
             try:
-                logger.debug(f"Stopping module {module.module_name}")
+                logger.info(f"Stopping module {module.module_name}")
                 module.stop()
             except (RuntimeError, TimeoutError) as e:
                 logger.error(
@@ -100,7 +100,7 @@ class Scene:
 
         try:
             if self.__timer and self.__timer.is_alive() and not from_scene:
-                logger.debug(f"Attempting to join timer for scene {self.__config.name}")
+                logger.info(f"Attempting to join timer for scene {self.__config.name}")
                 self.__timer.join(5)
         except (RuntimeError, TimeoutError) as e:
             logger.exception(
@@ -109,9 +109,9 @@ class Scene:
 
         for thread in self.__threads:
             try:
-                logger.debug(f"Attempting to join thread {thread.name}")
+                logger.info(f"Attempting to join thread {thread.name}")
                 if thread.is_alive():
-                    thread.join()
+                    thread.join(5)
             except (RuntimeError, TimeoutError) as e:
                 logger.error(f"Error while joining thread {thread.name}: {e}")
 
