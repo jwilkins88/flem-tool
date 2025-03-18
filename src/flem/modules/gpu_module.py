@@ -25,6 +25,9 @@ class GpuModule(MatrixModule):
     def __init__(self, config: GpuConfig = None, width: int = 3, height: int = 18):
         super().__init__(config, width, height)
 
+        self.__width = width
+        self.__height = height
+
         if not isinstance(config, GpuConfig):
             self.__config = GpuConfigSchema().load(ModuleSchema().dump(config))
         else:

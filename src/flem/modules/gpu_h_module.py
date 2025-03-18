@@ -117,7 +117,7 @@ class GpuHModule(MatrixModule):
                 )
 
                 gpu_percentage = gpu_info[self.__config.arguments.gpu_index][
-                    self.__config.arguments.gpu_util_argument
+                    self.__config.arguments.gpu_util_property
                 ][:-1]
 
                 if self.__config.arguments.use_bar_graph:

@@ -17,6 +17,8 @@ class CpuModule(MatrixModule):
     __line_module: LineModule = None
     __config: CpuConfig = None
     __previous_value: str = "NA"
+    __width: int = 3
+    __height: int = 18
 
     running = True
     module_name = "CPU Module"

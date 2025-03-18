@@ -16,6 +16,8 @@ class LineModule(MatrixModule):
     module_name = "Line Module"
 
     def __init__(self, config: LineConfig, width: int = None, height: int = 1):
+        self.__width = width
+        self.__height = height
         super().__init__(config, width, height)
 
         if not isinstance(config, LineConfig):
@@ -49,15 +51,15 @@ class LineModule(MatrixModule):
             while i < self.__config.position.x + (
                 self.__width or self.__config.arguments.width
             ):
-                write_queue((i, self.__config.position.y, True))
-
                 if self.__config.arguments.line_style == "dashed" and i % 2 != 0:
                     write_queue((i, self.__config.position.y, False))
+                else:
+                    write_queue((i, self.__config.position.y, True))
                 i += 1
 
-                super().write(
-                    update_device, write_queue, execute_callback, refresh_override
-                )
+            super().write(
+                update_device, write_queue, execute_callback, refresh_override
+            )
         except (IndexError, ValueError, TypeError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()

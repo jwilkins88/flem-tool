@@ -79,6 +79,7 @@ class WeatherModule(MatrixModule):
         self.write(update_device, write_queue, execute_callback)
 
     def stop(self) -> None:
+        self.running = False
         if self.__icon_module and self.__icon_module.running:
             self.__icon_module.stop()
 
@@ -94,7 +95,7 @@ class WeatherModule(MatrixModule):
         try:
             while self.running:
                 if self.__weather_timer.finished.is_set():
-                    logger.info("weather timer is finishe")
+                    logger.info("weather timer is finished")
                     self.__weather_timer = Timer(
                         self.__weather_update_interval, self.__get_weather_from_api
                     )
@@ -104,7 +105,7 @@ class WeatherModule(MatrixModule):
                 weather = None
                 if os.path.exists(self.__weather_file):
                     with open(self.__weather_file, "r", encoding="utf-8") as f:
-                        weather = json.load(f)
+                        weather = json.loads(f.read())
 
                 weather_icon = weather
 
@@ -137,7 +138,6 @@ class WeatherModule(MatrixModule):
                     self.__config.position.x,
                     write_queue,
                 )
-
                 start_row += 2
 
                 self.__draw_temp(write_queue, weather, start_row)
@@ -153,11 +153,10 @@ class WeatherModule(MatrixModule):
                     start_row += 8
 
                 del weather
-
                 super().write(
                     update_device, write_queue, execute_callback, refresh_override
                 )
-        except (IndexError, ValueError, TypeError) as e:
+        except (IndexError, ValueError, TypeError, KeyError) as e:
             logger.exception(f"Error while running {self.module_name}: {e}")
             super().stop()
             super().clear_module(update_device, write_queue)
