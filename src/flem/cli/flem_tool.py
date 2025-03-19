@@ -55,6 +55,7 @@ from flem.matrix.matrix import Matrix
 
 
 @click.group()
+@click.version_option(package_name="flem-tool")
 def flem():
     pass
 
@@ -166,7 +167,6 @@ def service():
     """
     Manage the FLEM service
     """
-    pass
 
 
 @service.command()
