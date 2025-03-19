@@ -37,7 +37,9 @@ import os
 import signal
 import sys
 from time import sleep
+import subprocess
 
+import click
 from loguru import logger
 
 from flem.models.config import Config
@@ -52,31 +54,51 @@ from flem.utilities.utilities import (
 from flem.matrix.matrix import Matrix
 
 
-def main():
+@click.group()
+def flem():
+    pass
+
+
+@click.command()
+@click.option(
+    "--debug",
+    "-d",
+    is_flag=True,
+    help="Enable debug logging.",
+)
+@click.option(
+    "--log-dump",
+    "-l",
+    is_flag=True,
+    help="Enable logging to file.",
+)
+@click.option(
+    "--print-matrix",
+    "-p",
+    is_flag=True,
+    help="Print the matrix to the console.",
+)
+def run(debug: bool, log_dump: bool, print_matrix: bool):
+    """
+    Run FLEM
+    """
     logger.remove()
     logger.add(sys.stderr, level="INFO")
-
-    # This is mostly useful for development work and testing
-    print_matrix = False
 
     check_and_create_user_directory()
     create_animator_files()
 
-    # child_pid = -1
-    if "--debug" in sys.argv or "-d" in sys.argv:
+    if debug:
         logger.remove()
         logger.add(sys.stderr, level="DEBUG")
-    if "--log-dump" in sys.argv or "-l" in sys.argv:
+    if log_dump:
         logger.add(
             f"{os.path.expanduser('~')}/.flem/logs/flem.log",
             rotation="50 MB",
             compression="zip",
         )
-    if "--print-matrix" in sys.argv or "-p" in sys.argv:
+    if print_matrix:
         print_matrix = True
-    # if "--background" in sys.argv or "-b" in sys.argv:
-    #     # child_pid = os.fork()
-    #     pass
 
     config: Config
     config_hash: str
@@ -139,5 +161,77 @@ def main():
         sleep(10)
 
 
+@click.group()
+def service():
+    """
+    Manage the FLEM service
+    """
+    pass
+
+
+@service.command()
+def install():
+    """
+    Install the FLEM service
+    """
+    logger.info("Installing FLEM service")
+    subprocess.call(["sh", "./install_flem_service.sh"])
+    logger.info("FLEM service installed")
+
+
+@service.command()
+def uninstall():
+    """
+    Uninstall the FLEM service
+    """
+    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
+        subprocess.call(["sh", "./uninstall_flem_service.sh"])
+        logger.info("FLEM service uninstalled")
+    else:
+        logger.warning("FLEM service not installed")
+
+
+@service.command()
+def start():
+    """
+    Start the FLEM service
+    """
+    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
+        subprocess.call(["systemctl", "--user", "start", "flem.service"])
+        logger.info("FLEM service started")
+    else:
+        logger.warning("FLEM service not installed")
+        logger.info("Run 'flem service install' to install the FLEM service")
+
+
+@service.command()
+def stop():
+    """
+    Stop the FLEM service
+    """
+    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
+        subprocess.call(["systemctl", "--user", "stop", "flem.service"])
+        logger.info("FLEM service stopped")
+    else:
+        logger.warning("FLEM service not installed")
+        logger.info("Run 'flem service install' to install the FLEM service")
+
+
+@service.command()
+def restart():
+    """
+    Restart the FLEM service
+    """
+    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
+        subprocess.call(["systemctl", "--user", "restart", "flem.service"])
+        logger.info("FLEM service restarted")
+    else:
+        logger.warning("FLEM service not installed")
+        logger.info("Run 'flem service install' to install the FLEM service")
+
+
+flem.add_command(run)
+flem.add_command(service)
+
 if __name__ == "__main__":
-    main()
+    flem()
