@@ -62,11 +62,6 @@ class WeatherModule(MatrixModule):
             self.__config = config
 
         self.__get_weather_from_api()
-        self.__weather_timer = Timer(
-            self.__weather_update_interval, self.__get_weather_from_api
-        )
-        self.__weather_timer.name = "weather_update"
-        self.__weather_timer.start()
 
     def start(
         self,
@@ -76,6 +71,11 @@ class WeatherModule(MatrixModule):
     ):
         self.running = True
         self.reset()
+        self.__weather_timer = Timer(
+            self.__weather_update_interval, self.__get_weather_from_api
+        )
+        self.__weather_timer.name = "weather_update"
+        self.__weather_timer.start()
         self.write(update_device, write_queue, execute_callback)
 
     def stop(self) -> None:

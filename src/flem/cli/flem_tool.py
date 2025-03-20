@@ -37,11 +37,13 @@ import os
 import signal
 import sys
 from time import sleep
-import subprocess
 
 import click
 from loguru import logger
 
+from flem.cli.flem_config import config
+from flem.cli.flem_device import device
+from flem.cli.flem_service import service
 from flem.models.config import Config
 from flem.utilities.utilities import (
     get_config,
@@ -57,6 +59,7 @@ from flem.matrix.matrix import Matrix
 @click.group()
 @click.version_option(package_name="flem-tool")
 def flem():
+    logger.remove()
     pass
 
 
@@ -79,20 +82,26 @@ def flem():
     is_flag=True,
     help="Print the matrix to the console.",
 )
-def run(debug: bool, log_dump: bool, print_matrix: bool):
+@click.option(
+    "--profile",
+    is_flag=True,
+    help="Start up in profiling mode (dev only)",
+)
+def run(debug: bool, log_dump: bool, print_matrix: bool, profile: bool):
     """
     Run FLEM
     """
     logger.remove()
-    logger.add(sys.stderr, level="INFO")
+    if not profile:
+        logger.add(sys.stderr, level="INFO")
 
     check_and_create_user_directory()
     create_animator_files()
 
-    if debug:
+    if debug and not profile:
         logger.remove()
         logger.add(sys.stderr, level="DEBUG")
-    if log_dump:
+    if log_dump and not profile:
         logger.add(
             f"{os.path.expanduser('~')}/.flem/logs/flem.log",
             rotation="50 MB",
@@ -162,76 +171,10 @@ def run(debug: bool, log_dump: bool, print_matrix: bool):
         sleep(10)
 
 
-@click.group()
-def service():
-    """
-    Manage the FLEM service
-    """
-
-
-@service.command()
-def install():
-    """
-    Install the FLEM service
-    """
-    logger.info("Installing FLEM service")
-    subprocess.call(["sh", "./install_flem_service.sh"])
-    logger.info("FLEM service installed")
-
-
-@service.command()
-def uninstall():
-    """
-    Uninstall the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["sh", "./uninstall_flem_service.sh"])
-        logger.info("FLEM service uninstalled")
-    else:
-        logger.warning("FLEM service not installed")
-
-
-@service.command()
-def start():
-    """
-    Start the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "start", "flem.service"])
-        logger.info("FLEM service started")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")
-
-
-@service.command()
-def stop():
-    """
-    Stop the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "stop", "flem.service"])
-        logger.info("FLEM service stopped")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")
-
-
-@service.command()
-def restart():
-    """
-    Restart the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "restart", "flem.service"])
-        logger.info("FLEM service restarted")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")
-
-
 flem.add_command(run)
 flem.add_command(service)
+flem.add_command(device)
+flem.add_command(config)
 
 if __name__ == "__main__":
     flem()

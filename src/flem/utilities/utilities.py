@@ -10,6 +10,7 @@ from flem.models.config import Config, ModuleConfig
 from flem.models.config_schema import ConfigSchema
 from flem.devices.led_device import LedDevice
 from flem.matrix.matrix import Matrix
+from flem.modules.matrix_module import MatrixModule
 
 __CONFIG_PATHS = [f"{os.path.expanduser('~')}/.flem/config.json", "config.json"]
 
@@ -58,7 +59,7 @@ def check_and_create_user_directory():
         logger.info("User directory already exists")
 
 
-def load_module(module_config: ModuleConfig):
+def load_module(module_config: ModuleConfig) -> MatrixModule:
     """
     Loads and initializes a module based on the provided configuration.
 
@@ -112,6 +113,17 @@ def get_config() -> tuple[Config, str]:
     return (config_schema.loads(config_string), md5(config_string.encode()).hexdigest())
 
 
+def get_config_location() -> str:
+    for path in __CONFIG_PATHS:
+        logger.debug(f"Checking for configuration file at '{path}'")
+        if os.path.exists((path)):
+            logger.debug(f"Reading configuration from '{path}'")
+            return path
+
+    logger.error("Configuration file not found")
+    return None
+
+
 def read_config_from_file() -> str:
     """
     Reads the configuration from the first available file in the predefined configuration paths.
@@ -124,15 +136,13 @@ def read_config_from_file() -> str:
         FileNotFoundError: If no configuration file is found in the predefined paths.
     """
 
-    for path in __CONFIG_PATHS:
-        logger.debug(f"Checking for configuration file at '{path}'")
-        if os.path.exists((path)):
-            logger.debug(f"Reading configuration from '{path}'")
-            with open(path, encoding="utf-8") as config_file:
-                return config_file.read()
+    config_location = get_config_location()
 
-    logger.error("Configuration file not found")
-    raise FileNotFoundError("Configuration file not found")
+    if config_location is None:
+        raise FileNotFoundError("Configuration file not found")
+
+    with open(config_location, encoding="utf-8") as config_file:
+        return config_file.read()
 
 
 def has_config_changed(current_config_hash: any, read_config: str) -> bool:

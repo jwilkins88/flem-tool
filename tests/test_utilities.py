@@ -3,8 +3,10 @@ import shutil
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 from flem.utilities.utilities import (
+    __CONFIG_PATHS,
     create_animator_files,
     check_and_create_user_directory,
+    get_config_location,
     load_module,
     get_config,
     read_config_from_file,
@@ -217,3 +219,19 @@ def test_parse_int(value, expected):
     """Test parsing a string to an integer."""
     result = parse_int(value)
     assert result == expected
+
+
+def test_get_config_location_found():
+    """Test finding the configuration file in predefined paths."""
+    with patch("os.path.exists", side_effect=[False, True]) as mock_exists:
+        result = get_config_location()
+        assert result == "config.json"
+        assert mock_exists.call_count == 2
+
+
+def test_get_config_location_not_found():
+    """Test when no configuration file is found in predefined paths."""
+    with patch("os.path.exists", return_value=False) as mock_exists:
+        result = get_config_location()
+        assert result is None
+        assert mock_exists.call_count == len(__CONFIG_PATHS)

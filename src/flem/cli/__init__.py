@@ -1,4 +1,4 @@
-from flem.cli import flem_tool
+from flem.cli import flem_tool, flem_device, flem_service, flem_config
 from flem.devices import led_device
 from flem.matrix import matrix, scene
 from flem.models.config import (

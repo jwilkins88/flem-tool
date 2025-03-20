@@ -211,6 +211,12 @@ class LedDevice:
         """Adjust the brightness scaling of the entire screen."""
         self.send_command(CommandVals.BRIGHTNESS, [brightness])
 
+    def sleep(self):
+        self.send_command(CommandVals.SLEEP, [True])
+
+    def wake(self):
+        self.send_command(CommandVals.SLEEP, [False])
+
     def __str__(self):
         return (
             f"Device: {self.__config.name} at {self.__config.device_address}"
