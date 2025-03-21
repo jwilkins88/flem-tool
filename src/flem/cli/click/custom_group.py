@@ -6,4 +6,4 @@ class CustomGroup(click.Group):
         if len(args) and args[0] in self.commands:
             if len(args) == 1 or args[1] not in self.commands:
                 args.insert(0, "")
-        super(CustomGroup, self).parse_args(ctx, args)
+        super().parse_args(ctx, args)

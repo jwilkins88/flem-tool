@@ -57,9 +57,6 @@ def test(ctx):
     columns_on = [
         [LedDevice.ON for _ in range(LedDevice.HEIGHT)] for _ in range(LedDevice.WIDTH)
     ]
-    columns_off = [
-        [LedDevice.OFF for _ in range(LedDevice.HEIGHT)] for _ in range(LedDevice.WIDTH)
-    ]
 
     if not ctx.obj["device_name"]:
         click.echo(click.style("Device name argument must be specified", fg="red"))
@@ -91,8 +88,7 @@ def test(ctx):
 
     click.echo("Test successful")
 
-    specified_device.send_col(0, columns_off[0])
-    specified_device.commit_cols()
+    ctx.invoke(clear)
     specified_device.sleep()
 
 

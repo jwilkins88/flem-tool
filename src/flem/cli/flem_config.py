@@ -1,9 +1,6 @@
 # pylint: disable=too-many-locals
 
-import os
-import subprocess
 import click
-from loguru import logger
 
 from flem.cli.flem_device import test
 
@@ -268,54 +265,3 @@ def validate(ctx, skip_device, verbose):
     else:
         click.echo("No errors found")
         click.echo("Config validated successfully")
-
-
-@config.command()
-def uninstall():
-    """
-    Uninstall the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["sh", "./uninstall_flem_service.sh"])
-        logger.info("FLEM service uninstalled")
-    else:
-        logger.warning("FLEM service not installed")
-
-
-@config.command()
-def start():
-    """
-    Start the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "start", "flem.service"])
-        logger.info("FLEM service started")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")
-
-
-@config.command()
-def stop():
-    """
-    Stop the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "stop", "flem.service"])
-        logger.info("FLEM service stopped")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")
-
-
-@config.command()
-def restart():
-    """
-    Restart the FLEM service
-    """
-    if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
-        subprocess.call(["systemctl", "--user", "restart", "flem.service"])
-        logger.info("FLEM service restarted")
-    else:
-        logger.warning("FLEM service not installed")
-        logger.info("Run 'flem service install' to install the FLEM service")

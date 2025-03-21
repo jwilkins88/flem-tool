@@ -128,10 +128,28 @@ pip install flem-tool
 FLEM comes with a default layout that's very, very basic. If you want to customize it, you'll have to create your own config. The default config is buried in the python directory, and I don't recommend messing around in there too much. See [Customizing](#customizing) for more details on how you can configure flem
 
 ```bash
-flem
+flem run
 ```
 
 Once that's done, your terminal should be spitting out logs, and you should see things happening on your matrix(s)!
+
+#### Installing as a service
+
+There's a couple benefits to installing FLEM as a service:
+
+1. FLEM runs automatically in the background
+2. FLEM runs with your computer at startup
+
+This is a fairly hands off approach, and if you're not constantly tinkering with the config (like I am), running as a service is a great and simple way to go.
+
+##### Install and start the service
+
+```
+flem service install
+flem service start
+```
+
+For more CLI commands, see the [CLI documentation]()
 
 ## Customizing
 
