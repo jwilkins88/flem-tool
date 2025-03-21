@@ -60,7 +60,6 @@ from flem.matrix.matrix import Matrix
 @click.version_option(package_name="flem-tool")
 def flem():
     logger.remove()
-    pass
 
 
 @click.command()
@@ -110,7 +109,7 @@ def run(debug: bool, log_dump: bool, print_matrix: bool, profile: bool):
     if print_matrix:
         print_matrix = True
 
-    config: Config
+    loaded_config: Config
     config_hash: str
     matrices: list[Matrix] = []
 
@@ -137,10 +136,10 @@ def run(debug: bool, log_dump: bool, print_matrix: bool, profile: bool):
     signal.signal(signal.SIGINT, signal_handler)
 
     logger.debug("Retrieving configuration...")
-    config, config_hash = get_config()
+    loaded_config, config_hash = get_config()
 
     logger.debug("Running matrices...")
-    matrices = run_matrices_from_config(config, matrices)
+    matrices = run_matrices_from_config(loaded_config, matrices)
 
     # pylint: disable=invalid-name
     any_matrix_running = True
@@ -165,8 +164,8 @@ def run(debug: bool, log_dump: bool, print_matrix: bool, profile: bool):
 
         if has_config_changed(config_hash, config_string):
             logger.info("Configuration has changed. Reloading configuration...")
-            config, config_hash = get_config()
-            matrices = run_matrices_from_config(config, matrices)
+            loaded_config, config_hash = get_config()
+            matrices = run_matrices_from_config(loaded_config, matrices)
 
         sleep(10)
 

@@ -67,7 +67,7 @@ def test_weather_module_start(weather_module):
         patch.object(weather_module, "reset") as mock_reset,
         patch.object(weather_module, "write") as mock_write,
     ):
-        weather_module.start(update_device, write_queue)
+        weather_module.start(update_device, write_queue, start_thread=False)
 
         assert weather_module.running is True
         mock_reset.assert_called_once()

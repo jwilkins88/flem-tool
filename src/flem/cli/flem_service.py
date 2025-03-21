@@ -1,7 +1,6 @@
 import os
 import subprocess
 import click
-from loguru import logger
 
 
 @click.group()

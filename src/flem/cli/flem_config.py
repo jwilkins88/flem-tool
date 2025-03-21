@@ -1,10 +1,16 @@
+# pylint: disable=too-many-locals
+
 import os
 import subprocess
 import click
 from loguru import logger
 
 from flem.cli.flem_device import test
+
+# pylint: disable=unused-import
 from flem.models.config import Config, DeviceConfig, SceneConfig, ModuleConfig
+
+# pylint: enable=unused-import
 from flem.models.config_schema import ConfigSchema
 from flem.utilities.utilities import (
     get_config_location,
@@ -21,7 +27,7 @@ def config():
     config_location = get_config_location()
     if config_location is None:
         click.echo("Warning: No config file found. Exiting")
-        return
+        raise click.Abort()
 
 
 @config.command()
@@ -79,10 +85,12 @@ def validate(ctx, skip_device, verbose):
     errors: list[dict] = []
     for config_device in loaded_config.devices:
         click.echo(
-            f"Detected {len(config_device.modules)} moduele{"s" if len(config_device.modules) > 1 else ""} for device {config_device.name}"
+            f"Detected {len(config_device.modules)} moduele"
+            f"{'s' if len(config_device.modules) > 1 else ''} "
+            f"for device {config_device.name}"
         )
         click.echo()
-        click.echo(f"Validating modules")
+        click.echo("Validating modules")
         for module in config_device.modules:
             click.echo()
             click.echo(f"Validating module {module.module_type}:{module.name}")
@@ -94,7 +102,7 @@ def validate(ctx, skip_device, verbose):
                 click.echo(f"        y: {module.position.y}")
                 click.echo(f"   Refresh Interval: {module.refresh_interval}")
                 if len(module.arguments) > 0:
-                    click.echo(f"   Arguments:")
+                    click.echo("   Arguments:")
                     for key, value in module.arguments.items():
                         click.echo(f"       {key}: {value}")
                 click.echo()
@@ -160,7 +168,9 @@ def validate(ctx, skip_device, verbose):
                             "device_name": device.name,
                             "scene_name": scene.name,
                             "module_name": module["module_name"],
-                            "error_text": f"Error: Module {module} not found in device {device.name}",
+                            "error_text": (
+                                f"Error: Module {module} not found in device {device.name}"
+                            ),
                             "error_type": "scene",
                         }
                     )
@@ -187,7 +197,10 @@ def validate(ctx, skip_device, verbose):
                                 "device_name": device.name,
                                 "scene_name": scene.name,
                                 "module_name": module["module_name"],
-                                "error_text": f"Error: {module['module_name']} overlaps {neighbor['module_name']}",
+                                "error_text": (
+                                    f"Error: {module['module_name']} overlaps"
+                                    f"{neighbor['module_name']}"
+                                ),
                                 "error_type": "module",
                             }
                         )
@@ -198,7 +211,9 @@ def validate(ctx, skip_device, verbose):
                             "device_name": device.name,
                             "scene_name": scene.name,
                             "module_name": module["module_name"],
-                            "error_text": f"Error: Module {module['module_name']} starts outside the grid",
+                            "error_text": (
+                                f"Error: Module {module['module_name']} starts outside the grid"
+                            ),
                             "error_type": "module",
                         }
                     )
@@ -208,7 +223,9 @@ def validate(ctx, skip_device, verbose):
                             "device_name": device.name,
                             "scene_name": scene.name,
                             "module_name": module["module_name"],
-                            "error_text": f"Error: Module {module['module_name']} starts outside the grid",
+                            "error_text": (
+                                f"Error: Module {module['module_name']} starts outside the grid"
+                            ),
                             "error_type": "module",
                         }
                     )
@@ -218,7 +235,9 @@ def validate(ctx, skip_device, verbose):
                             "device_name": device.name,
                             "scene_name": scene.name,
                             "module_name": module["module_name"],
-                            "error_text": f"Error: Module {module['module_name']} ends outside the grid",
+                            "error_text": (
+                                f"Error: Module {module['module_name']} ends outside the grid"
+                            ),
                             "error_type": "module",
                         }
                     )
@@ -228,7 +247,9 @@ def validate(ctx, skip_device, verbose):
                             "device_name": device.name,
                             "scene_name": scene.name,
                             "module_name": module["module_name"],
-                            "error_text": f"Error: Module {module['module_name']} ends outside the grid",
+                            "error_text": (
+                                f"Error: Module {module['module_name']} ends outside the grid"
+                            ),
                             "error_type": "module",
                         }
                     )

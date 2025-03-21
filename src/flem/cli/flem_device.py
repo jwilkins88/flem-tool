@@ -1,9 +1,6 @@
-import os
-import subprocess
 from time import sleep
 
 import click
-from loguru import logger
 
 from flem.cli.click.custom_group import CustomGroup
 from flem.devices.led_device import LedDevice

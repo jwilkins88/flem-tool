@@ -68,6 +68,7 @@ class WeatherModule(MatrixModule):
         update_device: Callable[[], None],
         write_queue: Callable[[tuple[int, int, bool]], None],
         execute_callback: bool = True,
+        start_thread: bool = True,
     ):
         self.running = True
         self.reset()
@@ -75,7 +76,8 @@ class WeatherModule(MatrixModule):
             self.__weather_update_interval, self.__get_weather_from_api
         )
         self.__weather_timer.name = "weather_update"
-        self.__weather_timer.start()
+        if start_thread:
+            self.__weather_timer.start()
         self.write(update_device, write_queue, execute_callback)
 
     def stop(self) -> None:
