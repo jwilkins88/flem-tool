@@ -18,6 +18,7 @@ def install():
     click.echo("Installing FLEM service")
     subprocess.call(["sh", "./install_flem_service.sh"])
     click.echo("FLEM service installed")
+    subprocess.call(["systemctl", "--user", "status", "flem.service"])
 
 
 @service.command()
@@ -41,6 +42,7 @@ def start():
     if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
         subprocess.call(["systemctl", "--user", "start", "flem.service"])
         click.echo("FLEM service started")
+        subprocess.call(["systemctl", "--user", "status", "flem.service"])
     else:
         click.echo(click.style("Warning: FLEM service not installed", fg="yellow"))
         click.echo("Run 'flem service install' to install the FLEM service")
@@ -54,6 +56,7 @@ def stop():
     if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
         subprocess.call(["systemctl", "--user", "stop", "flem.service"])
         click.echo("FLEM service stopped")
+        subprocess.call(["systemctl", "--user", "status", "flem.service"])
     else:
         click.echo(click.style("Warning: FLEM service not installed", fg="yellow"))
         click.echo("Run 'flem service install' to install the FLEM service")
@@ -67,6 +70,7 @@ def restart():
     if os.path.exists(f"{os.path.expanduser('~')}/.config/systemd/user/flem.service"):
         subprocess.call(["systemctl", "--user", "restart", "flem.service"])
         click.echo("FLEM service restarted")
+        subprocess.call(["systemctl", "--user", "status", "flem.service"])
     else:
         click.echo(click.style("Warning: FLEM service not installed", fg="yellow"))
         click.echo("Run 'flem service install' to install the FLEM service")
