@@ -155,9 +155,6 @@ def clear(ctx):
     Clear the device of any state. Turns all LEDs off
     """
     clear_all = False
-    columns_off = [
-        [LedDevice.OFF for _ in range(LedDevice.HEIGHT)] for _ in range(LedDevice.WIDTH)
-    ]
     click.echo(ctx.obj)
     if not ctx.obj["device_name"]:
         click.echo(
@@ -176,7 +173,14 @@ def clear(ctx):
 
         led_device = LedDevice(config_device)
 
-        led_device.render_matrix(columns_off)
+        led_device.connect()
+
+        led_device.render_matrix(
+            [
+                [LedDevice.OFF for _ in range(LedDevice.HEIGHT)]
+                for _ in range(LedDevice.WIDTH)
+            ]
+        )
         led_device.sleep()
 
 
