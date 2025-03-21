@@ -17,6 +17,7 @@ dependencies = [
     "psutil==7.0.0",
     "pyserial==3.5",
     "requests==2.32.3",
+    "click==8.0.3",
 ]
 requires-python = ">=3.9"
 
