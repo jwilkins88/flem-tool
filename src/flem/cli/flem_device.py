@@ -35,7 +35,7 @@ def ls(ctx):
     """
     List the devices in the config as well as their status
     """
-    click.echo(f"Checking configured devices in {ctx.obj["config_location"]}")
+    click.echo(f"Checking configured devices in {ctx.obj['config_location']}")
     config_string = read_config_from_file()
     config: Config = ConfigSchema().loads(config_string)
 
