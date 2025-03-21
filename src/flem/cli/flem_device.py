@@ -115,7 +115,7 @@ def brightness(ctx, device_brightness):
     if specified_device is None:
         return
 
-    click.echo(f"Connecting to device {ctx.obj["device_name"]}")
+    click.echo(f"Connecting to device {ctx.obj['device_name']}")
     specified_device.connect()
 
     click.echo(f"Setting brightness to {device_brightness}")
