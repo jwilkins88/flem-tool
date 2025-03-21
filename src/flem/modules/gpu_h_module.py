@@ -38,7 +38,7 @@ class GpuHModule(MatrixModule):
         else:
             self.__config = config
 
-        self.__width = width
+        self.width = width
         line_config = LineConfig(
             name="line",
             position=ModulePositionConfig(x=config.position.x, y=config.position.y + 5),
@@ -46,7 +46,7 @@ class GpuHModule(MatrixModule):
             module_type="line",
             arguments=LineConfigArguments(line_style="solid", width=width),
         )
-        self.__line_module = LineModule(line_config, self.__width)
+        self.__line_module = LineModule(line_config, self.width)
 
         if self.__config.arguments.show_temp:
             # self.__height = self.__height + 7
@@ -62,7 +62,7 @@ class GpuHModule(MatrixModule):
                 arguments=LineConfigArguments(line_style="dashed", width=width),
             )
             self.__temperature_line_module = LineModule(
-                temperature_line_config, self.__width
+                temperature_line_config, self.width
             )
 
     def start(

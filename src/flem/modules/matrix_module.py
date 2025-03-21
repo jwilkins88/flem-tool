@@ -111,8 +111,8 @@ class MatrixModule:
     __metaclass__ = abc.ABCMeta
     __write_funcs: dict = {}
     __config: ModuleConfig = None
-    __width: int = None
-    __height: int = None
+    width: int = None
+    height: int = None
 
     is_static = False
     module_name: str = "Base Module"
@@ -148,8 +148,8 @@ class MatrixModule:
         }
 
         self.__config = config
-        self.__width = width
-        self.__height = height
+        self.width = width
+        self.height = height
         self.module_name = config.name
 
     @abc.abstractmethod
@@ -216,10 +216,10 @@ class MatrixModule:
         """
         try:
             for row in range(
-                self.__config.position.y, self.__config.position.y + self.__height
+                self.__config.position.y, self.__config.position.y + self.height
             ):
                 for col in range(
-                    self.__config.position.x, self.__config.position.x + self.__width
+                    self.__config.position.x, self.__config.position.x + self.width
                 ):
                     write_queue((col, row, False))
 

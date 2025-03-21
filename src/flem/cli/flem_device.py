@@ -26,7 +26,7 @@ def device(ctx, device_name):
 
     config_location = get_config_location()
     if config_location is None:
-        click.echo("Warning: No config file found. Exiting")
+        click.echo(click.style("Warning: No config file found. Exiting", fg="yellow"))
         return
 
     ctx.obj["config_location"] = config_location
@@ -65,7 +65,7 @@ def test(ctx):
     ]
 
     if not ctx.obj["device_name"]:
-        click.echo("Device name argument must be specified")
+        click.echo(click.style("Device name argument must be specified", fg="red"))
         return
 
     click.echo(f"Testing device: {ctx.obj['device_name']}")
@@ -111,7 +111,9 @@ def brightness(ctx, device_brightness):
         return
 
     if device_brightness < 1 or device_brightness > 255:
-        click.echo("Warning: Brightness must be between 1 and 255")
+        click.echo(
+            click.style("Warning: Brightness must be between 1 and 255", fg="yellow")
+        )
         click.echo("Setting brightness to 50")
         device_brightness = 55
 
@@ -165,7 +167,9 @@ def clear(ctx):
     ]
     click.echo(ctx.obj)
     if not ctx.obj["device_name"]:
-        click.echo("No device name specified. Clearing all devices")
+        click.echo(
+            click.style("No device name specified. Clearing all devices", fg="yellow")
+        )
         clear_all = True
 
     click.echo("Loading devices from config")
@@ -194,6 +198,6 @@ def load_device_from_config(device_name: str) -> LedDevice:
             break
 
     if specified_device is None:
-        click.echo("Warning: Couldn't find requested device")
+        click.echo(click.style("Warning: Couldn't find requested device", fg="yellow"))
 
     return specified_device

@@ -26,8 +26,8 @@ class GpuModule(MatrixModule):
         super().__init__(config, width, height)
 
         # pylint: disable=W0238
-        self.__width = width
-        self.__height = height
+        self.width = width
+        self.height = height
         # pylint: enable=W0238
 
         if not isinstance(config, GpuConfig):
@@ -42,7 +42,7 @@ class GpuModule(MatrixModule):
             module_type="line",
             arguments=LineConfigArguments(line_style="solid", width=width),
         )
-        self.__line_module = LineModule(line_config, self.__width)
+        self.__line_module = LineModule(line_config, self.width)
 
     def start(
         self,
