@@ -414,10 +414,6 @@ I've made pretty good progress here (see [modules docs](/src/flem/modules) for d
 
 Again, I'm bad at naming things, but I've had the idea that if I could join both my matrices (currently one on the left and one on the right) into a single screen, I'd have so much more room for activities. With the current architecture, this just isn't possible. It's something I definitely want to consider at some point though (reading text top to bottom just isn't great). This might be more of a gimmick, but it's something I want to look into
 
-#### Bundle my version of NVTOP with FLEM
-
-I've been thinking about the usefulness (rather, lack of) of the GPU module, and I think I need to add my compiled version of that into FLEM somehow. It's possible that I may just add is as a [cli](/src/flem/cli/README.md) to download an artifact from github and place it in the flem home directory. That'd allow folks to use the GPU modules without going through the hassle of building it themselves. I need to think about this a little bit more, but it's probably going to happen soon.
-
 ## Contributing
 
 I'd love to see the community excited about this project and wanting to make it better. If you've got something to add (or just want to make it your own), please do! I'm open to feature requests, but even better than that, I'd love to see your ideas in the form of a PR.
