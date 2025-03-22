@@ -33,7 +33,7 @@ def device(ctx, device_name):
 @click.pass_context
 def ls(ctx):
     """
-    List the devices in the config as well as their status
+    List the devices in the config
     """
     click.echo(f"Checking configured devices in {ctx.obj['config_location']}")
     config_string = read_config_from_file()
@@ -45,7 +45,6 @@ def ls(ctx):
         click.echo(f"  Address: {led_device.device_address}")
         click.echo(f"  Baud Rate: {led_device.speed}")
         click.echo(f"  Brightness: {led_device.brightness}")
-        click.echo(f"  Connected: {configured_device.is_open()}")
 
 
 @device.command()
@@ -144,8 +143,6 @@ def brightness(ctx, device_brightness):
             for _ in range(LedDevice.WIDTH)
         ]
     )
-
-    specified_device.sleep()
 
 
 @device.command()

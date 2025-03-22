@@ -29,7 +29,18 @@ def config():
 
 @config.command()
 def which():
+    """
+    Returns the location of your current config
+    """
     click.echo(get_config_location())
+
+
+@config.command()
+def edit():
+    """
+    Opens flem config in default editor
+    """
+    click.launch(get_config_location())
 
 
 @config.command()
