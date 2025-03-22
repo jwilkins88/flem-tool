@@ -71,24 +71,24 @@ As of the latest update, Scenes are supported, and this makes the tool even more
 
 ### Modules
 
-Modules are the core of FLEM. Each module is self-contained, and is only concerned about rendering its own information to the matrix. Each module runs in isolation, and isn't affected by other modules that are also running (well, sort of... more on that in [limitations](#limitations)). See [the modules documentation for more details](src/flem/modules/README.md)
+Modules are the core of FLEM. Each module is self-contained, and is only concerned about rendering its own information to the matrix. Each module runs in isolation, and isn't affected by other modules that are also running (well, sort of... more on that in [limitations](#limitations)). See [the modules documentation for more details](src/flem/modules)
 
 Currently, I have:
 
 - CPU
-  - [Minimalist CPU Module](src/flem/modules/README.md#cpu-module)
-  - [Full CPU Module (includes CPU temp)](src/flem/modules/README.md#horizontal-cpu-module)
+  - [Minimalist CPU Module](src/flem/modules#cpu-module)
+  - [Full CPU Module (includes CPU temp)](src/flem/modules#horizontal-cpu-module)
 - GPU***
-  - [Minimalist GPU Module](src/flem/modules/README.md#gpu-module)
-  - [Full GPU Module (include GPU temp)](src/flem/modules/README.md#horizontal-gpu-module)
+  - [Minimalist GPU Module](src/flem/modulesgpu-module)
+  - [Full GPU Module (include GPU temp)](src/flem/modules#horizontal-gpu-module)
 - Clocks
-  - [Clock Module](src/flem/modules/README.md#clock-module)
-  - [Binary Clock Module](src/flem/modules/README.md#binary-clock-module)
-- [RAM Module](src/flem/modules/README.md#ram-module)
-- [Battery Module](src/flem/modules/README.md#battery-module)
-- [Weather Module](src/flem/modules/README.md#weather-module)
-- [Animator Module](src/flem/modules/README.md#animator-module)
-- [Line Module (more of a building block)](src/flem/modules/README.md#line-module)
+  - [Clock Module](src/flem/modulesclock-module)
+  - [Binary Clock Module](src/flem/modules#binary-clock-module)
+- [RAM Module](src/flem/modulesram-module)
+- [Battery Module](src/flem/modules#battery-module)
+- [Weather Module](src/flem/modules#weather-module)
+- [Animator Module](src/flem/modules#animator-module)
+- [Line Module (more of a building block)](src/flem/modules#line-module)
 
 *** The GPU module **will not** work out of the box. It requires a custom built version of NVTOP (can be found on my github). I'm hoping that my changes will make it to the stable version of NVTOP, but, for now, there's a bit of monkeying required to get the GPU modules working. See [the GPU module](#gpu-module) section for more information
 
@@ -403,11 +403,11 @@ I wanted to add some clarity to this one now that I've been sitting on it for a 
 
 #### More modules * In Progress
 
-I've made pretty good progress here (see [modules docs](/src/flem/modules/README.MD) for details), but I've still got a couple things that I'd like to figure out:
+I've made pretty good progress here (see [modules docs](/src/flem/modules) for details), but I've still got a couple things that I'd like to figure out:
 
 1. RAM Bar
 2. Network utilization (maybe)
-3. Date module - This seems like a no brainer, but I'll probably just add this as an argument to the [clock module](/src/flem/modules/README.MD)
+3. Date module - This seems like a no brainer, but I'll probably just add this as an argument to the [clock module](/src/flem/modules#clock-module)
 4. FPS module (may be difficult depending on the data availability)
 
 #### Mega Matrix
