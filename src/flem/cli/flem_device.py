@@ -45,6 +45,8 @@ def ls(ctx):
         click.echo(f"  Address: {led_device.device_address}")
         click.echo(f"  Baud Rate: {led_device.speed}")
         click.echo(f"  Brightness: {led_device.brightness}")
+        configured_device.connect()
+        click.echo(f"  Connected: {configured_device.is_open()}")
 
 
 @device.command()
