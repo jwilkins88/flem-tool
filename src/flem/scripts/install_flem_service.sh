@@ -7,7 +7,6 @@ After=network.service
 [Service]
 Type=simple
 Restart=always
-WorkingDirectory=$PWD/src
 Environment=PYTHONUNBUFFERED=1
 ExecStart=$(which python) -m flem run
 KillSignal=SIGINT
