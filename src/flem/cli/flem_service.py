@@ -35,7 +35,10 @@ def uninstall():
         subprocess.call(
             [
                 "sh",
-                f"{os.path.dirname(os.path.abspath(__file__))}/../scripts/uninstall_flem_service.sh",
+                (
+                    f"{os.path.dirname(os.path.abspath(__file__))}"
+                    "/../scripts/uninstall_flem_service.sh"
+                ),
             ]
         )
         click.echo("FLEM service uninstalled")
